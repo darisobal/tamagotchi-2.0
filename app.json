@@ -25,6 +25,19 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "scheme": "tamagotchi",
+    "plugins": [
+      "expo-sqlite",
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Allow Tamagotchi to access your camera to create your pixel pet avatar.",
+          "photosPermission": "Allow Tamagotchi to access your photos to create your pixel pet avatar."
+        }
+      ],
+      "expo-secure-store"
+    ]
   }
 }
