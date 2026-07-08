@@ -17,6 +17,7 @@ import {
   DIFFICULTY_SECTION_LABEL,
   DIFFICULTY_OPTIONS,
   DEFAULT_HABIT_NAME,
+  DEFAULT_PET_NAME,
   PET_COLOR_OPTIONS,
   PET_HAT_OPTIONS,
   PetHat,
@@ -30,17 +31,23 @@ import LineArtPet from '../../src/LineArtPet';
 import { HatOnlyPreview } from '../../src/PetHat';
 
 const HABIT_NAME_MAX = 40;
+const PET_NAME_MAX = 30;
 
 export default function SettingsScreen() {
   const { prefs, updatePrefs } = useAppState();
   const { user, signOut } = useAuth();
   const tabBarExtraPad = useFloatingTabBarExtraPadding();
   const [habitDraft, setHabitDraft] = useState(prefs.habitName ?? DEFAULT_HABIT_NAME);
+  const [petDraft, setPetDraft] = useState(prefs.petName ?? DEFAULT_PET_NAME);
 
   // Keep the draft in sync if prefs.habitName changes from elsewhere (e.g. reset).
   useEffect(() => {
     setHabitDraft(prefs.habitName ?? DEFAULT_HABIT_NAME);
   }, [prefs.habitName]);
+
+  useEffect(() => {
+    setPetDraft(prefs.petName ?? DEFAULT_PET_NAME);
+  }, [prefs.petName]);
 
   const persistHabitName = useCallback(async () => {
     const trimmed = habitDraft.trim();
@@ -52,6 +59,16 @@ export default function SettingsScreen() {
     if (trimmed === prefs.habitName) return;
     await updatePrefs({ habitName: trimmed });
   }, [habitDraft, prefs.habitName, updatePrefs]);
+
+  const persistPetName = useCallback(async () => {
+    const trimmed = petDraft.trim();
+    if (trimmed.length === 0) {
+      setPetDraft(prefs.petName ?? DEFAULT_PET_NAME);
+      return;
+    }
+    if (trimmed === prefs.petName) return;
+    await updatePrefs({ petName: trimmed });
+  }, [petDraft, prefs.petName, updatePrefs]);
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -71,7 +88,7 @@ export default function SettingsScreen() {
             onChangeText={setHabitDraft}
             onBlur={persistHabitName}
             onEndEditing={persistHabitName}
-            placeholder="e.g. read 10 pages"
+            placeholder="e.g. walk 20 minutes"
             placeholderTextColor={Colors.textMuted}
             style={styles.habitInput}
             maxLength={HABIT_NAME_MAX}
@@ -91,6 +108,21 @@ export default function SettingsScreen() {
               />
             ))}
           </View>
+
+          <Text style={styles.sectionLabel}>name your pet</Text>
+          <TextInput
+            value={petDraft}
+            onChangeText={setPetDraft}
+            onBlur={persistPetName}
+            onEndEditing={persistPetName}
+            placeholder="e.g. beans"
+            placeholderTextColor={Colors.textMuted}
+            style={styles.habitInput}
+            maxLength={PET_NAME_MAX}
+            autoCorrect={false}
+            autoCapitalize="none"
+            returnKeyType="done"
+          />
 
           <View style={styles.avatarSection}>
             <View style={styles.avatarDisc}>

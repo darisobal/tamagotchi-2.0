@@ -7,11 +7,22 @@ import React, {
   useState,
 } from 'react';
 import { Platform } from 'react-native';
+import * as Linking from 'expo-linking';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Session, User } from '@supabase/supabase-js';
 import { getSupabase, isSupabaseConfigured } from './supabase';
+import {
+  createSessionFromUrl,
+  getAuthRedirectUrl,
+  isAuthCallbackUrl,
+} from './authRedirect';
 
 type AuthMode = 'login' | 'signup';
+
+export type SignUpResult =
+  | { outcome: 'session' }
+  | { outcome: 'confirm_email' }
+  | { outcome: 'error'; message: string };
 
 const LOCAL_USER_KEY = 'tamagotchi_local_user';
 
@@ -22,8 +33,9 @@ interface AuthState {
   isConfigured: boolean;
   isLocalOnly: boolean;
   signInWithPassword: (email: string, password: string) => Promise<string | null>;
-  signUpWithPassword: (email: string, password: string) => Promise<string | null>;
+  signUpWithPassword: (email: string, password: string) => Promise<SignUpResult>;
   signInWithMagicLink: (email: string) => Promise<string | null>;
+  resendConfirmationEmail: (email: string) => Promise<string | null>;
   signOut: () => Promise<void>;
 }
 
@@ -42,6 +54,11 @@ function formatAuthError(error: unknown): string {
   return 'Something went wrong. Try again.';
 }
 
+function isEmailNotConfirmedError(message: string): boolean {
+  const lower = message.toLowerCase();
+  return lower.includes('email not confirmed') || lower.includes('not confirmed');
+}
+
 function makeLocalUser(email: string): User {
   const id = `local-${email.trim().toLowerCase()}`;
   return {
@@ -51,6 +68,7 @@ function makeLocalUser(email: string): User {
     user_metadata: {},
     aud: 'authenticated',
     created_at: new Date().toISOString(),
+    email_confirmed_at: new Date().toISOString(),
   } as User;
 }
 
@@ -88,6 +106,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
 
+  const handleAuthCallbackUrl = useCallback(async (url: string) => {
+    if (!isAuthCallbackUrl(url)) return;
+    const supabase = getSupabase();
+    if (!supabase) return;
+    await createSessionFromUrl(supabase, url);
+  }, []);
+
   useEffect(() => {
     const supabase = getSupabase();
     if (!supabase) {
@@ -109,6 +134,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return () => listener.subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    const supabase = getSupabase();
+    if (!supabase) return;
+
+    Linking.getInitialURL().then((url) => {
+      if (url) void handleAuthCallbackUrl(url);
+    });
+
+    const subscription = Linking.addEventListener('url', ({ url }) => {
+      void handleAuthCallbackUrl(url);
+    });
+
+    return () => subscription.remove();
+  }, [handleAuthCallbackUrl]);
 
   const localSignIn = useCallback(async (email: string, password: string, mode: AuthMode) => {
     if (!email.trim()) return 'Enter your email.';
@@ -134,11 +174,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const signUpWithPassword = useCallback(
-    async (email: string, password: string) => {
+    async (email: string, password: string): Promise<SignUpResult> => {
       const supabase = getSupabase();
-      if (!supabase) return localSignIn(email, password, 'signup');
-      const { error } = await supabase.auth.signUp({ email, password });
-      return error ? formatAuthError(error) : null;
+      if (!supabase) {
+        const err = await localSignIn(email, password, 'signup');
+        return err ? { outcome: 'error', message: err } : { outcome: 'session' };
+      }
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: getAuthRedirectUrl() },
+      });
+
+      if (error) {
+        return { outcome: 'error', message: formatAuthError(error) };
+      }
+
+      if (data.session) {
+        return { outcome: 'session' };
+      }
+
+      return { outcome: 'confirm_email' };
     },
     [localSignIn]
   );
@@ -150,7 +207,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { shouldCreateUser: true },
+      options: {
+        shouldCreateUser: true,
+        emailRedirectTo: getAuthRedirectUrl(),
+      },
+    });
+    return error ? formatAuthError(error) : null;
+  }, []);
+
+  const resendConfirmationEmail = useCallback(async (email: string) => {
+    const supabase = getSupabase();
+    if (!supabase) {
+      return 'Email confirmation needs Supabase. Add EXPO_PUBLIC_SUPABASE_* keys.';
+    }
+    if (!email.trim()) return 'Enter your email.';
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email.trim(),
+      options: { emailRedirectTo: getAuthRedirectUrl() },
     });
     return error ? formatAuthError(error) : null;
   }, []);
@@ -175,12 +249,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signInWithPassword,
       signUpWithPassword,
       signInWithMagicLink,
+      resendConfirmationEmail,
       signOut,
     }),
-    [loading, session, signInWithPassword, signUpWithPassword, signInWithMagicLink, signOut]
+    [
+      loading,
+      session,
+      signInWithPassword,
+      signUpWithPassword,
+      signInWithMagicLink,
+      resendConfirmationEmail,
+      signOut,
+    ]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
+export { isEmailNotConfirmedError };
 export type { AuthMode };

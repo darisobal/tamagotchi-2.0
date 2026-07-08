@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { router, Redirect } from 'expo-router';
-import { useAuth, AuthMode } from '../src/authContext';
+import { useAuth, AuthMode, isEmailNotConfirmedError } from '../src/authContext';
 import { Colors, Spacing, FontSize, Slab, Radius, Border } from '../src/theme';
 
 export default function AuthScreen() {
@@ -21,6 +21,7 @@ export default function AuthScreen() {
     signInWithPassword,
     signUpWithPassword,
     signInWithMagicLink,
+    resendConfirmationEmail,
     isConfigured,
     isLocalOnly,
   } = useAuth();
@@ -31,6 +32,8 @@ export default function AuthScreen() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
+  const [confirmationSent, setConfirmationSent] = useState(false);
+  const [resendNotice, setResendNotice] = useState<string | null>(null);
 
   const isLogin = mode === 'login';
 
@@ -50,16 +53,54 @@ export default function AuthScreen() {
 
   const handleSubmit = async () => {
     setError(null);
+    setResendNotice(null);
+    setConfirmationSent(false);
     setBusy(true);
-    const err = isLogin
-      ? await signInWithPassword(email.trim(), password)
-      : await signUpWithPassword(email.trim(), password);
+
+    if (isLogin) {
+      const err = await signInWithPassword(email.trim(), password);
+      setBusy(false);
+      if (err) {
+        if (isEmailNotConfirmedError(err)) {
+          setConfirmationSent(true);
+          setError('Confirm your email before logging in.');
+          return;
+        }
+        setError(err);
+        return;
+      }
+      router.replace('/(tabs)');
+      return;
+    }
+
+    const result = await signUpWithPassword(email.trim(), password);
+    setBusy(false);
+    if (result.outcome === 'error') {
+      setError(result.message);
+      return;
+    }
+    if (result.outcome === 'confirm_email') {
+      setConfirmationSent(true);
+      return;
+    }
+    router.replace('/(tabs)');
+  };
+
+  const handleResendConfirmation = async () => {
+    setError(null);
+    setResendNotice(null);
+    if (!email.trim()) {
+      setError('Enter your email first.');
+      return;
+    }
+    setBusy(true);
+    const err = await resendConfirmationEmail(email.trim());
     setBusy(false);
     if (err) {
       setError(err);
       return;
     }
-    router.replace('/(tabs)');
+    setResendNotice('Confirmation email sent again. Check your inbox.');
   };
 
   const handleMagicLink = async () => {
@@ -106,6 +147,8 @@ export default function AuthScreen() {
                 setMode('login');
                 setError(null);
                 setMagicLinkSent(false);
+                setConfirmationSent(false);
+                setResendNotice(null);
               }}
             >
               <Text style={[styles.modeText, isLogin && styles.modeTextActive]}>log in</Text>
@@ -116,6 +159,8 @@ export default function AuthScreen() {
                 setMode('signup');
                 setError(null);
                 setMagicLinkSent(false);
+                setConfirmationSent(false);
+                setResendNotice(null);
               }}
             >
               <Text style={[styles.modeText, !isLogin && styles.modeTextActive]}>sign up</Text>
@@ -148,6 +193,12 @@ export default function AuthScreen() {
           />
 
           {error ? <Text style={styles.error}>{error}</Text> : null}
+          {confirmationSent ? (
+            <Text style={styles.success}>
+              check your email to confirm your account before logging in.
+            </Text>
+          ) : null}
+          {resendNotice ? <Text style={styles.success}>{resendNotice}</Text> : null}
           {magicLinkSent ? (
             <Text style={styles.success}>check your email for a sign-in link.</Text>
           ) : null}
@@ -165,7 +216,18 @@ export default function AuthScreen() {
             )}
           </TouchableOpacity>
 
-          {isConfigured ? (
+          {confirmationSent && isConfigured ? (
+            <TouchableOpacity
+              style={styles.secondaryBtn}
+              onPress={handleResendConfirmation}
+              disabled={busy}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.secondaryBtnText}>resend confirmation email</Text>
+            </TouchableOpacity>
+          ) : null}
+
+          {isConfigured && !confirmationSent ? (
             <TouchableOpacity
               style={styles.secondaryBtn}
               onPress={handleMagicLink}

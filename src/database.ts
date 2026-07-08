@@ -6,8 +6,12 @@ import {
   TrackType,
   ALL_TRACKS,
   DEFAULT_HABIT_NAME,
+  DEFAULT_PET_NAME,
   DEFAULT_PET_COLOR,
   DEFAULT_HABIT_CADENCE,
+  resolveHabitName,
+  resolvePetName,
+  normalizeUserPrefs,
   PetHat,
   HabitCadence,
 } from './types';
@@ -77,6 +81,9 @@ class NativeStorage implements Storage {
     } catch {}
     try {
       await this.db.execAsync(`ALTER TABLE user_prefs ADD COLUMN habitCadence TEXT`);
+    } catch {}
+    try {
+      await this.db.execAsync(`ALTER TABLE user_prefs ADD COLUMN petName TEXT`);
     } catch {}
     for (const t of ALL_TRACKS) {
       await this.db.runAsync(
@@ -152,20 +159,32 @@ class NativeStorage implements Storage {
       onboardingDone: number;
       customSprite: string | null;
       habitName: string | null;
+      petName: string | null;
       petColor: string | null;
       petHat: string | null;
       habitCadence: string | null;
     }>(`SELECT * FROM user_prefs WHERE id = 1`);
-    return {
+    const prefs = normalizeUserPrefs({
       petType: row!.petType as UserPrefs['petType'],
       difficulty: row!.difficulty as UserPrefs['difficulty'],
       onboardingDone: row!.onboardingDone === 1,
       customSprite: row!.customSprite ?? null,
-      habitName: row!.habitName ?? DEFAULT_HABIT_NAME,
-      petColor: row!.petColor ?? DEFAULT_PET_COLOR,
-      petHat: ((row!.petHat as PetHat) ?? 'none') as PetHat,
-      habitCadence: ((row!.habitCadence as HabitCadence) ?? DEFAULT_HABIT_CADENCE) as HabitCadence,
-    };
+      habitName: row!.habitName,
+      petName: row!.petName,
+      petColor: row!.petColor,
+      petHat: row!.petHat as PetHat,
+      habitCadence: row!.habitCadence as HabitCadence,
+    });
+    if (
+      prefs.habitName !== (row!.habitName ?? '') ||
+      prefs.petName !== (row!.petName ?? '')
+    ) {
+      await this.updateUserPrefs({
+        habitName: prefs.habitName,
+        petName: prefs.petName,
+      });
+    }
+    return prefs;
   }
 
   async updateUserPrefs(prefs: Partial<UserPrefs>) {
@@ -180,6 +199,8 @@ class NativeStorage implements Storage {
       await db.runAsync(`UPDATE user_prefs SET customSprite = ? WHERE id = 1`, prefs.customSprite);
     if (prefs.habitName !== undefined)
       await db.runAsync(`UPDATE user_prefs SET habitName = ? WHERE id = 1`, prefs.habitName);
+    if (prefs.petName !== undefined)
+      await db.runAsync(`UPDATE user_prefs SET petName = ? WHERE id = 1`, prefs.petName);
     if (prefs.petColor !== undefined)
       await db.runAsync(`UPDATE user_prefs SET petColor = ? WHERE id = 1`, prefs.petColor);
     if (prefs.petHat !== undefined)

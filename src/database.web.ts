@@ -5,8 +5,12 @@ import {
   TrackType,
   ALL_TRACKS,
   DEFAULT_HABIT_NAME,
+  DEFAULT_PET_NAME,
   DEFAULT_PET_COLOR,
   DEFAULT_HABIT_CADENCE,
+  resolveHabitName,
+  resolvePetName,
+  normalizeUserPrefs,
 } from './types';
 
 export interface Storage {
@@ -32,6 +36,7 @@ const DEFAULT_PREFS: UserPrefs = {
   onboardingDone: true,
   customSprite: null,
   habitName: DEFAULT_HABIT_NAME,
+  petName: DEFAULT_PET_NAME,
   petColor: DEFAULT_PET_COLOR,
   petHat: 'none',
   habitCadence: DEFAULT_HABIT_CADENCE,
@@ -66,14 +71,12 @@ class WebStorage implements Storage {
           for (const t of data.tracks) this.tracks.set(t.trackType as TrackType, t);
         }
         if (data.prefs) {
-          this.prefs = {
-            ...DEFAULT_PREFS,
-            ...data.prefs,
-            habitName: data.prefs.habitName ?? DEFAULT_HABIT_NAME,
-            petColor: data.prefs.petColor ?? DEFAULT_PET_COLOR,
-            petHat: data.prefs.petHat ?? 'none',
-            habitCadence: data.prefs.habitCadence ?? DEFAULT_HABIT_CADENCE,
-          };
+          const normalized = normalizeUserPrefs(data.prefs);
+          const migrated =
+            data.prefs.habitName !== normalized.habitName ||
+            data.prefs.petName !== normalized.petName;
+          this.prefs = normalized;
+          if (migrated) this.save();
         }
       }
     } catch { /* fresh start */ }
@@ -139,6 +142,14 @@ class WebStorage implements Storage {
 
   async getUserPrefs() {
     this.load();
+    const normalized = normalizeUserPrefs(this.prefs);
+    if (
+      normalized.habitName !== this.prefs.habitName ||
+      normalized.petName !== this.prefs.petName
+    ) {
+      this.prefs = normalized;
+      this.save();
+    }
     return { ...this.prefs };
   }
 
@@ -162,7 +173,7 @@ class WebStorage implements Storage {
     checkIns: CheckIn[];
   }) {
     this.load();
-    this.prefs = { ...DEFAULT_PREFS, ...snapshot.prefs, onboardingDone: true };
+    this.prefs = normalizeUserPrefs({ ...snapshot.prefs, onboardingDone: true });
     this.checkIns = [...snapshot.checkIns];
     this.tracks = new Map();
     for (const t of ALL_TRACKS) {

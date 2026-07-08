@@ -51,6 +51,8 @@ export interface UserPrefs {
   customSprite?: string | null;
   /** Human-readable name for the single tracked habit. */
   habitName: string;
+  /** Display name for the pet. */
+  petName: string;
   /** Hex colour used to draw the line-art pet. */
   petColor: string;
   /** Cosmetic hat sitting on top of the pet. */
@@ -83,7 +85,39 @@ export const MAIN_TRACK: TrackType = 'main';
 /** Used by storage/iteration code that previously walked multiple tracks. */
 export const ALL_TRACKS: TrackType[] = [MAIN_TRACK];
 
-export const DEFAULT_HABIT_NAME = 'my habit';
+export const DEFAULT_HABIT_NAME = 'read 10 pages';
+
+/** Previous placeholder default — migrate so existing users see the new example. */
+export const LEGACY_DEFAULT_HABIT_NAME = 'my habit';
+
+export function resolveHabitName(stored: string | null | undefined): string {
+  if (!stored || stored === LEGACY_DEFAULT_HABIT_NAME) return DEFAULT_HABIT_NAME;
+  return stored;
+}
+
+export const DEFAULT_PET_NAME = 'noodle';
+
+/** Previous placeholder default — migrate so existing users see the new example. */
+export const LEGACY_DEFAULT_PET_NAME = 'buddy';
+
+export function resolvePetName(stored: string | null | undefined): string {
+  if (!stored || stored === LEGACY_DEFAULT_PET_NAME) return DEFAULT_PET_NAME;
+  return stored;
+}
+
+export function normalizeUserPrefs(partial: Partial<UserPrefs>): UserPrefs {
+  return {
+    petType: partial.petType ?? 'dino',
+    difficulty: partial.difficulty ?? 'gentle',
+    onboardingDone: partial.onboardingDone ?? true,
+    customSprite: partial.customSprite ?? null,
+    habitName: resolveHabitName(partial.habitName),
+    petName: resolvePetName(partial.petName),
+    petColor: partial.petColor ?? DEFAULT_PET_COLOR,
+    petHat: partial.petHat ?? 'none',
+    habitCadence: partial.habitCadence ?? DEFAULT_HABIT_CADENCE,
+  };
+}
 
 export const DEFAULT_HABIT_CADENCE: HabitCadence = 'daily';
 
