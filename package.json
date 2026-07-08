@@ -8,7 +8,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest",
-    "setup:supabase": "node scripts/setup-supabase.mjs"
+    "setup:supabase": "node scripts/setup-supabase.mjs",
+    "enable:email-confirmation": "node scripts/enable-email-confirmation.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/hepta-slab": "^0.4.2",
