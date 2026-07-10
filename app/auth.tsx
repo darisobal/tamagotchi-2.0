@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { router, Redirect } from 'expo-router';
 import { useAuth, AuthMode, isEmailNotConfirmedError } from '../src/authContext';
@@ -126,7 +127,11 @@ export default function AuthScreen() {
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <View style={styles.container}>
+        <ScrollView
+          style={styles.flex}
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+        >
           <Text style={styles.title}>{isLogin ? 'welcome back' : 'create account'}</Text>
           <Text style={styles.subtitle}>
             {isLogin
@@ -241,7 +246,7 @@ export default function AuthScreen() {
           <Text style={styles.footerNote}>
             {isLogin ? "new here? switch to sign up." : 'already have an account? switch to log in.'}
           </Text>
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -251,7 +256,7 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.stateTodoBg },
   flex: { flex: 1 },
   container: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.xl,
     paddingBottom: Spacing.xl,
