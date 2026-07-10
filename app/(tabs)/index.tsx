@@ -28,12 +28,15 @@ import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
 import PixelPet from '../../src/PixelPet';
 import LineArtPet from '../../src/LineArtPet';
 import { PET_SVG_W_PER_H } from '../../src/PetFigure';
+import PetEggShell, { petEggHeight, petEggShellStyles } from '../../src/PetEggShell';
+import PetLives from '../../src/PetLives';
 
-/** White circle behind the hero pet (fixed size). */
-const HERO_PET_DISC_SIZE = 300;
+/** White egg shell behind the hero pet (fixed size). */
+const HERO_PET_EGG_WIDTH = 300;
+const HERO_PET_EGG_HEIGHT = petEggHeight(HERO_PET_EGG_WIDTH);
 
-/** Outer stage height: 40px pad above/below the 300px disc (room for lying-down pose). */
-const HERO_PET_STAGE_HEIGHT = 40 + HERO_PET_DISC_SIZE + 40;
+/** Outer stage height: 40px pad above/below the egg (room for lying-down pose). */
+const HERO_PET_STAGE_HEIGHT = 40 + HERO_PET_EGG_HEIGHT + 40;
 
 /** Line art drawn at this base height, then visually scaled up. */
 const LINE_ART_BASE_SIZE = 186;
@@ -42,7 +45,7 @@ const LINE_ART_BASE_SIZE = 186;
 const PET_LINE_ART_VISUAL_SCALE_MAX = 1.85;
 
 export default function HomeScreen() {
-  const { prefs, computedHabits, mood, refresh } = useAppState();
+  const { prefs, computedHabits, mood, lives, refresh } = useAppState();
   const [refreshing, setRefreshing] = React.useState(false);
 
   const onRefresh = useCallback(async () => {
@@ -57,6 +60,8 @@ export default function HomeScreen() {
   // Single-habit app: there's exactly one habit to render.
   const habit = computedHabits[0] ?? null;
   const habitName = (prefs.habitName || DEFAULT_HABIT_NAME).trim();
+  const petName = (prefs.petName || 'champ').trim();
+  const petColor = prefs.petColor || theme.pet;
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]}>
@@ -69,14 +74,16 @@ export default function HomeScreen() {
         }
       >
         <Text style={[styles.greeting, { color: theme.ink }]} numberOfLines={2}>
-          {theme.greeting()}
+          {theme.greeting(petName)}
         </Text>
+
+        <PetLives lives={lives} color={petColor} size={42} gap={8} />
 
         <PetStage
           petType={prefs.petType}
           mood={mood}
           customSprite={prefs.customSprite}
-          petColor={prefs.petColor || theme.pet}
+          petColor={petColor}
           petHat={prefs.petHat ?? 'none'}
           showConfetti={theme.showConfetti}
         />
@@ -86,8 +93,9 @@ export default function HomeScreen() {
             habit={habit}
             habitName={habitName}
             theme={theme}
-            prelude={theme.prelude}
+            accentColor={petColor}
             showCrossOut={theme.showCrossOut}
+            checkInLabel={theme.checkInLabel}
           />
         ) : (
           <View style={[styles.heroCard, { borderColor: theme.cardBorder }]}>
@@ -139,16 +147,14 @@ function PetStage({
     <View style={styles.petStage}>
       {showConfetti ? <ConfettiBurst /> : null}
       <View style={styles.petStageCompose}>
-        <View
+        <PetEggShell
+          width={HERO_PET_EGG_WIDTH}
           style={[
-            styles.petDisc,
+            petEggShellStyles.centered,
             {
-              width: HERO_PET_DISC_SIZE,
-              height: HERO_PET_DISC_SIZE,
-              marginTop: -HERO_PET_DISC_SIZE / 2,
-              marginLeft: -HERO_PET_DISC_SIZE / 2,
+              marginTop: -HERO_PET_EGG_HEIGHT / 2,
+              marginLeft: -HERO_PET_EGG_WIDTH / 2,
             },
-            styles.petDiscCentered,
           ]}
         />
         <View style={[styles.petForeground, { transform: [{ scale: petVisualScale }] }]}>
@@ -271,49 +277,72 @@ function HeroTaskCard({
   habit,
   habitName,
   theme,
-  prelude,
+  accentColor,
   showCrossOut,
+  checkInLabel,
 }: {
   habit: ComputedHabit;
   habitName: string;
   theme: ReturnType<typeof getStateTheme>;
-  prelude: string | null;
+  accentColor: string;
   showCrossOut: boolean;
+  checkInLabel: string;
 }) {
+  const isDead = theme.scene === 'failed';
+
   return (
-    <View style={[styles.heroCard, { borderColor: theme.cardBorder }]}>
-      {prelude ? (
-        <Text style={[styles.heroPrelude, styles.heroPreludeTop, { color: theme.cardInk }]}>
-          {prelude}
-        </Text>
-      ) : null}
-      <View style={styles.heroNumberRow}>
-        <Text
-          style={[styles.heroHabitTitle, { color: theme.numberInk }]}
-          numberOfLines={4}
-          adjustsFontSizeToFit
-          minimumFontScale={0.28}
-        >
-          {habitName}
-        </Text>
-        {showCrossOut ? <CrossOut /> : null}
-      </View>
-      <Text style={[styles.heroCardMotto, { color: theme.mottoInk }]} numberOfLines={2}>
-        {theme.motto(habitName)}
-      </Text>
-      <TouchableOpacity
+    <View style={styles.heroCardWrap}>
+      <View
         style={[
-          styles.checkInBtn,
-          styles.checkInBtnFullWidth,
-          { backgroundColor: theme.cardInk, borderColor: theme.cardInk },
+          styles.heroCard,
+          isDead && styles.heroCardDead,
+          { borderColor: theme.cardBorder, backgroundColor: theme.cardBg },
         ]}
-        onPress={() =>
-          router.push({ pathname: '/checkin', params: { track: habit.trackType } })
-        }
-        activeOpacity={0.85}
       >
-        <Text style={styles.checkInBtnText}>check in</Text>
-      </TouchableOpacity>
+        <View style={styles.heroNumberRow}>
+          <Text
+            style={[styles.heroHabitTitle, { color: accentColor }]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.45}
+          >
+            {habitName}
+          </Text>
+          {showCrossOut ? <CrossOut /> : null}
+        </View>
+        <Text style={[styles.heroCardMotto, { color: theme.mottoInk }]} numberOfLines={2}>
+          {theme.motto(habitName)}
+        </Text>
+        {!isDead ? (
+          <TouchableOpacity
+            style={[
+              styles.checkInBtn,
+              { backgroundColor: theme.cardInk, borderColor: theme.cardInk },
+            ]}
+            onPress={() =>
+              router.push({ pathname: '/checkin', params: { track: habit.trackType } })
+            }
+            activeOpacity={0.85}
+          >
+            <Text style={styles.checkInBtnText}>{checkInLabel}</Text>
+          </TouchableOpacity>
+        ) : null}
+      </View>
+      {isDead ? (
+        <TouchableOpacity
+          style={[
+            styles.checkInBtn,
+            styles.checkInBtnDead,
+            { backgroundColor: theme.cardInk, borderColor: theme.cardInk },
+          ]}
+          onPress={() =>
+            router.push({ pathname: '/checkin', params: { track: habit.trackType } })
+          }
+          activeOpacity={0.85}
+        >
+          <Text style={styles.checkInBtnText}>{checkInLabel}</Text>
+        </TouchableOpacity>
+      ) : null}
     </View>
   );
 }
@@ -336,11 +365,63 @@ const styles = StyleSheet.create({
   },
 
   greeting: {
-    fontFamily: Slab.black,
+    fontFamily: Slab.bold,
     fontSize: FontSize.display,
+    letterSpacing: -0.8,
+    lineHeight: FontSize.display + 2,
+    marginBottom: Spacing.xs,
+  },
+
+  heroCardWrap: {
+    marginBottom: Spacing.lg,
+    gap: Spacing.md,
+  },
+  heroCard: {
+    borderWidth: Border.hero,
+    borderRadius: Radius.lg,
+    paddingTop: Spacing.lg + Spacing.xs,
+    paddingBottom: Spacing.lg,
+    paddingHorizontal: Spacing.lg + Spacing.xs,
+  },
+  heroCardDead: {
+    paddingBottom: Spacing.lg + Spacing.xs,
+  },
+  heroCardMotto: {
+    fontFamily: Slab.semiBold,
+    fontSize: FontSize.motto,
+    lineHeight: FontSize.motto + 4,
+    letterSpacing: -0.2,
+    marginTop: Spacing.sm,
+    alignSelf: 'flex-start',
+  },
+  heroNumberRow: {
+    position: 'relative',
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+  },
+  /** Habit label — blue accent per Figma. */
+  heroHabitTitle: {
+    fontFamily: Slab.bold,
+    fontSize: FontSize.habitTitle,
+    lineHeight: FontSize.habitTitle + 6,
     letterSpacing: -1,
-    lineHeight: FontSize.display + 4,
-    marginBottom: Spacing.sm,
+    flex: 1,
+    minWidth: 0,
+  },
+  heroNumber: {
+    fontFamily: Slab.bold,
+    fontSize: FontSize.habitTitle,
+    lineHeight: FontSize.habitTitle + 11,
+    letterSpacing: -1.5,
+  },
+  heroUnit: {
+    fontFamily: Slab.extraBold,
+    fontSize: FontSize.lg,
+    marginTop: Spacing.xs,
+  },
+  heroPrelude: {
+    fontFamily: Slab.extraBold,
+    fontSize: FontSize.xl,
   },
 
   petStage: {
@@ -358,21 +439,9 @@ const styles = StyleSheet.create({
     position: 'relative',
     overflow: 'visible',
   },
-  petDiscCentered: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    zIndex: 0,
-  },
   petForeground: {
     zIndex: 1,
     overflow: 'visible',
-  },
-  petDisc: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 9999,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   confettiLayer: {
     position: 'absolute',
@@ -382,75 +451,31 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
 
-  heroCard: {
-    borderWidth: Border.hero,
-    borderRadius: Radius.lg,
-    paddingVertical: Spacing.lg,
-    paddingHorizontal: Spacing.lg,
-    marginBottom: Spacing.lg,
-  },
-  heroPreludeTop: {
-    marginBottom: Spacing.sm,
-  },
-  heroCardMotto: {
-    fontFamily: Slab.black,
-    fontSize: 36,
-    lineHeight: 40,
-    letterSpacing: -0.5,
-    marginTop: 20,
-    alignSelf: 'flex-start',
-  },
-  heroPrelude: {
-    fontFamily: Slab.extraBold,
-    fontSize: FontSize.xl,
-  },
-  heroNumberRow: {
-    position: 'relative',
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-  },
-  /** Habit label at the former hero number scale (single focal headline). */
-  heroHabitTitle: {
-    fontFamily: Slab.black,
-    fontSize: 72,
-    lineHeight: 76,
-    letterSpacing: -2,
-    textTransform: 'lowercase',
-    flex: 1,
-    minWidth: 0,
-  },
-  heroNumber: {
-    fontFamily: Slab.black,
-    fontSize: 72,
-    lineHeight: 76,
-    letterSpacing: -2,
-  },
-  heroUnit: {
-    fontFamily: Slab.extraBold,
-    fontSize: FontSize.lg,
-    marginTop: Spacing.xs,
-    textTransform: 'lowercase',
-  },
   checkInBtn: {
     borderWidth: Border.base,
     borderRadius: Radius.md,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm + 2,
-  },
-  checkInBtnFullWidth: {
-    alignSelf: 'stretch',
+    alignSelf: 'center',
     width: '100%',
-    marginTop: Spacing.lg,
-    paddingVertical: Spacing.md,
+    maxWidth: 293,
+    minHeight: 56,
+    marginTop: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm + 4,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  checkInBtnDead: {
+    alignSelf: 'stretch',
+    maxWidth: '100%',
+    marginTop: 0,
+  },
   checkInBtnText: {
-    fontFamily: Slab.black,
-    fontSize: FontSize.md,
+    fontFamily: Slab.semiBold,
+    fontSize: FontSize.cta,
     color: '#FFFFFF',
-    letterSpacing: 0.5,
+    letterSpacing: 0.2,
     textAlign: 'center',
+    lineHeight: FontSize.cta + 3,
   },
 
   crossOutLayer: {

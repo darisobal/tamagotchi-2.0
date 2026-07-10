@@ -18,6 +18,7 @@ import * as repo from './repository';
 import { pullUserSnapshot, pushUserSnapshot, canSyncToCloud } from './sync';
 import { useAuth } from './authContext';
 import { processCheckIn, computeAllHabits, computePetMood, recomputeStreakFromCheckIns } from './logic';
+import { syncPetStatusWidget } from './widgetSync';
 import * as Crypto from 'expo-crypto';
 
 interface AppState {
@@ -26,6 +27,7 @@ interface AppState {
   tracks: TrackState[];
   checkIns: CheckIn[];
   mood: Mood;
+  lives: number;
   petMoodInfo: PetMoodInfo;
   computedHabits: ComputedHabit[];
   refresh: () => Promise<void>;
@@ -62,7 +64,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [tracks, setTracks] = useState<TrackState[]>([]);
   const [checkIns, setCheckIns] = useState<CheckIn[]>([]);
   const [mood, setMood] = useState<Mood>('okay');
-  const [petMoodInfo, setPetMoodInfo] = useState<PetMoodInfo>({ mood: 'okay', reason: '' });
+  const [lives, setLives] = useState<number>(3);
+  const [petMoodInfo, setPetMoodInfo] = useState<PetMoodInfo>({ mood: 'okay', reason: '', lives: 3 });
   const [computedHabits, setComputedHabits] = useState<ComputedHabit[]>([]);
   const userIdRef = useRef<string | null>(null);
   const tracksRef = useRef<TrackState[]>([]);
@@ -75,7 +78,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const moodInfo = computePetMood(habits, habitNameRef.current);
     setComputedHabits(habits);
     setMood(moodInfo.mood);
+    setLives(moodInfo.lives);
     setPetMoodInfo(moodInfo);
+
+    const lastCheckInAt = habits[0]?.lastCheckInAt ?? null;
+    void syncPetStatusWidget(moodInfo.mood, lastCheckInAt, habitCadenceRef.current);
   }, []);
 
   const syncToCloud = useCallback(async () => {
@@ -224,6 +231,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         tracks,
         checkIns,
         mood,
+        lives,
         petMoodInfo,
         computedHabits,
         refresh,

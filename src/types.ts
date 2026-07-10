@@ -148,12 +148,17 @@ export interface ComputedHabit {
   progress: number;        // 0..1, freshness bar
   timeRemainingMs: number; // ms until overdue
   status: HabitStatus;
+  lives: number;           // 0..PET_LIVES_MAX
   lastCheckInAt: string | null;
 }
+
+/** Tamagotchi-style life count — miss two deadlines, die on the third. */
+export const PET_LIVES_MAX = 3;
 
 export interface PetMoodInfo {
   mood: Mood;
   reason: string;
+  lives: number;
 }
 
 const HOUR = 60 * 60 * 1000;
@@ -176,7 +181,14 @@ export function habitCadenceToPeriodMs(cadence: HabitCadence | undefined): numbe
   return HABIT_CADENCE_MS[cadence];
 }
 
+/** Remaining-time fraction above which each life tier holds (thirds of the period). */
+export const LIFE_THRESHOLDS = {
+  THREE: 2 / 3,
+  TWO: 1 / 3,
+} as const;
+
+/** @deprecated Use LIFE_THRESHOLDS — kept for imports that haven't migrated. */
 export const STATUS_THRESHOLDS = {
-  GREEN: 0.50,
-  YELLOW: 0.20,
+  GREEN: LIFE_THRESHOLDS.THREE,
+  YELLOW: LIFE_THRESHOLDS.TWO,
 } as const;

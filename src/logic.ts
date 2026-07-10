@@ -8,9 +8,46 @@ import {
   ComputedHabit,
   PetMoodInfo,
   HABIT_PERIOD_MS,
-  STATUS_THRESHOLDS,
+  LIFE_THRESHOLDS,
+  PET_LIVES_MAX,
   DEFAULT_HABIT_NAME,
 } from './types';
+
+// ─── Pet lives ───────────────────────────────────────────
+
+/** Map remaining-time progress (1 = fresh, 0 = overdue) to lives left. */
+export function computeLives(progress: number, hasCheckIn: boolean): number {
+  if (!hasCheckIn || progress <= 0) return 0;
+  if (progress > LIFE_THRESHOLDS.THREE) return 3;
+  if (progress > LIFE_THRESHOLDS.TWO) return 2;
+  return 1;
+}
+
+export function livesToMood(lives: number): Mood {
+  switch (lives) {
+    case 3:
+      return 'happy';
+    case 2:
+      return 'okay';
+    case 1:
+      return 'sad';
+    default:
+      return 'dead';
+  }
+}
+
+function livesToStatus(lives: number): HabitStatus {
+  switch (lives) {
+    case 3:
+      return 'GREEN';
+    case 2:
+      return 'YELLOW';
+    case 1:
+      return 'RED';
+    default:
+      return 'OVERDUE';
+  }
+}
 
 // ─── Habit status computation ────────────────────────────
 
@@ -27,6 +64,7 @@ export function computeHabitStatus(
       progress: 0,
       timeRemainingMs: 0,
       status: 'OVERDUE',
+      lives: 0,
       lastCheckInAt: null,
     };
   }
@@ -34,23 +72,15 @@ export function computeHabitStatus(
   const deadlineMs = new Date(lastCheckInAtIso).getTime() + periodMs;
   const timeRemainingMs = Math.max(deadlineMs - nowMs, 0);
   const progress = Math.min(Math.max(timeRemainingMs / periodMs, 0), 1);
-
-  let status: HabitStatus;
-  if (progress > STATUS_THRESHOLDS.GREEN) {
-    status = 'GREEN';
-  } else if (progress > STATUS_THRESHOLDS.YELLOW) {
-    status = 'YELLOW';
-  } else if (progress > 0) {
-    status = 'RED';
-  } else {
-    status = 'OVERDUE';
-  }
+  const lives = computeLives(progress, true);
+  const status = livesToStatus(lives);
 
   return {
     trackType,
     progress,
     timeRemainingMs,
     status,
+    lives,
     lastCheckInAt: lastCheckInAtIso,
   };
 }
@@ -72,24 +102,25 @@ export function computePetMood(
   habitName: string = DEFAULT_HABIT_NAME,
 ): PetMoodInfo {
   if (habits.length === 0) {
-    return { mood: 'okay', reason: '' };
+    return { mood: 'dead', reason: '', lives: 0 };
   }
 
-  // Single-habit app: mood mirrors the single habit's status.
   const habit = habits[0];
   const name = habitName || DEFAULT_HABIT_NAME;
+  const lives = habit.lives;
+  const mood = livesToMood(lives);
 
-  if (habit.status === 'OVERDUE') {
-    return { mood: 'dead', reason: `${name} is overdue` };
+  if (lives === 0) {
+    return { mood, lives, reason: `${name} is overdue` };
   }
-  if (habit.status === 'RED') {
-    return { mood: 'sad', reason: `${name} is urgent` };
+  if (lives === 1) {
+    return { mood, lives, reason: `${name} is urgent` };
   }
-  if (habit.status === 'YELLOW') {
-    return { mood: 'okay', reason: `${name} needs attention` };
+  if (lives === 2) {
+    return { mood, lives, reason: `${name} needs attention` };
   }
 
-  return { mood: 'happy', reason: 'keep it up!' };
+  return { mood, lives, reason: 'keep it up!' };
 }
 
 // ─── Mood helpers ────────────────────────────────────────

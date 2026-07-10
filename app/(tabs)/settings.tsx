@@ -27,15 +27,22 @@ import {
 } from '../../src/types';
 import { Colors, Spacing, FontSize, Slab, Radius, Border } from '../../src/theme';
 import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
+import { useMoodBackground } from '../../src/useMoodBackground';
 import LineArtPet from '../../src/LineArtPet';
 import { HatOnlyPreview } from '../../src/PetHat';
+import PetEggShell, { petEggHeight } from '../../src/PetEggShell';
+import PetLives from '../../src/PetLives';
+
+const AVATAR_EGG_WIDTH = 240;
+const AVATAR_EGG_HEIGHT = petEggHeight(AVATAR_EGG_WIDTH);
 
 const HABIT_NAME_MAX = 40;
 const PET_NAME_MAX = 30;
 
 export default function SettingsScreen() {
-  const { prefs, updatePrefs } = useAppState();
+  const { prefs, updatePrefs, mood, lives } = useAppState();
   const { user, signOut } = useAuth();
+  const screenBg = useMoodBackground();
   const tabBarExtraPad = useFloatingTabBarExtraPadding();
   const [habitDraft, setHabitDraft] = useState(prefs.habitName ?? DEFAULT_HABIT_NAME);
   const [petDraft, setPetDraft] = useState(prefs.petName ?? DEFAULT_PET_NAME);
@@ -71,7 +78,7 @@ export default function SettingsScreen() {
   }, [petDraft, prefs.petName, updatePrefs]);
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: screenBg }]}>
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -125,13 +132,22 @@ export default function SettingsScreen() {
           />
 
           <View style={styles.avatarSection}>
-            <View style={styles.avatarDisc}>
-              <LineArtPet
-                mood="okay"
-                strokeColor={prefs.petColor || Colors.pet}
-                size={192}
-                hat={prefs.petHat ?? 'none'}
-              />
+            <PetLives
+              lives={lives}
+              color={prefs.petColor || Colors.pet}
+              size={32}
+              gap={6}
+            />
+            <View style={styles.avatarCompose}>
+              <PetEggShell width={AVATAR_EGG_WIDTH} />
+              <View style={styles.avatarPet}>
+                <LineArtPet
+                  mood={mood}
+                  strokeColor={prefs.petColor || Colors.pet}
+                  size={192}
+                  hat={prefs.petHat ?? 'none'}
+                />
+              </View>
             </View>
           </View>
 
@@ -250,7 +266,7 @@ function SettingsOption({
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.stateTodoBg },
+  safe: { flex: 1 },
   flex: { flex: 1 },
   content: {
     padding: Spacing.lg,
@@ -293,15 +309,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: Spacing.md,
     marginBottom: Spacing.lg,
+    gap: Spacing.sm,
   },
-  avatarDisc: {
-    width: 240,
-    height: 240,
-    borderRadius: 120,
-    backgroundColor: Colors.surface,
+  avatarCompose: {
+    width: AVATAR_EGG_WIDTH,
+    height: AVATAR_EGG_HEIGHT,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
+  },
+  avatarPet: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   row: {
     flexDirection: 'row',

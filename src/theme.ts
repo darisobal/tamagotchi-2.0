@@ -3,7 +3,7 @@
  * - Bold slab-serif headlines (Hepta Slab via @expo-google-fonts/hepta-slab)
  * - Pastel page backgrounds that change with the pet's state
  * - Thick black-bordered, 20px-rounded "task cards"
- * - Royal-blue character on a white disc
+ * - Royal-blue character on a white egg shell
  */
 
 export const Colors = {
@@ -16,13 +16,14 @@ export const Colors = {
   ink: '#000000',
   inkSoft: '#1A1A1A',
 
-  // Character / accent
-  pet: '#1F1AE6',
+  // Character / accent (Figma habit title uses #22f)
+  pet: '#2222FF',
   petSoft: '#3F39FF',
 
   // Mood-specific page palette
   stateGoodBg: '#DCFFD8',
   stateTodoBg: '#FFEDD8',
+  stateSadBg: '#FFDCC8',
   stateBadBg: '#FF8484',
 
   // Confetti / sparkle dots used in "all good" state
@@ -76,7 +77,9 @@ export const Border = {
   thin: 1,
   base: 2,
   thick: 4,
-  hero: 6,
+  hero: 8,
+  tabDivider: 4,
+  tabIndicator: 4,
 };
 
 export const FontSize = {
@@ -87,7 +90,16 @@ export const FontSize = {
   xl: 26,
   xxl: 34,
   hero: 44,
-  display: 58,
+  /** Greeting — scaled from Figma 62px @ 430w */
+  display: 52,
+  /** Habit title inside the task card — scaled from Figma 54px */
+  habitTitle: 46,
+  /** Card motto — Figma 20px */
+  motto: 18,
+  /** Primary CTA — scaled from Figma 25px */
+  cta: 18,
+  /** Bottom tab labels */
+  tab: 11,
 };
 
 /** Internal names registered by `useFonts` from `@expo-google-fonts/hepta-slab`. */

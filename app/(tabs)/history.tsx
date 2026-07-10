@@ -16,6 +16,7 @@ import { CheckIn, DEFAULT_HABIT_NAME } from '../../src/types';
 import { toDateString } from '../../src/logic';
 import { Colors, Spacing, FontSize, Slab, Radius, Border } from '../../src/theme';
 import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
+import { useMoodBackground } from '../../src/useMoodBackground';
 
 const WEEKDAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'] as const;
 
@@ -47,6 +48,7 @@ function chunk<T>(arr: T[], size: number): T[][] {
 
 export default function HistoryScreen() {
   const { checkIns, deleteCheckInById, prefs } = useAppState();
+  const screenBg = useMoodBackground();
   const tabBarExtraPad = useFloatingTabBarExtraPadding();
   const habitName = (prefs.habitName || DEFAULT_HABIT_NAME).trim();
   const { width } = useWindowDimensions();
@@ -134,7 +136,7 @@ export default function HistoryScreen() {
 
   if (checkIns.length === 0) {
     return (
-      <SafeAreaView style={styles.safe}>
+      <SafeAreaView style={[styles.safe, { backgroundColor: screenBg }]}>
         <View style={[styles.empty, { paddingBottom: Spacing.xl + tabBarExtraPad }]}>
           <Text style={styles.emptyIcon}>[ ]</Text>
           <Text style={styles.emptyTitle}>no check-ins yet</Text>
@@ -147,7 +149,7 @@ export default function HistoryScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: screenBg }]}>
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
@@ -339,7 +341,7 @@ function HistoryItem({
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.stateTodoBg },
+  safe: { flex: 1 },
   scrollContent: {
     paddingHorizontal: Spacing.lg,
     alignItems: 'center',

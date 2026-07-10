@@ -1,161 +1,135 @@
 import { Tabs } from 'expo-router';
-import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { CommonActions } from '@react-navigation/native';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors, FontSize, Slab } from '../../src/theme';
-import { FLOATING_TAB_BAR_BOTTOM_GAP, FLOATING_TAB_VISUAL_HEIGHT } from '../../src/floatingTabBarPadding';
+import { Colors, FontSize, Slab, Border } from '../../src/theme';
+import { useMoodBackground } from '../../src/useMoodBackground';
+import {
+  TAB_BAR_DIVIDER,
+  TAB_BAR_INDICATOR,
+  TAB_BAR_INDICATOR_GAP,
+  TAB_BAR_LABEL_LINE,
+  TAB_BAR_TOP_PAD,
+} from '../../src/floatingTabBarPadding';
 
-const FLOAT_HORIZONTAL = 18;
-const PANEL_RADIUS = 26;
+const TAB_INDICATOR_WIDTH = 39;
 
-function FloatingTabBar(props: BottomTabBarProps) {
+function BottomTextTabBar(props: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
-  const bottomPad = Math.max(insets.bottom, FLOATING_TAB_BAR_BOTTOM_GAP) + 4;
+  const screenBg = useMoodBackground();
   const { state, descriptors, navigation } = props;
 
   return (
     <View
       pointerEvents="box-none"
       style={[
-        styles.floatingRoot,
+        styles.root,
         {
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: 0,
-          paddingBottom: bottomPad,
-          paddingHorizontal: FLOAT_HORIZONTAL,
+          backgroundColor: screenBg,
+          paddingBottom: Math.max(insets.bottom, 8),
         },
       ]}
     >
-      <View style={styles.panel}>
-        <View style={[styles.tabRow, { minHeight: FLOATING_TAB_VISUAL_HEIGHT }]}>
-          {state.routes.map((route, index) => {
-            const focused = state.index === index;
-            const { options } = descriptors[route.key];
-            const label =
-              typeof options.tabBarLabel === 'string'
-                ? options.tabBarLabel
-                : options.title ?? route.name;
-            const activeTint = options.tabBarActiveTintColor ?? Colors.ink;
-            const inactiveTint = options.tabBarInactiveTintColor ?? '#9A9A9A';
+      <View style={styles.divider} />
+      <View style={styles.tabRow}>
+        {state.routes.map((route, index) => {
+          const focused = state.index === index;
+          const { options } = descriptors[route.key];
+          const label =
+            typeof options.tabBarLabel === 'string'
+              ? options.tabBarLabel
+              : options.title ?? route.name;
 
-            return (
-              <Pressable
-                key={route.key}
-                accessibilityRole="tab"
-                accessibilityState={{ selected: focused }}
-                onPress={() => {
-                  const event = navigation.emit({
-                    type: 'tabPress',
-                    target: route.key,
-                    canPreventDefault: true,
+          return (
+            <Pressable
+              key={route.key}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: focused }}
+              onPress={() => {
+                const event = navigation.emit({
+                  type: 'tabPress',
+                  target: route.key,
+                  canPreventDefault: true,
+                });
+                if (!focused && !event.defaultPrevented) {
+                  navigation.dispatch({
+                    ...CommonActions.navigate(route),
+                    target: state.key,
                   });
-                  if (!focused && !event.defaultPrevented) {
-                    navigation.dispatch({
-                      ...CommonActions.navigate(route),
-                      target: state.key,
-                    });
-                  }
-                }}
-                onLongPress={() =>
-                  navigation.emit({
-                    type: 'tabLongPress',
-                    target: route.key,
-                  })
                 }
-                style={({ pressed }) => [
-                  styles.tabCell,
-                  pressed && styles.tabCellPressed,
-                ]}
+              }}
+              onLongPress={() =>
+                navigation.emit({
+                  type: 'tabLongPress',
+                  target: route.key,
+                })
+              }
+              style={({ pressed }) => [styles.tabCell, pressed && styles.tabCellPressed]}
+            >
+              <Text
+                style={[styles.tabLabel, !focused && styles.tabLabelInactive]}
+                numberOfLines={1}
               >
-                <View style={styles.tabLabelWrap}>
-                  <Text
-                    style={[
-                      styles.tabLabel,
-                      { color: focused ? activeTint : inactiveTint },
-                    ]}
-                    numberOfLines={1}
-                  >
-                    {label}
-                  </Text>
-                </View>
-              </Pressable>
-            );
-          })}
-        </View>
+                {label}
+              </Text>
+              {focused ? <View style={styles.tabIndicator} /> : <View style={styles.tabIndicatorSpacer} />}
+            </Pressable>
+          );
+        })}
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  floatingRoot: {
-    backgroundColor: 'transparent',
-    width: '100%',
+  root: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
     zIndex: 10,
   },
-  panel: {
+  divider: {
+    height: TAB_BAR_DIVIDER,
+    backgroundColor: Colors.ink,
     width: '100%',
-    maxWidth: 560,
-    alignSelf: 'center',
-    backgroundColor: Colors.surface,
-    borderRadius: PANEL_RADIUS,
-    overflow: 'hidden',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.2,
-        shadowRadius: 14,
-      },
-      android: {
-        elevation: 12,
-      },
-      default: {
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.18,
-        shadowRadius: 14,
-      },
-    }),
   },
   tabRow: {
     flexDirection: 'row',
-    alignItems: 'stretch',
-    width: '100%',
+    alignItems: 'flex-start',
+    paddingTop: TAB_BAR_TOP_PAD,
   },
   tabCell: {
     flex: 1,
-    alignSelf: 'stretch',
-    ...Platform.select({
-      web: {
-        display: 'flex',
-        flexDirection: 'column',
-      },
-      default: {},
-    }),
+    alignItems: 'center',
+    minHeight: TAB_BAR_LABEL_LINE + TAB_BAR_INDICATOR_GAP + TAB_BAR_INDICATOR,
   },
   tabCellPressed: {
     opacity: 0.75,
   },
-  tabLabelWrap: {
-    flex: 1,
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 6,
-  },
   tabLabel: {
-    fontSize: FontSize.sm,
-    fontFamily: Slab.black,
-    letterSpacing: 0.3,
-    textTransform: 'lowercase',
-    ...Platform.select({
-      android: { includeFontPadding: false },
-      default: {},
-    }),
+    fontSize: FontSize.tab,
+    fontFamily: Slab.semiBold,
+    color: Colors.ink,
+    letterSpacing: 0.2,
+    textTransform: 'uppercase',
+    lineHeight: TAB_BAR_LABEL_LINE,
+    textAlign: 'center',
+  },
+  tabLabelInactive: {
+    opacity: 0.5,
+  },
+  tabIndicator: {
+    marginTop: TAB_BAR_INDICATOR_GAP,
+    width: TAB_INDICATOR_WIDTH,
+    height: TAB_BAR_INDICATOR,
+    backgroundColor: Colors.ink,
+    borderRadius: 0,
+  },
+  tabIndicatorSpacer: {
+    marginTop: TAB_BAR_INDICATOR_GAP,
+    height: TAB_BAR_INDICATOR,
   },
 });
 
@@ -163,16 +137,16 @@ export default function TabLayout() {
   return (
     <Tabs
       initialRouteName="index"
-      tabBar={(props) => <FloatingTabBar {...props} />}
+      tabBar={(props) => <BottomTextTabBar {...props} />}
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: Colors.ink,
-        tabBarInactiveTintColor: '#9A9A9A',
+        tabBarInactiveTintColor: Colors.ink,
       }}
     >
-      <Tabs.Screen name="settings" options={{ title: 'setup' }} />
-      <Tabs.Screen name="index" options={{ title: 'home' }} />
-      <Tabs.Screen name="history" options={{ title: 'history' }} />
+      <Tabs.Screen name="settings" options={{ title: 'Setup' }} />
+      <Tabs.Screen name="index" options={{ title: 'Home' }} />
+      <Tabs.Screen name="history" options={{ title: 'History' }} />
     </Tabs>
   );
 }

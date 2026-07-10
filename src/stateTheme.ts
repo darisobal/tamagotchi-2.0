@@ -3,109 +3,121 @@ import { Colors } from './theme';
 
 /**
  * Maps the pet's mood to a full visual + copy palette that matches
- * the three Figma frames (To do / All good / Failed).
+ * the Figma frames (All good / Neutral / Sad / Dead).
  *
- * Two moods can share the same scene:
- *   happy        → "all good"   (you're winning)
- *   okay  / sad  → "to do"      (something's pending)
- *   dead         → "failed"     (you missed it)
+ * Lives → mood → scene:
+ *   3 hearts → happy   → allGood
+ *   2 hearts → okay    → toDo (neutral)
+ *   1 heart  → sad     → sad
+ *   0 hearts → dead    → failed
  */
 
-export type StateScene = 'allGood' | 'toDo' | 'failed';
+export type StateScene = 'allGood' | 'toDo' | 'sad' | 'failed';
 
 export interface StateTheme {
   scene: StateScene;
   bg: string;
-  ink: string;            // headline / body colour
-  inkSoft: string;        // captions
-  cardBg: string;         // hero card fill
-  cardInk: string;        // hero card text colour
+  ink: string;
+  inkSoft: string;
+  cardBg: string;
+  cardInk: string;
   cardBorder: string;
-  numberInk: string;      // big "10" colour inside the card
-  mottoInk: string;       // status line inside the hero card
-  pet: string;            // pixel pet colour
+  numberInk: string;
+  mottoInk: string;
+  pet: string;
   showConfetti: boolean;
-  showCrossOut: boolean;  // strike-through "X" over the task
+  showCrossOut: boolean;
   greeting: (name?: string) => string;
-  prelude: string | null; // small line above the number (e.g. "Go and do")
   motto: (firstHabit: string) => string;
+  checkInLabel: string;
 }
 
 export function moodToScene(mood: Mood): StateScene {
   switch (mood) {
     case 'happy':
       return 'allGood';
+    case 'okay':
+      return 'toDo';
+    case 'sad':
+      return 'sad';
     case 'dead':
       return 'failed';
-    case 'okay':
-    case 'sad':
     default:
       return 'toDo';
   }
 }
 
-const PERSON_NAME = 'champ';
+const DEFAULT_NAME = 'champ';
+
+/** Shared copy + palette tokens used across the four Figma home frames. */
+const CHECK_IN_LABEL = 'I DID IT!!!!!1';
 
 export function getStateTheme(mood: Mood, difficulty: Difficulty = 'gentle'): StateTheme {
   const scene = moodToScene(mood);
   const tough = difficulty === 'tough';
 
+  const shared = {
+    ink: Colors.ink,
+    cardBg: 'transparent',
+    cardInk: Colors.ink,
+    cardBorder: Colors.ink,
+    numberInk: Colors.pet,
+    mottoInk: Colors.ink,
+    pet: Colors.pet,
+  };
+
   if (scene === 'allGood') {
     return {
       scene,
+      ...shared,
       bg: Colors.stateGoodBg,
-      ink: Colors.ink,
       inkSoft: '#1A1A1A',
-      cardBg: 'transparent',
-      cardInk: Colors.ink,
-      cardBorder: Colors.ink,
-      numberInk: Colors.ink,
-      mottoInk: '#FFFFFF',
-      pet: Colors.pet,
       showConfetti: true,
       showCrossOut: false,
-      greeting: (name = PERSON_NAME) => `Hi ${name}!`,
-      prelude: null,
-      motto: () => (tough ? "DON'T STOP NOW!" : "YOU'RE THE STRONGEST!"),
+      greeting: (name = DEFAULT_NAME) => `Hi ${name}!`,
+      motto: () => (tough ? "DON'T STOP NOW!" : 'Skip = RIP.'),
+      checkInLabel: CHECK_IN_LABEL,
     };
   }
 
   if (scene === 'failed') {
     return {
       scene,
+      ...shared,
       bg: Colors.stateBadBg,
-      ink: Colors.ink,
       inkSoft: '#330000',
-      cardBg: 'transparent',
-      cardInk: Colors.ink,
-      cardBorder: Colors.ink,
-      numberInk: Colors.ink,
-      mottoInk: '#FFFFFF',
-      pet: Colors.pet,
       showConfetti: false,
       showCrossOut: true,
-      greeting: () => (tough ? 'Damn it!' : 'oh no...'),
-      prelude: null,
-      motto: () => 'WASTED!',
+      greeting: (name = DEFAULT_NAME) => `Ugh, ${name}!`,
+      motto: () => 'I died waiting.',
+      checkInLabel: 'START AGAIN',
     };
   }
 
-  // toDo (default — peach)
-  return {
-    scene,
-    bg: Colors.stateTodoBg,
-    ink: Colors.ink,
-    inkSoft: '#1A1A1A',
-    cardBg: 'transparent',
-    cardInk: Colors.ink,
-    cardBorder: Colors.ink,
-      numberInk: Colors.ink,
-      mottoInk: '#FFFFFF',
-      pet: Colors.pet,
+  if (scene === 'sad') {
+    return {
+      scene,
+      ...shared,
+      bg: Colors.stateSadBg,
+      inkSoft: '#1A1A1A',
       showConfetti: false,
       showCrossOut: false,
-      greeting: (name = PERSON_NAME) => `Hi ${name}!`,
-      prelude: 'Go and do',
-    motto: () => (tough ? 'FAaaaaSTER!' : "Let's gooo!"),
+      greeting: (name = DEFAULT_NAME) => `Hi ${name}!`,
+      motto: () => 'Your laziness, my funeral.',
+      checkInLabel: CHECK_IN_LABEL,
+    };
+  }
+
+  // toDo — neutral (2 hearts)
+  return {
+    scene,
+    ...shared,
+    bg: Colors.stateTodoBg,
+    inkSoft: '#1A1A1A',
+    showConfetti: false,
+    showCrossOut: false,
+    greeting: (name = DEFAULT_NAME) => `Hi ${name}!`,
+    motto: () => (tough ? 'FAaaaaSTER!' : "Don't make me die cringe."),
+    checkInLabel: CHECK_IN_LABEL,
   };
 }
