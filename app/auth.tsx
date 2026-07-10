@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -35,6 +35,8 @@ export default function AuthScreen() {
   const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [confirmationSent, setConfirmationSent] = useState(false);
   const [resendNotice, setResendNotice] = useState<string | null>(null);
+  
+  const passwordInputRef = useRef<TextInput>(null);
 
   const isLogin = mode === 'login';
 
@@ -183,10 +185,14 @@ export default function AuthScreen() {
             autoCorrect={false}
             keyboardType="email-address"
             textContentType="emailAddress"
+            returnKeyType="next"
+            onSubmitEditing={() => passwordInputRef.current?.focus()}
+            blurOnSubmit={false}
           />
 
           <Text style={styles.label}>password</Text>
           <TextInput
+            ref={passwordInputRef}
             style={styles.input}
             value={password}
             onChangeText={setPassword}
@@ -195,6 +201,8 @@ export default function AuthScreen() {
             secureTextEntry
             autoCapitalize="none"
             textContentType={isLogin ? 'password' : 'newPassword'}
+            returnKeyType="go"
+            onSubmitEditing={handleSubmit}
           />
 
           {error ? <Text style={styles.error}>{error}</Text> : null}
