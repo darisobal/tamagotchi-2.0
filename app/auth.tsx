@@ -9,33 +9,25 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
-import { router, Redirect } from 'expo-router';
-import { useAuth, AuthMode, isEmailNotConfirmedError } from '../src/authContext';
+import { Redirect } from 'expo-router';
+import { useAuth } from '../src/authContext';
 import { Colors, Spacing, FontSize, Slab, Radius, Border } from '../src/theme';
 
 export default function AuthScreen() {
   const {
     user,
     loading,
-    signInWithPassword,
-    signUpWithPassword,
     signInWithMagicLink,
-    resendConfirmationEmail,
     isConfigured,
     isLocalOnly,
   } = useAuth();
 
-  const [mode, setMode] = useState<AuthMode>('login');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
-  const [confirmationSent, setConfirmationSent] = useState(false);
-  const [resendNotice, setResendNotice] = useState<string | null>(null);
-
-  const isLogin = mode === 'login';
 
   if (loading) {
     return (
@@ -50,58 +42,6 @@ export default function AuthScreen() {
   if (user) {
     return <Redirect href="/(tabs)" />;
   }
-
-  const handleSubmit = async () => {
-    setError(null);
-    setResendNotice(null);
-    setConfirmationSent(false);
-    setBusy(true);
-
-    if (isLogin) {
-      const err = await signInWithPassword(email.trim(), password);
-      setBusy(false);
-      if (err) {
-        if (isEmailNotConfirmedError(err)) {
-          setConfirmationSent(true);
-          setError('Confirm your email before logging in.');
-          return;
-        }
-        setError(err);
-        return;
-      }
-      router.replace('/(tabs)');
-      return;
-    }
-
-    const result = await signUpWithPassword(email.trim(), password);
-    setBusy(false);
-    if (result.outcome === 'error') {
-      setError(result.message);
-      return;
-    }
-    if (result.outcome === 'confirm_email') {
-      setConfirmationSent(true);
-      return;
-    }
-    router.replace('/(tabs)');
-  };
-
-  const handleResendConfirmation = async () => {
-    setError(null);
-    setResendNotice(null);
-    if (!email.trim()) {
-      setError('Enter your email first.');
-      return;
-    }
-    setBusy(true);
-    const err = await resendConfirmationEmail(email.trim());
-    setBusy(false);
-    if (err) {
-      setError(err);
-      return;
-    }
-    setResendNotice('Confirmation email sent again. Check your inbox.');
-  };
 
   const handleMagicLink = async () => {
     setError(null);
@@ -120,18 +60,81 @@ export default function AuthScreen() {
     setMagicLinkSent(true);
   };
 
+  const handleResendLink = async () => {
+    setError(null);
+    setBusy(true);
+    const err = await signInWithMagicLink(email.trim());
+    setBusy(false);
+    if (err) {
+      setError(err);
+    }
+  };
+
+  const handleBack = () => {
+    setMagicLinkSent(false);
+    setError(null);
+  };
+
+  if (magicLinkSent) {
+    return (
+      <SafeAreaView style={styles.safe}>
+        <ScrollView
+          style={styles.flex}
+          contentContainerStyle={[styles.container, styles.centered]}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.checkmarkContainer}>
+            <Text style={styles.checkmark}>✓</Text>
+          </View>
+          
+          <Text style={styles.successTitle}>check your email</Text>
+          <Text style={styles.successMessage}>
+            we sent a sign-in link to{'\n'}
+            <Text style={styles.emailHighlight}>{email}</Text>
+          </Text>
+
+          {error ? <Text style={styles.error}>{error}</Text> : null}
+
+          <TouchableOpacity
+            style={styles.primaryBtn}
+            onPress={handleResendLink}
+            disabled={busy}
+            activeOpacity={0.85}
+          >
+            {busy ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
+              <Text style={styles.primaryBtnText}>send me one more link</Text>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.secondaryBtn}
+            onPress={handleBack}
+            disabled={busy}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.secondaryBtnText}>← back to change email</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <View style={styles.container}>
-          <Text style={styles.title}>{isLogin ? 'welcome back' : 'create account'}</Text>
+        <ScrollView
+          style={styles.flex}
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Text style={styles.title}>welcome back</Text>
           <Text style={styles.subtitle}>
-            {isLogin
-              ? 'log in to keep your pet and check-ins.'
-              : 'sign up once — your habit data follows you.'}
+            log in to keep your pet and check-ins.
           </Text>
 
           {isLocalOnly ? (
@@ -139,33 +142,6 @@ export default function AuthScreen() {
               local mode: data stays on this device until you add Supabase keys.
             </Text>
           ) : null}
-
-          <View style={styles.modeRow}>
-            <TouchableOpacity
-              style={[styles.modeBtn, isLogin && styles.modeBtnActive]}
-              onPress={() => {
-                setMode('login');
-                setError(null);
-                setMagicLinkSent(false);
-                setConfirmationSent(false);
-                setResendNotice(null);
-              }}
-            >
-              <Text style={[styles.modeText, isLogin && styles.modeTextActive]}>log in</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.modeBtn, !isLogin && styles.modeBtnActive]}
-              onPress={() => {
-                setMode('signup');
-                setError(null);
-                setMagicLinkSent(false);
-                setConfirmationSent(false);
-                setResendNotice(null);
-              }}
-            >
-              <Text style={[styles.modeText, !isLogin && styles.modeTextActive]}>sign up</Text>
-            </TouchableOpacity>
-          </View>
 
           <Text style={styles.label}>email</Text>
           <TextInput
@@ -178,70 +154,25 @@ export default function AuthScreen() {
             autoCorrect={false}
             keyboardType="email-address"
             textContentType="emailAddress"
-          />
-
-          <Text style={styles.label}>password</Text>
-          <TextInput
-            style={styles.input}
-            value={password}
-            onChangeText={setPassword}
-            placeholder={isLogin ? 'your password' : 'at least 6 characters'}
-            placeholderTextColor={Colors.textMuted}
-            secureTextEntry
-            autoCapitalize="none"
-            textContentType={isLogin ? 'password' : 'newPassword'}
+            returnKeyType="go"
+            onSubmitEditing={handleMagicLink}
           />
 
           {error ? <Text style={styles.error}>{error}</Text> : null}
-          {confirmationSent ? (
-            <Text style={styles.success}>
-              check your email to confirm your account before logging in.
-            </Text>
-          ) : null}
-          {resendNotice ? <Text style={styles.success}>{resendNotice}</Text> : null}
-          {magicLinkSent ? (
-            <Text style={styles.success}>check your email for a sign-in link.</Text>
-          ) : null}
 
           <TouchableOpacity
             style={styles.primaryBtn}
-            onPress={handleSubmit}
+            onPress={handleMagicLink}
             disabled={busy}
             activeOpacity={0.85}
           >
             {busy ? (
               <ActivityIndicator color="#FFFFFF" />
             ) : (
-              <Text style={styles.primaryBtnText}>{isLogin ? 'log in' : 'sign up'}</Text>
+              <Text style={styles.primaryBtnText}>email me a link</Text>
             )}
           </TouchableOpacity>
-
-          {confirmationSent && isConfigured ? (
-            <TouchableOpacity
-              style={styles.secondaryBtn}
-              onPress={handleResendConfirmation}
-              disabled={busy}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.secondaryBtnText}>resend confirmation email</Text>
-            </TouchableOpacity>
-          ) : null}
-
-          {isConfigured && !confirmationSent ? (
-            <TouchableOpacity
-              style={styles.secondaryBtn}
-              onPress={handleMagicLink}
-              disabled={busy}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.secondaryBtnText}>email me a link instead</Text>
-            </TouchableOpacity>
-          ) : null}
-
-          <Text style={styles.footerNote}>
-            {isLogin ? "new here? switch to sign up." : 'already have an account? switch to log in.'}
-          </Text>
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -251,7 +182,7 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.stateTodoBg },
   flex: { flex: 1 },
   container: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.xl,
     paddingBottom: Spacing.xl,
@@ -279,32 +210,6 @@ const styles = StyleSheet.create({
     fontFamily: Slab.regular,
     color: Colors.textSecondary,
     marginBottom: Spacing.md,
-  },
-  modeRow: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-    marginBottom: Spacing.lg,
-  },
-  modeBtn: {
-    flex: 1,
-    paddingVertical: Spacing.sm + 2,
-    alignItems: 'center',
-    backgroundColor: Colors.card,
-    borderWidth: Border.thick,
-    borderColor: Colors.ink,
-    borderRadius: Radius.md,
-  },
-  modeBtnActive: {
-    backgroundColor: Colors.ink,
-  },
-  modeText: {
-    fontSize: FontSize.md,
-    fontFamily: Slab.black,
-    color: Colors.ink,
-    textTransform: 'lowercase',
-  },
-  modeTextActive: {
-    color: '#FFFFFF',
   },
   label: {
     fontSize: FontSize.lg,
@@ -351,25 +256,55 @@ const styles = StyleSheet.create({
     fontSize: FontSize.xl,
     fontFamily: Slab.black,
   },
+  checkmarkContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: Colors.ink,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.xl,
+  },
+  checkmark: {
+    fontSize: 72,
+    color: '#FFFFFF',
+    fontFamily: Slab.black,
+  },
+  successTitle: {
+    fontSize: FontSize.display,
+    fontFamily: Slab.black,
+    color: Colors.ink,
+    letterSpacing: -1,
+    lineHeight: FontSize.display + 4,
+    marginBottom: Spacing.md,
+    textAlign: 'center',
+  },
+  successMessage: {
+    fontSize: FontSize.lg,
+    fontFamily: Slab.bold,
+    color: Colors.ink,
+    marginBottom: Spacing.xl,
+    textAlign: 'center',
+    lineHeight: FontSize.lg + 8,
+  },
+  emailHighlight: {
+    color: Colors.ink,
+    fontFamily: Slab.black,
+  },
   secondaryBtn: {
     marginTop: Spacing.md,
     paddingVertical: Spacing.md,
     alignItems: 'center',
     backgroundColor: Colors.card,
-    borderWidth: Border.base,
+    borderWidth: Border.thick,
     borderColor: Colors.ink,
     borderRadius: Radius.md,
+    minHeight: 56,
+    justifyContent: 'center',
   },
   secondaryBtnText: {
     color: Colors.ink,
-    fontSize: FontSize.md,
+    fontSize: FontSize.lg,
     fontFamily: Slab.bold,
-  },
-  footerNote: {
-    marginTop: Spacing.lg,
-    fontSize: FontSize.sm,
-    fontFamily: Slab.regular,
-    color: Colors.textSecondary,
-    textAlign: 'center',
   },
 });
