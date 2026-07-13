@@ -28,15 +28,9 @@ import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
 import PixelPet from '../../src/PixelPet';
 import LineArtPet from '../../src/LineArtPet';
 import { PET_SVG_W_PER_H } from '../../src/PetFigure';
-import PetEggShell, { petEggHeight, petEggShellStyles } from '../../src/PetEggShell';
+import PetEggShell, { petEggShellStyles } from '../../src/PetEggShell';
 import PetLives from '../../src/PetLives';
-
-/** White egg shell behind the hero pet (fixed size). */
-const HERO_PET_EGG_WIDTH = 300;
-const HERO_PET_EGG_HEIGHT = petEggHeight(HERO_PET_EGG_WIDTH);
-
-/** Outer stage height: 40px pad above/below the egg (room for lying-down pose). */
-const HERO_PET_STAGE_HEIGHT = 40 + HERO_PET_EGG_HEIGHT + 40;
+import { useResponsiveEggSize, useBottomPadding } from '../../src/layoutSystem';
 
 /** Line art drawn at this base height, then visually scaled up. */
 const LINE_ART_BASE_SIZE = 186;
@@ -55,7 +49,8 @@ export default function HomeScreen() {
   }, [refresh]);
 
   const theme = getStateTheme(mood, prefs.difficulty);
-  const tabBarExtraPad = useFloatingTabBarExtraPadding();
+  const bottomPadding = useBottomPadding();
+  const { eggWidth, eggHeight, stageHeight } = useResponsiveEggSize();
 
   // Single-habit app: there's exactly one habit to render.
   const habit = computedHabits[0] ?? null;
@@ -67,7 +62,7 @@ export default function HomeScreen() {
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]}>
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={[styles.content, { paddingBottom: Spacing.xxl + tabBarExtraPad }]}
+        contentContainerStyle={[styles.content, { paddingBottom: bottomPadding }]}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.ink} />
@@ -86,6 +81,9 @@ export default function HomeScreen() {
           petColor={petColor}
           petHat={prefs.petHat ?? 'none'}
           showConfetti={theme.showConfetti}
+          eggWidth={eggWidth}
+          eggHeight={eggHeight}
+          stageHeight={stageHeight}
         />
 
         {habit ? (
@@ -121,6 +119,9 @@ function PetStage({
   petColor,
   petHat,
   showConfetti,
+  eggWidth,
+  eggHeight,
+  stageHeight,
 }: {
   petType: ReturnType<typeof useAppState>['prefs']['petType'];
   mood: ReturnType<typeof useAppState>['mood'];
@@ -128,6 +129,9 @@ function PetStage({
   petColor: string;
   petHat: ReturnType<typeof useAppState>['prefs']['petHat'];
   showConfetti: boolean;
+  eggWidth: number;
+  eggHeight: number;
+  stageHeight: number;
 }) {
   const useSelfiePixels = petType === 'selfie' && Boolean(customSprite);
 
@@ -144,16 +148,16 @@ function PetStage({
   );
 
   return (
-    <View style={styles.petStage}>
+    <View style={[styles.petStage, { height: stageHeight }]}>
       {showConfetti ? <ConfettiBurst /> : null}
       <View style={styles.petStageCompose}>
         <PetEggShell
-          width={HERO_PET_EGG_WIDTH}
+          width={eggWidth}
           style={[
             petEggShellStyles.centered,
             {
-              marginTop: -HERO_PET_EGG_HEIGHT / 2,
-              marginLeft: -HERO_PET_EGG_WIDTH / 2,
+              marginTop: -eggHeight / 2,
+              marginLeft: -eggWidth / 2,
             },
           ]}
         />
@@ -425,7 +429,6 @@ const styles = StyleSheet.create({
   },
 
   petStage: {
-    height: HERO_PET_STAGE_HEIGHT,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.sm,

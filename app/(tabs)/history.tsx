@@ -16,6 +16,7 @@ import { CheckIn, DEFAULT_HABIT_NAME } from '../../src/types';
 import { toDateString } from '../../src/logic';
 import { Colors, Spacing, FontSize, Slab, Radius, Border } from '../../src/theme';
 import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
+import { useBottomPadding } from '../../src/layoutSystem';
 import { useMoodBackground } from '../../src/useMoodBackground';
 
 const WEEKDAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'] as const;
@@ -49,7 +50,7 @@ function chunk<T>(arr: T[], size: number): T[][] {
 export default function HistoryScreen() {
   const { checkIns, deleteCheckInById, prefs } = useAppState();
   const screenBg = useMoodBackground();
-  const tabBarExtraPad = useFloatingTabBarExtraPadding();
+  const bottomPadding = useBottomPadding();
   const habitName = (prefs.habitName || DEFAULT_HABIT_NAME).trim();
   const { width } = useWindowDimensions();
   const contentWidth = Math.min(width - Spacing.lg * 2, 400);
@@ -137,7 +138,7 @@ export default function HistoryScreen() {
   if (checkIns.length === 0) {
     return (
       <SafeAreaView style={[styles.safe, { backgroundColor: screenBg }]}>
-        <View style={[styles.empty, { paddingBottom: Spacing.xl + tabBarExtraPad }]}>
+        <View style={[styles.empty, { paddingBottom: bottomPadding }]}>
           <Text style={styles.emptyIcon}>[ ]</Text>
           <Text style={styles.emptyTitle}>no check-ins yet</Text>
           <Text style={styles.emptySubtitle}>
@@ -153,7 +154,7 @@ export default function HistoryScreen() {
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingBottom: Spacing.xxl + tabBarExtraPad },
+          { paddingBottom: bottomPadding },
         ]}
         showsVerticalScrollIndicator={false}
       >
