@@ -27,6 +27,7 @@ import {
 } from '../../src/types';
 import { Colors, Spacing, FontSize, Slab, Radius, Border } from '../../src/theme';
 import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
+import { useBottomPadding } from '../../src/layoutSystem';
 import { useMoodBackground } from '../../src/useMoodBackground';
 import LineArtPet from '../../src/LineArtPet';
 import { HatOnlyPreview } from '../../src/PetHat';
@@ -43,7 +44,7 @@ export default function SettingsScreen() {
   const { prefs, updatePrefs, mood, lives } = useAppState();
   const { user, signOut } = useAuth();
   const screenBg = useMoodBackground();
-  const tabBarExtraPad = useFloatingTabBarExtraPadding();
+  const bottomPadding = useBottomPadding();
   const [habitDraft, setHabitDraft] = useState(prefs.habitName ?? DEFAULT_HABIT_NAME);
   const [petDraft, setPetDraft] = useState(prefs.petName ?? DEFAULT_PET_NAME);
 
@@ -84,7 +85,7 @@ export default function SettingsScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <ScrollView
-          contentContainerStyle={[styles.content, { paddingBottom: Spacing.xxl + tabBarExtraPad }]}
+          contentContainerStyle={[styles.content, { paddingBottom: bottomPadding }]}
           keyboardShouldPersistTaps="handled"
         >
           <Text style={styles.screenTitle}>your setup</Text>
