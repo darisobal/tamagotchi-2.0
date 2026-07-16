@@ -1,0 +1,14 @@
+---
+description: Auto-reload browser after code changes
+alwaysApply: true
+---
+
+# Auto-Reload Browser After Code Changes
+
+After making any code changes to the Tamagotchi project, always reload the browser so the user can see updates immediately.
+
+1. Make the code edit(s)
+2. Call `browser_reload` via the `cursor-ide-browser` MCP with `{"take_screenshot_afterwards": true}`
+3. Wait ~3 seconds, then take a screenshot to confirm the page loaded correctly
+
+Never skip the reload step — the user should see their changes without having to ask.

@@ -8,7 +8,7 @@ export async function pickAndResizeSelfie(useCamera: boolean): Promise<string | 
     : await ImagePicker.requestMediaLibraryPermissionsAsync();
 
   if (status !== 'granted') {
-    Alert.alert('Permission needed', 'Please grant access to your camera or photo library.');
+    Alert.alert('permission needed', 'please grant access to your camera or photo library.');
     return null;
   }
 

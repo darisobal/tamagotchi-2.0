@@ -51,6 +51,7 @@ scripts/       # setup helpers
 - Pet logic in `src/logic.ts`; theme in `src/theme.ts`
 - Prefer small, focused diffs; match existing patterns in surrounding code
 - Do not commit secrets (`.env`); see `.env.example` for required vars
+- **Lowercase copy:** all user-facing text (labels, buttons, errors, alerts) is lowercase — no title case or uppercase styling
 
 ## Related Cursor config
 

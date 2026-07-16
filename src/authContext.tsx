@@ -16,12 +16,12 @@ import {
   isAuthCallbackUrl,
 } from './authRedirect';
 
-type AuthMode = 'login' | 'signup';
-
-export type SignUpResult =
+export type ContinueResult =
   | { outcome: 'session' }
   | { outcome: 'confirm_email' }
   | { outcome: 'error'; message: string };
+
+export type SignUpResult = ContinueResult;
 
 const LOCAL_USER_KEY = 'tamagotchi_local_user';
 
@@ -33,6 +33,7 @@ interface AuthState {
   isLocalOnly: boolean;
   signInWithPassword: (email: string, password: string) => Promise<string | null>;
   signUpWithPassword: (email: string, password: string) => Promise<SignUpResult>;
+  continueWithPassword: (email: string, password: string) => Promise<ContinueResult>;
   signInWithMagicLink: (email: string) => Promise<string | null>;
   resendConfirmationEmail: (email: string) => Promise<string | null>;
   signOut: () => Promise<void>;
@@ -48,9 +49,9 @@ export function useAuth(): AuthState {
 
 function formatAuthError(error: unknown): string {
   if (error && typeof error === 'object' && 'message' in error) {
-    return String((error as { message: string }).message);
+    return String((error as { message: string }).message).toLowerCase();
   }
-  return 'Something went wrong. Try again.';
+  return 'something went wrong. try again.';
 }
 
 function isEmailNotConfirmedError(message: string): boolean {
@@ -149,36 +150,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.remove();
   }, [handleAuthCallbackUrl]);
 
-  const localSignIn = useCallback(async (email: string, password: string, mode: AuthMode) => {
-    if (!email.trim()) return 'Enter your email.';
-    if (mode === 'signup' && password.length < 6) return 'Use at least 6 characters.';
+  const localContinue = useCallback(async (email: string, password: string): Promise<ContinueResult> => {
+    if (!email.trim()) return { outcome: 'error', message: 'enter your email.' };
+    if (password.length < 6) return { outcome: 'error', message: 'use at least 6 characters.' };
+
     const existing = await readLocalUser();
     const normalized = email.trim().toLowerCase();
-    if (mode === 'login' && existing && existing.email !== normalized) {
-      return 'No account on this device for that email. Try sign up.';
+    if (existing && existing.email !== normalized) {
+      return {
+        outcome: 'error',
+        message: 'this device has a different account. sign out from settings first.',
+      };
     }
+
     const user = await writeLocalUser(normalized);
     setSession(makeLocalSession(user));
-    return null;
+    return { outcome: 'session' };
   }, []);
 
   const signInWithPassword = useCallback(
     async (email: string, password: string) => {
       const supabase = getSupabase();
-      if (!supabase) return localSignIn(email, password, 'login');
+      if (!supabase) {
+        const result = await localContinue(email, password);
+        return result.outcome === 'error' ? result.message : null;
+      }
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       return error ? formatAuthError(error) : null;
     },
-    [localSignIn]
+    [localContinue]
   );
 
   const signUpWithPassword = useCallback(
     async (email: string, password: string): Promise<SignUpResult> => {
       const supabase = getSupabase();
-      if (!supabase) {
-        const err = await localSignIn(email, password, 'signup');
-        return err ? { outcome: 'error', message: err } : { outcome: 'session' };
-      }
+      if (!supabase) return localContinue(email, password);
 
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -196,13 +202,55 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       return { outcome: 'confirm_email' };
     },
-    [localSignIn]
+    [localContinue]
+  );
+
+  const continueWithPassword = useCallback(
+    async (email: string, password: string): Promise<ContinueResult> => {
+      if (!email.trim()) return { outcome: 'error', message: 'enter your email.' };
+      if (password.length < 6) return { outcome: 'error', message: 'use at least 6 characters.' };
+
+      const supabase = getSupabase();
+      if (!supabase) return localContinue(email, password);
+
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      if (!signInError) {
+        return { outcome: 'session' };
+      }
+
+      const signInMessage = formatAuthError(signInError);
+      if (isEmailNotConfirmedError(signInMessage)) {
+        return { outcome: 'confirm_email' };
+      }
+
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: getAuthRedirectUrl() },
+      });
+
+      if (signUpError) {
+        const signUpMessage = formatAuthError(signUpError);
+        const lower = signUpMessage.toLowerCase();
+        if (lower.includes('already') || lower.includes('registered')) {
+          return { outcome: 'error', message: 'incorrect password. try again.' };
+        }
+        return { outcome: 'error', message: signUpMessage };
+      }
+
+      if (data.session) {
+        return { outcome: 'session' };
+      }
+
+      return { outcome: 'confirm_email' };
+    },
+    [localContinue]
   );
 
   const signInWithMagicLink = useCallback(async (email: string) => {
     const supabase = getSupabase();
     if (!supabase) {
-      return 'Magic links need Supabase. Use email + password for now, or add EXPO_PUBLIC_SUPABASE_* keys.';
+      return 'magic links need supabase. use email + password for now, or add expo_public_supabase_* keys.';
     }
     const { error } = await supabase.auth.signInWithOtp({
       email,
@@ -217,9 +265,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const resendConfirmationEmail = useCallback(async (email: string) => {
     const supabase = getSupabase();
     if (!supabase) {
-      return 'Email confirmation needs Supabase. Add EXPO_PUBLIC_SUPABASE_* keys.';
+      return 'email confirmation needs supabase. add expo_public_supabase_* keys.';
     }
-    if (!email.trim()) return 'Enter your email.';
+    if (!email.trim()) return 'enter your email.';
     const { error } = await supabase.auth.resend({
       type: 'signup',
       email: email.trim(),
@@ -247,6 +295,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isLocalOnly: !isSupabaseConfigured,
       signInWithPassword,
       signUpWithPassword,
+      continueWithPassword,
       signInWithMagicLink,
       resendConfirmationEmail,
       signOut,
@@ -256,6 +305,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       session,
       signInWithPassword,
       signUpWithPassword,
+      continueWithPassword,
       signInWithMagicLink,
       resendConfirmationEmail,
       signOut,
@@ -266,4 +316,3 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 }
 
 export { isEmailNotConfirmedError };
-export type { AuthMode };

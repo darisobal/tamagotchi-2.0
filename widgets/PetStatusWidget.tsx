@@ -23,10 +23,10 @@ const SCENE_BG: Record<WidgetPetScene, string> = {
 };
 
 const SCENE_LABEL: Record<WidgetPetScene, string> = {
-  well: 'Well',
-  neutral: 'Neutral',
-  sad: 'Sad',
-  fail: 'Fail',
+  well: 'well',
+  neutral: 'neutral',
+  sad: 'sad',
+  fail: 'fail',
 };
 
 const PetStatusWidget = (props: PetStatusWidgetProps, environment: WidgetEnvironment) => {

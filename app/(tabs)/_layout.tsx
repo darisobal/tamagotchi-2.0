@@ -113,7 +113,6 @@ const styles = StyleSheet.create({
     fontFamily: Slab.semiBold,
     color: Colors.ink,
     letterSpacing: 0.2,
-    textTransform: 'uppercase',
     lineHeight: TAB_BAR_LABEL_LINE,
     textAlign: 'center',
   },
@@ -144,9 +143,9 @@ export default function TabLayout() {
         tabBarInactiveTintColor: Colors.ink,
       }}
     >
-      <Tabs.Screen name="settings" options={{ title: 'Setup' }} />
-      <Tabs.Screen name="index" options={{ title: 'Home' }} />
-      <Tabs.Screen name="history" options={{ title: 'History' }} />
+      <Tabs.Screen name="settings" options={{ title: 'setup' }} />
+      <Tabs.Screen name="index" options={{ title: 'home' }} />
+      <Tabs.Screen name="history" options={{ title: 'history' }} />
     </Tabs>
   );
 }

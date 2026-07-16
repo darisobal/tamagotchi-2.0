@@ -50,7 +50,7 @@ export function moodToScene(mood: Mood): StateScene {
 const DEFAULT_NAME = 'champ';
 
 /** Shared copy + palette tokens used across the four Figma home frames. */
-const CHECK_IN_LABEL = 'I DID IT!!!!!1';
+const CHECK_IN_LABEL = 'i did it!!!!!1';
 
 export function getStateTheme(mood: Mood, difficulty: Difficulty = 'gentle'): StateTheme {
   const scene = moodToScene(mood);
@@ -74,8 +74,8 @@ export function getStateTheme(mood: Mood, difficulty: Difficulty = 'gentle'): St
       inkSoft: '#1A1A1A',
       showConfetti: true,
       showCrossOut: false,
-      greeting: (name = DEFAULT_NAME) => `Hi ${name}!`,
-      motto: () => (tough ? "DON'T STOP NOW!" : 'Skip = RIP.'),
+      greeting: (name = DEFAULT_NAME) => `hi ${name}!`,
+      motto: () => (tough ? "don't stop now!" : 'skip = rip.'),
       checkInLabel: CHECK_IN_LABEL,
     };
   }
@@ -88,9 +88,9 @@ export function getStateTheme(mood: Mood, difficulty: Difficulty = 'gentle'): St
       inkSoft: '#330000',
       showConfetti: false,
       showCrossOut: true,
-      greeting: (name = DEFAULT_NAME) => `Ugh, ${name}!`,
-      motto: () => 'I died waiting.',
-      checkInLabel: 'START AGAIN',
+      greeting: (name = DEFAULT_NAME) => `ugh, ${name}!`,
+      motto: () => 'i died waiting.',
+      checkInLabel: 'start again',
     };
   }
 
@@ -102,8 +102,8 @@ export function getStateTheme(mood: Mood, difficulty: Difficulty = 'gentle'): St
       inkSoft: '#1A1A1A',
       showConfetti: false,
       showCrossOut: false,
-      greeting: (name = DEFAULT_NAME) => `Hi ${name}!`,
-      motto: () => 'Your laziness, my funeral.',
+      greeting: (name = DEFAULT_NAME) => `hi ${name}!`,
+      motto: () => 'your laziness, my funeral.',
       checkInLabel: CHECK_IN_LABEL,
     };
   }
@@ -116,8 +116,8 @@ export function getStateTheme(mood: Mood, difficulty: Difficulty = 'gentle'): St
     inkSoft: '#1A1A1A',
     showConfetti: false,
     showCrossOut: false,
-    greeting: (name = DEFAULT_NAME) => `Hi ${name}!`,
-    motto: () => (tough ? 'FAaaaaSTER!' : "Don't make me die cringe."),
+    greeting: (name = DEFAULT_NAME) => `hi ${name}!`,
+    motto: () => (tough ? 'faaaaaster!' : "don't make me die cringe."),
     checkInLabel: CHECK_IN_LABEL,
   };
 }

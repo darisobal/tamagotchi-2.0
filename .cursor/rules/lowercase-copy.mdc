@@ -1,0 +1,25 @@
+---
+description: All user-facing copy must be lowercase
+alwaysApply: true
+---
+
+# Lowercase copy
+
+All user-facing text in this app is **lowercase only** — labels, buttons, titles, subtitles, errors, alerts, placeholders, tab names, and widget labels.
+
+- Write strings in lowercase: `your habit has a heartbeat.` not `Your habit has a heartbeat.`
+- Do not use `textTransform: 'uppercase'` on UI text.
+- Locale-formatted dates should be lowercased before display (e.g. `july 2026`).
+- External API error messages should be lowercased before showing to the user.
+- Exceptions: email addresses, URLs, env var names, and user-entered values (habit name, pet name).
+
+```tsx
+// ❌ BAD
+<Text>Welcome Back</Text>
+options={{ title: 'Home' }}
+textTransform: 'uppercase'
+
+// ✅ GOOD
+<Text>welcome back</Text>
+options={{ title: 'home' }}
+```

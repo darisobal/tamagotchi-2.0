@@ -18,7 +18,7 @@ import { Colors, Spacing, FontSize, Slab, Radius, Border } from '../../src/theme
 import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
 import { useMoodBackground } from '../../src/useMoodBackground';
 
-const WEEKDAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'] as const;
+const WEEKDAY_LABELS = ['s', 'm', 't', 'w', 't', 'f', 's'] as const;
 
 type GridCell =
   | { kind: 'empty' }
@@ -95,7 +95,7 @@ export default function HistoryScreen() {
 
   const monthTitle = useMemo(() => {
     const d = new Date(cursor.y, cursor.m, 1);
-    return d.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+    return d.toLocaleDateString(undefined, { month: 'long', year: 'numeric' }).toLowerCase();
   }, [cursor.y, cursor.m]);
 
   const goPrevMonth = useCallback(() => {
@@ -298,7 +298,7 @@ function formatModalTitle(iso: string | null): string {
     month: 'long',
     day: 'numeric',
     year: 'numeric',
-  });
+  }).toLowerCase();
 }
 
 function HistoryItem({
