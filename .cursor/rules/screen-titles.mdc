@@ -1,0 +1,29 @@
+---
+description: Screen titles use Hepta Slab Black via Type.screenTitle
+alwaysApply: true
+---
+
+# Screen titles
+
+All **screen-level titles** (page headlines, greetings, auth headlines) use the same type style for consistency across home, setup, history, auth, and check-in.
+
+- Use `Type.screenTitle` from `src/theme.ts` (`Slab.black` / Hepta Slab 900, `FontSize.display`, `letterSpacing: -1`).
+- Do **not** use `Slab.bold` or `Slab.extraBold` for screen titles.
+- Layer color, margin, and extra padding on top of `Type.screenTitle` as needed (e.g. mood `theme.ink`, descender padding on the home greeting).
+- Section labels and in-card habit titles are separate — this rule is for the primary page headline only.
+
+```tsx
+// ❌ BAD — home greeting out of sync with setup/history
+greeting: {
+  fontFamily: Slab.bold,
+  fontSize: FontSize.display,
+}
+
+// ✅ GOOD
+import { Type } from '../src/theme';
+
+greeting: {
+  ...Type.screenTitle,
+  // optional extras (margin, padding, overflow)
+}
+```

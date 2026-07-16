@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Svg, { G } from 'react-native-svg';
+import Svg from 'react-native-svg';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -16,6 +16,7 @@ import { Colors } from './theme';
 import PetFigure, { PET_SVG_VB } from './PetFigure';
 import PetHat from './PetHat';
 import DeadBloodSplatter from './DeadBloodSplatter';
+import { PET_HOME_DISPLAY_HEIGHT } from './PetEggShell';
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 
@@ -27,34 +28,47 @@ const HAT_PLACEMENT = {
   height: 26,
 } as const;
 
-const VB_CX = PET_SVG_VB.w / 2;
-const VB_CY = PET_SVG_VB.h / 2;
-
 type LineArtPetProps = {
   mood: Mood;
   strokeColor?: string;
-  /** Visual height of the figure in px (upright: full body height; same scale when lying). */
-  size?: number;
+  /**
+   * On-screen height of the posed figure in px (after dead rotation).
+   * Happy and dead share the same vertical presence in the egg.
+   */
+  displayHeight?: number;
   hat?: PetHatId;
 };
 
 /**
  * Animated wrapper around `PetFigure`. Dead mood: figure is rotated −90° so it lies
  * horizontally (head left), with a blood splatter on the torso; hat rotates with the body.
+ *
+ * Sizing uses `displayHeight` (posed bounding-box height), not upright body height —
+ * so the lying pet is scaled up to match the standing pet's on-screen height.
  */
 export default function LineArtPet({
   mood,
   strokeColor = Colors.pet,
-  size = 160,
+  displayHeight = PET_HOME_DISPLAY_HEIGHT,
   hat = 'none',
 }: LineArtPetProps) {
   const isDead = mood === 'dead';
 
-  /** Upright: narrow×tall. Dead (after rotation): wide×short — same viewBox scale (size = 360 px tall). */
-  const uprightW = (size * PET_SVG_VB.w) / PET_SVG_VB.h;
-  const uprightH = size;
-  const svgW = isDead ? uprightH : uprightW;
-  const svgH = isDead ? uprightW : uprightH;
+  /**
+   * Art is always laid out upright in local space, then the wrapper rotates when dead.
+   * Dead: local width becomes on-screen height → local width = displayHeight.
+   * Upright: local height = displayHeight.
+   */
+  const artW = isDead
+    ? displayHeight
+    : (displayHeight * PET_SVG_VB.w) / PET_SVG_VB.h;
+  const artH = isDead
+    ? (displayHeight * PET_SVG_VB.h) / PET_SVG_VB.w
+    : displayHeight;
+
+  /** Posed layout box (accounts for −90° rotation). */
+  const layoutW = isDead ? artH : artW;
+  const layoutH = isDead ? artW : artH;
 
   const bob = useSharedValue(0);
   const breathe = useSharedValue(1);
@@ -133,37 +147,30 @@ export default function LineArtPet({
     transform: `rotate(${armWave.value} 82 145)`,
   }));
 
-  const deadTransform = `translate(${VB_CX} ${VB_CY}) rotate(-90) translate(${-VB_CX} ${-VB_CY})`;
-
   return (
-    <AnimatedView style={[styles.wrap, { width: svgW, height: svgH }, wrapStyle]}>
-      <Svg
-        width={svgW}
-        height={svgH}
-        viewBox={`0 0 ${PET_SVG_VB.w} ${PET_SVG_VB.h}`}
-        preserveAspectRatio="xMidYMid meet"
+    <AnimatedView style={[styles.wrap, { width: layoutW, height: layoutH }, wrapStyle]}>
+      <View
+        style={[
+          styles.art,
+          { width: artW, height: artH },
+          isDead ? styles.artDead : null,
+        ]}
       >
-        {isDead ? (
-          <G transform={deadTransform}>
-            <PetFigure
-              mood={mood}
-              strokeColor={strokeColor}
-              armsAnimatedProps={armsAnimatedProps}
-            />
-            <DeadBloodSplatter />
-            <PetHat hat={hat} {...HAT_PLACEMENT} strokeColor={strokeColor} />
-          </G>
-        ) : (
-          <>
-            <PetFigure
-              mood={mood}
-              strokeColor={strokeColor}
-              armsAnimatedProps={armsAnimatedProps}
-            />
-            <PetHat hat={hat} {...HAT_PLACEMENT} strokeColor={strokeColor} />
-          </>
-        )}
-      </Svg>
+        <Svg
+          width={artW}
+          height={artH}
+          viewBox={`0 0 ${PET_SVG_VB.w} ${PET_SVG_VB.h}`}
+          preserveAspectRatio="xMidYMid meet"
+        >
+          <PetFigure
+            mood={mood}
+            strokeColor={strokeColor}
+            armsAnimatedProps={armsAnimatedProps}
+          />
+          {isDead ? <DeadBloodSplatter /> : null}
+          <PetHat hat={hat} {...HAT_PLACEMENT} strokeColor={strokeColor} />
+        </Svg>
+      </View>
     </AnimatedView>
   );
 }
@@ -172,5 +179,13 @@ const styles = StyleSheet.create({
   wrap: {
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'visible',
+  },
+  art: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  artDead: {
+    transform: [{ rotate: '-90deg' }],
   },
 });

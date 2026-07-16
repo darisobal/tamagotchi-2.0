@@ -32,7 +32,6 @@ function defaultTrackState(trackType: TrackType): TrackState {
 
 const DEFAULT_PREFS: UserPrefs = {
   petType: 'dino',
-  difficulty: 'gentle',
   onboardingDone: true,
   customSprite: null,
   habitName: DEFAULT_HABIT_NAME,

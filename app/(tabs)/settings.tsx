@@ -14,8 +14,6 @@ import { router } from 'expo-router';
 import { useAppState } from '../../src/context';
 import { useAuth } from '../../src/authContext';
 import {
-  DIFFICULTY_SECTION_LABEL,
-  DIFFICULTY_OPTIONS,
   DEFAULT_HABIT_NAME,
   DEFAULT_PET_NAME,
   PET_COLOR_OPTIONS,
@@ -25,22 +23,23 @@ import {
   HabitCadence,
   DEFAULT_HABIT_CADENCE,
 } from '../../src/types';
-import { Colors, Spacing, FontSize, Slab, Radius, Border } from '../../src/theme';
+import { Colors, Spacing, FontSize, Slab, Radius, Border, Type } from '../../src/theme';
 import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
 import { useMoodBackground } from '../../src/useMoodBackground';
 import LineArtPet from '../../src/LineArtPet';
 import { HatOnlyPreview } from '../../src/PetHat';
-import PetEggShell, { petEggHeight } from '../../src/PetEggShell';
-import PetLives from '../../src/PetLives';
-
-const AVATAR_EGG_WIDTH = 240;
-const AVATAR_EGG_HEIGHT = petEggHeight(AVATAR_EGG_WIDTH);
+import PetEggShell, {
+  PET_SETUP_DEAD_LEFT_INSET,
+  PET_SETUP_DISPLAY_HEIGHT,
+  PET_SETUP_EGG_HEIGHT,
+  PET_SETUP_EGG_WIDTH,
+} from '../../src/PetEggShell';
 
 const HABIT_NAME_MAX = 40;
 const PET_NAME_MAX = 30;
 
 export default function SettingsScreen() {
-  const { prefs, updatePrefs, mood, lives } = useAppState();
+  const { prefs, updatePrefs, mood } = useAppState();
   const { user, signOut } = useAuth();
   const screenBg = useMoodBackground();
   const tabBarExtraPad = useFloatingTabBarExtraPadding();
@@ -132,19 +131,18 @@ export default function SettingsScreen() {
           />
 
           <View style={styles.avatarSection}>
-            <PetLives
-              lives={lives}
-              color={prefs.petColor || Colors.pet}
-              size={32}
-              gap={6}
-            />
             <View style={styles.avatarCompose}>
-              <PetEggShell width={AVATAR_EGG_WIDTH} />
-              <View style={styles.avatarPet}>
+              <PetEggShell width={PET_SETUP_EGG_WIDTH} />
+              <View
+                style={[
+                  styles.avatarPet,
+                  mood === 'dead' && styles.avatarPetDead,
+                ]}
+              >
                 <LineArtPet
                   mood={mood}
                   strokeColor={prefs.petColor || Colors.pet}
-                  size={192}
+                  displayHeight={PET_SETUP_DISPLAY_HEIGHT}
                   hat={prefs.petHat ?? 'none'}
                 />
               </View>
@@ -201,22 +199,6 @@ export default function SettingsScreen() {
             })}
           </View>
 
-          <Text style={styles.sectionLabel}>{DIFFICULTY_SECTION_LABEL}</Text>
-          <View style={styles.row}>
-            <SettingsOption
-              selected={prefs.difficulty === 'gentle'}
-              onPress={() => updatePrefs({ difficulty: 'gentle' })}
-              symbol={DIFFICULTY_OPTIONS.gentle.symbol}
-              label={DIFFICULTY_OPTIONS.gentle.label}
-            />
-            <SettingsOption
-              selected={prefs.difficulty === 'tough'}
-              onPress={() => updatePrefs({ difficulty: 'tough' })}
-              symbol={DIFFICULTY_OPTIONS.tough.symbol}
-              label={DIFFICULTY_OPTIONS.tough.label}
-            />
-          </View>
-
           <Text style={styles.sectionLabel}>account</Text>
           {user?.email ? <Text style={styles.helper}>{user.email}</Text> : null}
           <TouchableOpacity
@@ -238,12 +220,10 @@ export default function SettingsScreen() {
 function SettingsOption({
   selected,
   onPress,
-  symbol,
   label,
 }: {
   selected: boolean;
   onPress: () => void;
-  symbol?: string;
   label: string;
 }) {
   return (
@@ -252,11 +232,6 @@ function SettingsOption({
       onPress={onPress}
       activeOpacity={0.7}
     >
-      {symbol != null && symbol !== '' ? (
-        <Text style={[styles.optionSymbol, selected && styles.optionSymbolSelected]}>
-          {symbol}
-        </Text>
-      ) : null}
       <Text style={[styles.optionLabel, selected && styles.optionLabelSelected]}>
         {label}
       </Text>
@@ -272,12 +247,9 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
   },
   screenTitle: {
-    fontSize: FontSize.display,
-    fontFamily: Slab.black,
+    ...Type.screenTitle,
     color: Colors.ink,
     marginBottom: Spacing.lg,
-    letterSpacing: -1,
-    lineHeight: FontSize.display + 4,
   },
   sectionLabel: {
     fontSize: FontSize.lg,
@@ -309,23 +281,29 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: Spacing.md,
     marginBottom: Spacing.lg,
-    gap: Spacing.sm,
+    overflow: 'visible',
   },
   avatarCompose: {
-    width: AVATAR_EGG_WIDTH,
-    height: AVATAR_EGG_HEIGHT,
+    width: PET_SETUP_EGG_WIDTH,
+    height: PET_SETUP_EGG_HEIGHT,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'visible',
   },
   avatarPet: {
     position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'visible',
   },
-  row: {
-    flexDirection: 'row',
-    gap: Spacing.md,
-    marginBottom: Spacing.md,
+  /** Dead pose: keep head/hat on the left of the egg; let feet overflow right. */
+  avatarPetDead: {
+    alignItems: 'flex-start',
+    paddingLeft: PET_SETUP_DEAD_LEFT_INSET,
   },
   rowThree: {
     flexDirection: 'row',
@@ -346,14 +324,6 @@ const styles = StyleSheet.create({
   },
   optionSelected: {
     backgroundColor: Colors.ink,
-  },
-  optionSymbol: {
-    fontSize: FontSize.lg,
-    fontFamily: Slab.black,
-    color: Colors.ink,
-  },
-  optionSymbolSelected: {
-    color: '#FFFFFF',
   },
   optionLabel: {
     fontSize: FontSize.md,

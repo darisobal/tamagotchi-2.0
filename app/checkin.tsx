@@ -12,14 +12,13 @@ import {
 import { router } from 'expo-router';
 import { useAppState } from '../src/context';
 import { MAIN_TRACK, DEFAULT_HABIT_NAME } from '../src/types';
-import { Colors, Spacing, FontSize, Slab, Radius, Border } from '../src/theme';
+import { Colors, Spacing, FontSize, Slab, Radius, Border, Type } from '../src/theme';
 
 export default function CheckInScreen() {
   const { doCheckIn, prefs } = useAppState();
   const [note, setNote] = useState('');
   const [saving, setSaving] = useState(false);
 
-  const isGentle = prefs.difficulty === 'gentle';
   const habitName = (prefs.habitName || DEFAULT_HABIT_NAME).trim();
 
   const handleSave = async () => {
@@ -47,21 +46,13 @@ export default function CheckInScreen() {
             {habitName}
           </Text>
 
-          <Text style={styles.prompt}>
-            {isGentle
-              ? "nice -- what did you do today?"
-              : "log it. keep the chain."}
-          </Text>
+          <Text style={styles.prompt}>nice -- what did you do today?</Text>
 
           {/* Note */}
           <Text style={styles.label}>note (optional)</Text>
           <TextInput
             style={styles.noteInput}
-            placeholder={
-              isGentle
-                ? "what did you work on?"
-                : "brief note"
-            }
+            placeholder="what did you work on?"
             placeholderTextColor={Colors.textMuted}
             value={note}
             onChangeText={setNote}
@@ -79,7 +70,7 @@ export default function CheckInScreen() {
             disabled={saving}
           >
             <Text style={styles.saveBtnText}>
-              {saving ? 'saving...' : isGentle ? 'done!' : 'log it'}
+              {saving ? 'saving...' : 'done!'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -118,12 +109,9 @@ const styles = StyleSheet.create({
     color: Colors.ink,
   },
   trackTitle: {
-    fontSize: FontSize.display,
-    fontFamily: Slab.black,
+    ...Type.screenTitle,
     color: Colors.ink,
     marginBottom: Spacing.xs,
-    letterSpacing: -1,
-    lineHeight: FontSize.display + 4,
   },
   prompt: {
     fontSize: FontSize.lg,

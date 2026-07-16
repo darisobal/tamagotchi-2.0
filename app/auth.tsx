@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { router, Redirect } from 'expo-router';
 import { useAuth } from '../src/authContext';
-import { Colors, Spacing, FontSize, Slab, Radius, Border } from '../src/theme';
+import { Colors, Spacing, FontSize, Slab, Radius, Border, Type } from '../src/theme';
 
 export default function AuthScreen() {
   const {
@@ -174,11 +174,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: FontSize.display,
-    fontFamily: Slab.black,
+    ...Type.screenTitle,
     color: Colors.ink,
-    letterSpacing: -1,
-    lineHeight: FontSize.display + 4,
     marginBottom: Spacing.xs,
   },
   subtitle: {

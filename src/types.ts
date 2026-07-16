@@ -12,15 +12,6 @@ export type Intensity = 'small' | 'medium' | 'big';
 
 export type PetType = 'dino' | 'bird' | 'selfie';
 
-export type Difficulty = 'gentle' | 'tough';
-
-export const DIFFICULTY_SECTION_LABEL = 'choose your vibe';
-
-export const DIFFICULTY_OPTIONS: Record<Difficulty, { symbol: string; label: string }> = {
-  gentle: { symbol: '~', label: 'soft support' },
-  tough: { symbol: '!', label: 'no-excuses coach' },
-};
-
 export type Mood = 'happy' | 'okay' | 'sad' | 'dead';
 
 /** How long until the next check-in is due (single-habit app). */
@@ -46,7 +37,6 @@ export type PetHat = 'none' | 'top' | 'beanie' | 'crown';
 
 export interface UserPrefs {
   petType: PetType;
-  difficulty: Difficulty;
   onboardingDone: boolean;
   customSprite?: string | null;
   /** Human-readable name for the single tracked habit. */
@@ -108,7 +98,6 @@ export function resolvePetName(stored: string | null | undefined): string {
 export function normalizeUserPrefs(partial: Partial<UserPrefs>): UserPrefs {
   return {
     petType: partial.petType ?? 'dino',
-    difficulty: partial.difficulty ?? 'gentle',
     onboardingDone: partial.onboardingDone ?? true,
     customSprite: partial.customSprite ?? null,
     habitName: resolveHabitName(partial.habitName),
@@ -132,11 +121,6 @@ export const INTENSITY_POINTS: Record<Intensity, number> = {
   small: 10,
   medium: 20,
   big: 30,
-};
-
-export const TRACK_NUDGES: Record<Difficulty, string> = {
-  gentle: 'gentle start is still a start.',
-  tough: "then you're a sad dead pixel",
 };
 
 // ─── Progress-based habit system ─────────────────────────

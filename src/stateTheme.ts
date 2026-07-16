@@ -1,4 +1,4 @@
-import { Mood, Difficulty } from './types';
+import { Mood } from './types';
 import { Colors } from './theme';
 
 /**
@@ -52,9 +52,8 @@ const DEFAULT_NAME = 'champ';
 /** Shared copy + palette tokens used across the four Figma home frames. */
 const CHECK_IN_LABEL = 'i did it!!!!!1';
 
-export function getStateTheme(mood: Mood, difficulty: Difficulty = 'gentle'): StateTheme {
+export function getStateTheme(mood: Mood): StateTheme {
   const scene = moodToScene(mood);
-  const tough = difficulty === 'tough';
 
   const shared = {
     ink: Colors.ink,
@@ -75,7 +74,7 @@ export function getStateTheme(mood: Mood, difficulty: Difficulty = 'gentle'): St
       showConfetti: true,
       showCrossOut: false,
       greeting: (name = DEFAULT_NAME) => `hi ${name}!`,
-      motto: () => (tough ? "don't stop now!" : 'skip = rip.'),
+      motto: () => 'skip = rip.',
       checkInLabel: CHECK_IN_LABEL,
     };
   }
@@ -117,7 +116,7 @@ export function getStateTheme(mood: Mood, difficulty: Difficulty = 'gentle'): St
     showConfetti: false,
     showCrossOut: false,
     greeting: (name = DEFAULT_NAME) => `hi ${name}!`,
-    motto: () => (tough ? 'faaaaaster!' : "don't make me die cringe."),
+    motto: () => "don't make me die cringe.",
     checkInLabel: CHECK_IN_LABEL,
   };
 }

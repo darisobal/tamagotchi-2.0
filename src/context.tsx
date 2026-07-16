@@ -52,7 +52,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [prefs, setPrefs] = useState<UserPrefs>({
     petType: 'dino',
-    difficulty: 'gentle',
     onboardingDone: true,
     customSprite: null,
     habitName: DEFAULT_HABIT_NAME,

@@ -155,7 +155,6 @@ class NativeStorage implements Storage {
     const db = await this.getDb();
     const row = await db.getFirstAsync<{
       petType: string;
-      difficulty: string;
       onboardingDone: number;
       customSprite: string | null;
       habitName: string | null;
@@ -166,7 +165,6 @@ class NativeStorage implements Storage {
     }>(`SELECT * FROM user_prefs WHERE id = 1`);
     const prefs = normalizeUserPrefs({
       petType: row!.petType as UserPrefs['petType'],
-      difficulty: row!.difficulty as UserPrefs['difficulty'],
       onboardingDone: row!.onboardingDone === 1,
       customSprite: row!.customSprite ?? null,
       habitName: row!.habitName,
@@ -191,8 +189,6 @@ class NativeStorage implements Storage {
     const db = await this.getDb();
     if (prefs.petType !== undefined)
       await db.runAsync(`UPDATE user_prefs SET petType = ? WHERE id = 1`, prefs.petType);
-    if (prefs.difficulty !== undefined)
-      await db.runAsync(`UPDATE user_prefs SET difficulty = ? WHERE id = 1`, prefs.difficulty);
     if (prefs.onboardingDone !== undefined)
       await db.runAsync(`UPDATE user_prefs SET onboardingDone = ? WHERE id = 1`, prefs.onboardingDone ? 1 : 0);
     if (prefs.customSprite !== undefined)

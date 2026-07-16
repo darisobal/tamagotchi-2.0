@@ -14,7 +14,7 @@ import {
 import { useAppState } from '../../src/context';
 import { CheckIn, DEFAULT_HABIT_NAME } from '../../src/types';
 import { toDateString } from '../../src/logic';
-import { Colors, Spacing, FontSize, Slab, Radius, Border } from '../../src/theme';
+import { Colors, Spacing, FontSize, Slab, Radius, Border, Type } from '../../src/theme';
 import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
 import { useMoodBackground } from '../../src/useMoodBackground';
 
@@ -352,11 +352,8 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.sm,
   },
   screenTitle: {
-    fontSize: FontSize.display,
-    fontFamily: Slab.black,
+    ...Type.screenTitle,
     color: Colors.ink,
-    letterSpacing: -1,
-    lineHeight: FontSize.display + 4,
   },
   countLabel: {
     fontSize: FontSize.sm,

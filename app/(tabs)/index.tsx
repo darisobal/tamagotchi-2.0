@@ -7,7 +7,6 @@ import {
   ScrollView,
   SafeAreaView,
   RefreshControl,
-  useWindowDimensions,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -22,27 +21,36 @@ import Animated, {
 import { router } from 'expo-router';
 import { useAppState } from '../../src/context';
 import { ComputedHabit, DEFAULT_HABIT_NAME, MAIN_TRACK } from '../../src/types';
-import { Colors, Spacing, FontSize, Slab, Radius, Border } from '../../src/theme';
+import { Spacing, FontSize, Slab, Radius, Border, Type } from '../../src/theme';
 import { getStateTheme } from '../../src/stateTheme';
 import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
 import PixelPet from '../../src/PixelPet';
 import LineArtPet from '../../src/LineArtPet';
-import { PET_SVG_W_PER_H } from '../../src/PetFigure';
-import PetEggShell, { petEggHeight, petEggShellStyles } from '../../src/PetEggShell';
+import PetEggShell, {
+  PET_HOME_DEAD_LEFT_INSET,
+  PET_HOME_DISPLAY_HEIGHT,
+  PET_HOME_EGG_HEIGHT,
+  PET_HOME_EGG_LEFT_INSET,
+  PET_HOME_EGG_WIDTH,
+  petEggShellStyles,
+} from '../../src/PetEggShell';
 import PetLives from '../../src/PetLives';
-
-/** White egg shell behind the hero pet (fixed size). */
-const HERO_PET_EGG_WIDTH = 300;
-const HERO_PET_EGG_HEIGHT = petEggHeight(HERO_PET_EGG_WIDTH);
+import { HEART_VIEWBOX } from '../../assets/pet/heart-paths';
 
 /** Outer stage height: 40px pad above/below the egg (room for lying-down pose). */
-const HERO_PET_STAGE_HEIGHT = 40 + HERO_PET_EGG_HEIGHT + 40;
+const HERO_PET_STAGE_PAD = 40;
+const HERO_PET_STAGE_HEIGHT = HERO_PET_STAGE_PAD + PET_HOME_EGG_HEIGHT + HERO_PET_STAGE_PAD;
 
-/** Line art drawn at this base height, then visually scaled up. */
-const LINE_ART_BASE_SIZE = 186;
-
-/** Cap on the visual scale for the line-art figure (164×360 viewBox). */
-const PET_LINE_ART_VISUAL_SCALE_MAX = 1.85;
+/** Home life hearts — size matches Figma; used to align the egg under them. */
+const HERO_HEART_SIZE = 51;
+const HERO_HEART_HEIGHT = Math.round(
+  (HERO_HEART_SIZE * HEART_VIEWBOX.h) / HEART_VIEWBOX.w,
+);
+/**
+ * Pull the pet stage up so the egg top sits in the same band as the hearts
+ * (hearts stay in flow; they layer above the egg via zIndex).
+ */
+const HERO_EGG_LIFT = HERO_HEART_HEIGHT + HERO_PET_STAGE_PAD - Spacing.sm;
 
 export default function HomeScreen() {
   const { prefs, computedHabits, mood, lives, refresh } = useAppState();
@@ -54,7 +62,7 @@ export default function HomeScreen() {
     setRefreshing(false);
   }, [refresh]);
 
-  const theme = getStateTheme(mood, prefs.difficulty);
+  const theme = getStateTheme(mood);
   const tabBarExtraPad = useFloatingTabBarExtraPadding();
 
   // Single-habit app: there's exactly one habit to render.
@@ -73,20 +81,23 @@ export default function HomeScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.ink} />
         }
       >
-        <Text style={[styles.greeting, { color: theme.ink }]} numberOfLines={2}>
+        <Text style={[styles.greeting, { color: theme.ink }]}>
           {theme.greeting(petName)}
         </Text>
 
-        <PetLives lives={lives} color={petColor} size={42} gap={8} />
-
-        <PetStage
-          petType={prefs.petType}
-          mood={mood}
-          customSprite={prefs.customSprite}
-          petColor={petColor}
-          petHat={prefs.petHat ?? 'none'}
-          showConfetti={theme.showConfetti}
-        />
+        <View style={styles.heroPetBlock}>
+          <View style={styles.livesLayer}>
+            <PetLives lives={lives} color={petColor} size={HERO_HEART_SIZE} gap={8} />
+          </View>
+          <PetStage
+            petType={prefs.petType}
+            mood={mood}
+            customSprite={prefs.customSprite}
+            petColor={petColor}
+            petHat={prefs.petHat ?? 'none'}
+            showConfetti={theme.showConfetti}
+          />
+        </View>
 
         {habit ? (
           <HeroTaskCard
@@ -130,34 +141,30 @@ function PetStage({
   showConfetti: boolean;
 }) {
   const useSelfiePixels = petType === 'selfie' && Boolean(customSprite);
-
-  const { width: windowWidth } = useWindowDimensions();
-  const horizontalPad = Spacing.lg * 2;
-  const maxDrawW = Math.max(1, windowWidth - horizontalPad);
-
-  // Upright: narrow width. Dead (lying): full body runs horizontally → wider layout box.
-  const baseArtW =
-    mood === 'dead' ? LINE_ART_BASE_SIZE : LINE_ART_BASE_SIZE * PET_SVG_W_PER_H;
-  const petVisualScale = Math.min(
-    PET_LINE_ART_VISUAL_SCALE_MAX,
-    maxDrawW / baseArtW,
-  );
+  const isDead = mood === 'dead';
 
   return (
     <View style={styles.petStage}>
       {showConfetti ? <ConfettiBurst /> : null}
       <View style={styles.petStageCompose}>
         <PetEggShell
-          width={HERO_PET_EGG_WIDTH}
+          width={PET_HOME_EGG_WIDTH}
           style={[
             petEggShellStyles.centered,
             {
-              marginTop: -HERO_PET_EGG_HEIGHT / 2,
-              marginLeft: -HERO_PET_EGG_WIDTH / 2,
+              marginTop: -PET_HOME_EGG_HEIGHT / 2,
+              marginLeft: -PET_HOME_EGG_WIDTH / 2 + PET_HOME_EGG_LEFT_INSET,
             },
           ]}
         />
-        <View style={[styles.petForeground, { transform: [{ scale: petVisualScale }] }]}>
+        <View
+          style={[
+            styles.petForeground,
+            // Dead pose is wider than the egg — pin its left (head/hat) to the egg's
+            // left edge so only the feet clip on the right.
+            isDead && styles.petForegroundDead,
+          ]}
+        >
           {useSelfiePixels ? (
             <PixelPet
               petType={petType}
@@ -170,7 +177,7 @@ function PetStage({
             <LineArtPet
               mood={mood}
               strokeColor={petColor}
-              size={LINE_ART_BASE_SIZE}
+              displayHeight={PET_HOME_DISPLAY_HEIGHT}
               hat={petHat}
             />
           )}
@@ -365,11 +372,15 @@ const styles = StyleSheet.create({
   },
 
   greeting: {
-    fontFamily: Slab.bold,
-    fontSize: FontSize.display,
-    letterSpacing: -0.8,
-    lineHeight: FontSize.display + 2,
+    ...Type.screenTitle,
+    /**
+     * Descenders (e.g. “g” in “ugh”) need extra room so they aren’t clipped
+     * above the hearts — keep padding beyond the shared screen-title metrics.
+     */
+    lineHeight: Math.round(FontSize.display * 1.35),
+    paddingBottom: Spacing.sm,
     marginBottom: Spacing.xs,
+    overflow: 'visible',
   },
 
   heroCardWrap: {
@@ -424,12 +435,23 @@ const styles = StyleSheet.create({
     fontSize: FontSize.xl,
   },
 
+  heroPetBlock: {
+    position: 'relative',
+    overflow: 'visible',
+  },
+  /** Hearts stay in their current spot; paint above the raised egg. */
+  livesLayer: {
+    position: 'relative',
+    zIndex: 2,
+  },
   petStage: {
     height: HERO_PET_STAGE_HEIGHT,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: -HERO_EGG_LIFT,
     marginBottom: Spacing.sm,
     overflow: 'visible',
+    zIndex: 0,
   },
   petStageCompose: {
     width: '100%',
@@ -442,6 +464,17 @@ const styles = StyleSheet.create({
   petForeground: {
     zIndex: 1,
     overflow: 'visible',
+    // Keep upright pet aligned with the egg's horizontal offset.
+    marginLeft: PET_HOME_EGG_LEFT_INSET,
+  },
+  petForegroundDead: {
+    position: 'absolute',
+    left: '50%',
+    // Pin near the egg's left edge (+ insets) so the hat stays visible; feet overflow right.
+    marginLeft:
+      -PET_HOME_EGG_WIDTH / 2 + PET_HOME_EGG_LEFT_INSET + PET_HOME_DEAD_LEFT_INSET,
+    top: '50%',
+    marginTop: -PET_HOME_DISPLAY_HEIGHT / 2,
   },
   confettiLayer: {
     position: 'absolute',

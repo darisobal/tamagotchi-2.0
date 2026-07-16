@@ -119,3 +119,16 @@ export const Font = {
   slab: Slab.regular,
   mono: Slab.regular,
 };
+
+/**
+ * Shared type styles. Screen titles (home greeting, setup, history, auth headlines)
+ * always use Hepta Slab Black at display size — see `.cursor/rules/screen-titles.mdc`.
+ */
+export const Type = {
+  screenTitle: {
+    fontFamily: Slab.black,
+    fontSize: FontSize.display,
+    letterSpacing: -1,
+    lineHeight: FontSize.display + 4,
+  },
+} as const;
