@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   ScrollView,
   SafeAreaView,
   RefreshControl,
@@ -20,7 +19,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { router } from 'expo-router';
 import { useAppState } from '../../src/context';
-import { ComputedHabit, DEFAULT_HABIT_NAME, MAIN_TRACK } from '../../src/types';
+import { DEFAULT_HABIT_NAME } from '../../src/types';
 import { Spacing, FontSize, Slab, Radius, Border, Type } from '../../src/theme';
 import { getStateTheme } from '../../src/stateTheme';
 import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
@@ -35,6 +34,7 @@ import PetEggShell, {
   petEggShellStyles,
 } from '../../src/PetEggShell';
 import PetLives from '../../src/PetLives';
+import HeroTaskCard from '../../src/HeroTaskCard';
 import { HEART_VIEWBOX } from '../../assets/pet/heart-paths';
 
 /** Outer stage height: 40px pad above/below the egg (room for lying-down pose). */
@@ -101,12 +101,18 @@ export default function HomeScreen() {
 
         {habit ? (
           <HeroTaskCard
-            habit={habit}
             habitName={habitName}
-            theme={theme}
+            motto={theme.motto(habitName)}
             accentColor={petColor}
-            showCrossOut={theme.showCrossOut}
+            borderColor={theme.cardBorder}
+            backgroundColor={theme.cardBg}
+            mottoColor={theme.mottoInk}
+            buttonColor={theme.cardInk}
             checkInLabel={theme.checkInLabel}
+            showCrossOut={theme.showCrossOut}
+            onCheckIn={() =>
+              router.push({ pathname: '/checkin', params: { track: habit.trackType } })
+            }
           />
         ) : (
           <View style={[styles.heroCard, { borderColor: theme.cardBorder }]}>
@@ -280,89 +286,6 @@ function ConfettiDot({ spec }: { spec: ConfettiDotSpec }) {
   );
 }
 
-function HeroTaskCard({
-  habit,
-  habitName,
-  theme,
-  accentColor,
-  showCrossOut,
-  checkInLabel,
-}: {
-  habit: ComputedHabit;
-  habitName: string;
-  theme: ReturnType<typeof getStateTheme>;
-  accentColor: string;
-  showCrossOut: boolean;
-  checkInLabel: string;
-}) {
-  const isDead = theme.scene === 'failed';
-
-  return (
-    <View style={styles.heroCardWrap}>
-      <View
-        style={[
-          styles.heroCard,
-          isDead && styles.heroCardDead,
-          { borderColor: theme.cardBorder, backgroundColor: theme.cardBg },
-        ]}
-      >
-        <View style={styles.heroNumberRow}>
-          <Text
-            style={[styles.heroHabitTitle, { color: accentColor }]}
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            minimumFontScale={0.45}
-          >
-            {habitName}
-          </Text>
-          {showCrossOut ? <CrossOut /> : null}
-        </View>
-        <Text style={[styles.heroCardMotto, { color: theme.mottoInk }]} numberOfLines={2}>
-          {theme.motto(habitName)}
-        </Text>
-        {!isDead ? (
-          <TouchableOpacity
-            style={[
-              styles.checkInBtn,
-              { backgroundColor: theme.cardInk, borderColor: theme.cardInk },
-            ]}
-            onPress={() =>
-              router.push({ pathname: '/checkin', params: { track: habit.trackType } })
-            }
-            activeOpacity={0.85}
-          >
-            <Text style={styles.checkInBtnText}>{checkInLabel}</Text>
-          </TouchableOpacity>
-        ) : null}
-      </View>
-      {isDead ? (
-        <TouchableOpacity
-          style={[
-            styles.checkInBtn,
-            styles.checkInBtnDead,
-            { backgroundColor: theme.cardInk, borderColor: theme.cardInk },
-          ]}
-          onPress={() =>
-            router.push({ pathname: '/checkin', params: { track: habit.trackType } })
-          }
-          activeOpacity={0.85}
-        >
-          <Text style={styles.checkInBtnText}>{checkInLabel}</Text>
-        </TouchableOpacity>
-      ) : null}
-    </View>
-  );
-}
-
-function CrossOut() {
-  return (
-    <View pointerEvents="none" style={styles.crossOutLayer}>
-      <View style={[styles.crossLine, styles.crossLineA]} />
-      <View style={[styles.crossLine, styles.crossLineB]} />
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   scroll: { flex: 1 },
@@ -383,19 +306,13 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   },
 
-  heroCardWrap: {
-    marginBottom: Spacing.lg,
-    gap: Spacing.md,
-  },
   heroCard: {
     borderWidth: Border.hero,
     borderRadius: Radius.lg,
     paddingTop: Spacing.lg + Spacing.xs,
     paddingBottom: Spacing.lg,
     paddingHorizontal: Spacing.lg + Spacing.xs,
-  },
-  heroCardDead: {
-    paddingBottom: Spacing.lg + Spacing.xs,
+    marginBottom: Spacing.lg,
   },
   heroCardMotto: {
     fontFamily: Slab.semiBold,
@@ -404,20 +321,6 @@ const styles = StyleSheet.create({
     letterSpacing: -0.2,
     marginTop: Spacing.sm,
     alignSelf: 'flex-start',
-  },
-  heroNumberRow: {
-    position: 'relative',
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-  },
-  /** Habit label — blue accent per Figma. */
-  heroHabitTitle: {
-    fontFamily: Slab.bold,
-    fontSize: FontSize.habitTitle,
-    lineHeight: FontSize.habitTitle + 6,
-    letterSpacing: -1,
-    flex: 1,
-    minWidth: 0,
   },
   heroNumber: {
     fontFamily: Slab.bold,
@@ -482,55 +385,5 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-  },
-
-  checkInBtn: {
-    borderWidth: Border.base,
-    borderRadius: Radius.md,
-    alignSelf: 'center',
-    width: '100%',
-    maxWidth: 293,
-    minHeight: 56,
-    marginTop: Spacing.md,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm + 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkInBtnDead: {
-    alignSelf: 'stretch',
-    maxWidth: '100%',
-    marginTop: 0,
-  },
-  checkInBtnText: {
-    fontFamily: Slab.semiBold,
-    fontSize: FontSize.cta,
-    color: '#FFFFFF',
-    letterSpacing: 0.2,
-    textAlign: 'center',
-    lineHeight: FontSize.cta + 3,
-  },
-
-  crossOutLayer: {
-    position: 'absolute',
-    top: -8,
-    left: -8,
-    right: -8,
-    bottom: -8,
-    zIndex: 1,
-  },
-  crossLine: {
-    position: 'absolute',
-    backgroundColor: '#FFFFFF',
-    height: 8,
-    width: '120%',
-    top: '50%',
-    left: '-10%',
-  },
-  crossLineA: {
-    transform: [{ rotate: '-12deg' }],
-  },
-  crossLineB: {
-    transform: [{ rotate: '12deg' }],
   },
 });

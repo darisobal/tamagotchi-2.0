@@ -28,11 +28,9 @@ import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
 import { useMoodBackground } from '../../src/useMoodBackground';
 import LineArtPet from '../../src/LineArtPet';
 import { HatOnlyPreview } from '../../src/PetHat';
-import PetEggShell, {
+import {
   PET_SETUP_DEAD_LEFT_INSET,
   PET_SETUP_DISPLAY_HEIGHT,
-  PET_SETUP_EGG_HEIGHT,
-  PET_SETUP_EGG_WIDTH,
 } from '../../src/PetEggShell';
 
 const HABIT_NAME_MAX = 40;
@@ -130,23 +128,18 @@ export default function SettingsScreen() {
             returnKeyType="done"
           />
 
-          <View style={styles.avatarSection}>
-            <View style={styles.avatarCompose}>
-              <PetEggShell width={PET_SETUP_EGG_WIDTH} />
-              <View
-                style={[
-                  styles.avatarPet,
-                  mood === 'dead' && styles.avatarPetDead,
-                ]}
-              >
-                <LineArtPet
-                  mood={mood}
-                  strokeColor={prefs.petColor || Colors.pet}
-                  displayHeight={PET_SETUP_DISPLAY_HEIGHT}
-                  hat={prefs.petHat ?? 'none'}
-                />
-              </View>
-            </View>
+          <View
+            style={[
+              styles.avatarSection,
+              mood === 'dead' && styles.avatarSectionDead,
+            ]}
+          >
+            <LineArtPet
+              mood={mood}
+              strokeColor={prefs.petColor || Colors.pet}
+              displayHeight={PET_SETUP_DISPLAY_HEIGHT}
+              hat={prefs.petHat ?? 'none'}
+            />
           </View>
 
           <Text style={styles.sectionLabel}>pet colour</Text>
@@ -283,27 +276,9 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
     overflow: 'visible',
   },
-  avatarCompose: {
-    width: PET_SETUP_EGG_WIDTH,
-    height: PET_SETUP_EGG_HEIGHT,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'visible',
-  },
-  avatarPet: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'visible',
-  },
-  /** Dead pose: keep head/hat on the left of the egg; let feet overflow right. */
-  avatarPetDead: {
-    alignItems: 'flex-start',
-    paddingLeft: PET_SETUP_DEAD_LEFT_INSET,
+  avatarSectionDead: {
+    // Shift dead pose right so the hat stays on-screen; feet may clip right.
+    transform: [{ translateX: PET_SETUP_DEAD_LEFT_INSET }],
   },
   rowThree: {
     flexDirection: 'row',

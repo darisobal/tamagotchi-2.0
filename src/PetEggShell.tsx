@@ -29,13 +29,10 @@ export const PET_HOME_DEAD_LEFT_INSET = 24;
 /** Shift egg + pet right from center; 0 = centered. */
 export const PET_HOME_EGG_LEFT_INSET = 80;
 
-/** Setup screen egg + pet (centered). */
-export const PET_SETUP_EGG_WIDTH = 240;
-export const PET_SETUP_EGG_HEIGHT = petEggHeight(PET_SETUP_EGG_WIDTH); // 288
+/** Setup screen pet size (no egg on setup). */
 export const PET_SETUP_DISPLAY_HEIGHT = 200;
+/** Dead pose: nudge right so the hat/head stay visible; feet may clip on the right. */
 export const PET_SETUP_DEAD_LEFT_INSET = 24;
-/** Keep 0 so the setup avatar stays centered. */
-export const PET_SETUP_EGG_LEFT_INSET = 0;
 
 export default function PetEggShell({
   width,
