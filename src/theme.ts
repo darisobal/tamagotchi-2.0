@@ -99,7 +99,7 @@ export const FontSize = {
   /** Primary CTA — scaled from Figma 25px */
   cta: 18,
   /** Bottom tab labels */
-  tab: 11,
+  tab: 12,
 };
 
 /** Internal names registered by `useFonts` from `@expo-google-fonts/hepta-slab`. */

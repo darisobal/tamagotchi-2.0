@@ -13,7 +13,7 @@ import {
   TAB_BAR_TOP_PAD,
 } from '../../src/floatingTabBarPadding';
 
-const TAB_INDICATOR_WIDTH = 39;
+const TAB_INDICATOR_WIDTH = 24;
 
 function BottomTextTabBar(props: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
