@@ -23,7 +23,10 @@ export function petEggHeight(width: number): number {
 /** Home screen egg + pet (offset layout). */
 export const PET_HOME_EGG_WIDTH = 340;
 export const PET_HOME_EGG_HEIGHT = petEggHeight(PET_HOME_EGG_WIDTH); // 408
-export const PET_HOME_DISPLAY_HEIGHT = 200;
+/** Alive (happy / okay / sad) posed height on home. */
+export const PET_HOME_DISPLAY_HEIGHT = 300;
+/** Dead posed height on home — kept separate so alive can grow without changing dead. */
+export const PET_HOME_DEAD_DISPLAY_HEIGHT = 200;
 /** Dead pose: inset from the egg's left edge (hat/head stay visible). */
 export const PET_HOME_DEAD_LEFT_INSET = 24;
 /** Shift egg + pet right from center; 0 = centered. */

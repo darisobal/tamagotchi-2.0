@@ -33,7 +33,7 @@ type LineArtPetProps = {
   strokeColor?: string;
   /**
    * On-screen height of the posed figure in px (after dead rotation).
-   * Happy and dead share the same vertical presence in the egg.
+   * Call sites can pass different values for alive vs dead.
    */
   displayHeight?: number;
   hat?: PetHatId;
@@ -44,7 +44,7 @@ type LineArtPetProps = {
  * horizontally (head left), with a blood splatter on the torso; hat rotates with the body.
  *
  * Sizing uses `displayHeight` (posed bounding-box height), not upright body height —
- * so the lying pet is scaled up to match the standing pet's on-screen height.
+ * so a dead pet is scaled from its lying bounding box to that height.
  */
 export default function LineArtPet({
   mood,

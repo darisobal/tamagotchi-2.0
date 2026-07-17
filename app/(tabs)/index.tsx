@@ -26,6 +26,7 @@ import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
 import PixelPet from '../../src/PixelPet';
 import LineArtPet from '../../src/LineArtPet';
 import PetEggShell, {
+  PET_HOME_DEAD_DISPLAY_HEIGHT,
   PET_HOME_DEAD_LEFT_INSET,
   PET_HOME_DISPLAY_HEIGHT,
   PET_HOME_EGG_HEIGHT,
@@ -183,7 +184,9 @@ function PetStage({
             <LineArtPet
               mood={mood}
               strokeColor={petColor}
-              displayHeight={PET_HOME_DISPLAY_HEIGHT}
+              displayHeight={
+                isDead ? PET_HOME_DEAD_DISPLAY_HEIGHT : PET_HOME_DISPLAY_HEIGHT
+              }
               hat={petHat}
             />
           )}
@@ -377,7 +380,7 @@ const styles = StyleSheet.create({
     marginLeft:
       -PET_HOME_EGG_WIDTH / 2 + PET_HOME_EGG_LEFT_INSET + PET_HOME_DEAD_LEFT_INSET,
     top: '50%',
-    marginTop: -PET_HOME_DISPLAY_HEIGHT / 2,
+    marginTop: -PET_HOME_DEAD_DISPLAY_HEIGHT / 2,
   },
   confettiLayer: {
     position: 'absolute',
