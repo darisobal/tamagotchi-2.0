@@ -5,10 +5,10 @@ import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { Colors } from '../src/theme';
 
 export default function Index() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, passwordRecoveryPending } = useAuth();
   const { loading: appLoading } = useAppState();
 
-  if (authLoading || (user && appLoading)) {
+  if (authLoading || (user && appLoading && !passwordRecoveryPending)) {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color={Colors.primary} />
@@ -18,6 +18,10 @@ export default function Index() {
 
   if (!user) {
     return <Redirect href="/auth" />;
+  }
+
+  if (passwordRecoveryPending) {
+    return <Redirect href="/reset-password" />;
   }
 
   return <Redirect href="/(tabs)" />;

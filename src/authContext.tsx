@@ -14,6 +14,7 @@ import {
   createSessionFromUrl,
   getAuthRedirectUrl,
   isAuthCallbackUrl,
+  isPasswordRecoveryUrl,
 } from './authRedirect';
 
 export type ContinueResult =
@@ -31,11 +32,16 @@ interface AuthState {
   user: User | null;
   isConfigured: boolean;
   isLocalOnly: boolean;
+  passwordRecoveryPending: boolean;
   signInWithPassword: (email: string, password: string) => Promise<string | null>;
   signUpWithPassword: (email: string, password: string) => Promise<SignUpResult>;
   continueWithPassword: (email: string, password: string) => Promise<ContinueResult>;
   signInWithMagicLink: (email: string) => Promise<string | null>;
   resendConfirmationEmail: (email: string) => Promise<string | null>;
+  requestPasswordReset: (email: string) => Promise<string | null>;
+  updatePassword: (password: string) => Promise<string | null>;
+  beginPasswordRecovery: () => void;
+  clearPasswordRecovery: () => void;
   signOut: () => Promise<void>;
 }
 
@@ -105,12 +111,24 @@ async function clearLocalUser(): Promise<void> {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
+  const [passwordRecoveryPending, setPasswordRecoveryPending] = useState(false);
+
+  const beginPasswordRecovery = useCallback(() => {
+    setPasswordRecoveryPending(true);
+  }, []);
+
+  const clearPasswordRecovery = useCallback(() => {
+    setPasswordRecoveryPending(false);
+  }, []);
 
   const handleAuthCallbackUrl = useCallback(async (url: string) => {
     if (!isAuthCallbackUrl(url)) return;
     const supabase = getSupabase();
     if (!supabase) return;
-    await createSessionFromUrl(supabase, url);
+    const ok = await createSessionFromUrl(supabase, url);
+    if (ok && isPasswordRecoveryUrl(url)) {
+      setPasswordRecoveryPending(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -128,8 +146,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     });
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event, nextSession) => {
       setSession(nextSession);
+      if (event === 'PASSWORD_RECOVERY') {
+        setPasswordRecoveryPending(true);
+      }
     });
 
     return () => listener.subscription.unsubscribe();
@@ -276,8 +297,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return error ? formatAuthError(error) : null;
   }, []);
 
+  const requestPasswordReset = useCallback(async (email: string) => {
+    const supabase = getSupabase();
+    if (!supabase) {
+      return 'password reset needs supabase. add expo_public_supabase_* keys.';
+    }
+    if (!email.trim()) return 'enter your email.';
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: getAuthRedirectUrl(),
+    });
+    return error ? formatAuthError(error) : null;
+  }, []);
+
+  const updatePassword = useCallback(async (password: string) => {
+    if (password.length < 6) return 'use at least 6 characters.';
+    const supabase = getSupabase();
+    if (!supabase) {
+      return 'password reset needs supabase. add expo_public_supabase_* keys.';
+    }
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) return formatAuthError(error);
+    setPasswordRecoveryPending(false);
+    return null;
+  }, []);
+
   const signOut = useCallback(async () => {
     const supabase = getSupabase();
+    setPasswordRecoveryPending(false);
     if (!supabase) {
       await clearLocalUser();
       setSession(null);
@@ -293,21 +339,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       user: session?.user ?? null,
       isConfigured: isSupabaseConfigured,
       isLocalOnly: !isSupabaseConfigured,
+      passwordRecoveryPending,
       signInWithPassword,
       signUpWithPassword,
       continueWithPassword,
       signInWithMagicLink,
       resendConfirmationEmail,
+      requestPasswordReset,
+      updatePassword,
+      beginPasswordRecovery,
+      clearPasswordRecovery,
       signOut,
     }),
     [
       loading,
       session,
+      passwordRecoveryPending,
       signInWithPassword,
       signUpWithPassword,
       continueWithPassword,
       signInWithMagicLink,
       resendConfirmationEmail,
+      requestPasswordReset,
+      updatePassword,
+      beginPasswordRecovery,
+      clearPasswordRecovery,
       signOut,
     ]
   );

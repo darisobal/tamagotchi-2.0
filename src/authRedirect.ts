@@ -2,12 +2,26 @@ import { Platform } from 'react-native';
 import * as Linking from 'expo-linking';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-/** Redirect target for Supabase confirmation / magic-link emails. */
+/** Redirect target for Supabase confirmation / magic-link / recovery emails. */
 export function getAuthRedirectUrl(): string {
   if (Platform.OS === 'web' && typeof window !== 'undefined') {
     return `${window.location.origin}/auth-callback`;
   }
   return Linking.createURL('auth-callback');
+}
+
+/** True when the callback URL is a password-recovery redirect from Supabase. */
+export function isPasswordRecoveryUrl(url: string): boolean {
+  const parsed = Linking.parse(url);
+  if (parsed.queryParams?.type === 'recovery') return true;
+
+  const hashStart = url.indexOf('#');
+  if (hashStart >= 0) {
+    const params = new URLSearchParams(url.slice(hashStart + 1));
+    if (params.get('type') === 'recovery') return true;
+  }
+
+  return false;
 }
 
 export async function createSessionFromUrl(

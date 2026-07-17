@@ -11,8 +11,11 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { router, Redirect } from 'expo-router';
+import Svg, { Path } from 'react-native-svg';
 import { useAuth } from '../src/authContext';
 import { Colors, Spacing, FontSize, Slab, Radius, Border, Type } from '../src/theme';
+
+type AuthMode = 'sign_in' | 'forgot';
 
 export default function AuthScreen() {
   const {
@@ -20,16 +23,20 @@ export default function AuthScreen() {
     loading,
     continueWithPassword,
     resendConfirmationEmail,
+    requestPasswordReset,
+    passwordRecoveryPending,
     isConfigured,
     isLocalOnly,
   } = useAuth();
 
+  const [mode, setMode] = useState<AuthMode>('sign_in');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmationSent, setConfirmationSent] = useState(false);
   const [resendNotice, setResendNotice] = useState<string | null>(null);
+  const [resetSent, setResetSent] = useState(false);
 
   if (loading) {
     return (
@@ -41,14 +48,23 @@ export default function AuthScreen() {
     );
   }
 
+  if (user && passwordRecoveryPending) {
+    return <Redirect href="/reset-password" />;
+  }
+
   if (user) {
     return <Redirect href="/(tabs)" />;
   }
 
-  const handleContinue = async () => {
+  const clearMessages = () => {
     setError(null);
     setResendNotice(null);
     setConfirmationSent(false);
+    setResetSent(false);
+  };
+
+  const handleContinue = async () => {
+    clearMessages();
     setBusy(true);
 
     const result = await continueWithPassword(email.trim(), password);
@@ -66,8 +82,7 @@ export default function AuthScreen() {
   };
 
   const handleResendConfirmation = async () => {
-    setError(null);
-    setResendNotice(null);
+    clearMessages();
     if (!email.trim()) {
       setError('enter your email first.');
       return;
@@ -82,6 +97,32 @@ export default function AuthScreen() {
     setResendNotice('confirmation email sent again. check your inbox.');
   };
 
+  const handleForgotPassword = async () => {
+    clearMessages();
+    if (!email.trim()) {
+      setError('enter your email.');
+      return;
+    }
+    setBusy(true);
+    const err = await requestPasswordReset(email.trim());
+    setBusy(false);
+    if (err) {
+      setError(err);
+      return;
+    }
+    setResetSent(true);
+  };
+
+  const switchToForgot = () => {
+    clearMessages();
+    setMode('forgot');
+  };
+
+  const switchToSignIn = () => {
+    clearMessages();
+    setMode('sign_in');
+  };
+
   return (
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView
@@ -89,12 +130,45 @@ export default function AuthScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <View style={styles.container}>
-          <Text style={styles.title}>welcome</Text>
-          <Text style={styles.subtitle}>your habit has a heartbeat</Text>
+          {mode === 'forgot' ? (
+            <>
+              <TouchableOpacity
+                style={styles.backBtn}
+                onPress={switchToSignIn}
+                disabled={busy}
+                hitSlop={12}
+                accessibilityRole="button"
+                accessibilityLabel="back to sign in"
+                activeOpacity={0.7}
+              >
+                <Svg width={18} height={18} viewBox="0 0 18 18">
+                  <Path
+                    d="M11.5 3.5L5.5 9l6 5.5"
+                    stroke={Colors.ink}
+                    strokeWidth={2.25}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    fill="none"
+                  />
+                </Svg>
+              </TouchableOpacity>
+              <Text style={styles.title}>forgot password</Text>
+              <Text style={styles.subtitle}>
+                enter your email and we will send a reset link
+              </Text>
+            </>
+          ) : (
+            <>
+              <Text style={styles.title}>welcome</Text>
+              <Text style={styles.subtitle}>your habit has a heartbeat</Text>
+            </>
+          )}
 
           {isLocalOnly ? (
             <Text style={styles.hint}>
-              local mode: data stays on this device until you add Supabase keys.
+              {mode === 'forgot'
+                ? 'password reset needs supabase. add expo_public_supabase_* keys.'
+                : 'local mode: data stays on this device until you add Supabase keys.'}
             </Text>
           ) : null}
 
@@ -111,17 +185,32 @@ export default function AuthScreen() {
             textContentType="emailAddress"
           />
 
-          <Text style={styles.label}>password</Text>
-          <TextInput
-            style={styles.input}
-            value={password}
-            onChangeText={setPassword}
-            placeholder="at least 6 characters"
-            placeholderTextColor={Colors.textMuted}
-            secureTextEntry
-            autoCapitalize="none"
-            textContentType="password"
-          />
+          {mode === 'sign_in' ? (
+            <>
+              <Text style={styles.label}>password</Text>
+              <TextInput
+                style={styles.input}
+                value={password}
+                onChangeText={setPassword}
+                placeholder="at least 6 characters"
+                placeholderTextColor={Colors.textMuted}
+                secureTextEntry
+                autoCapitalize="none"
+                textContentType="password"
+              />
+
+              {isConfigured ? (
+                <TouchableOpacity
+                  style={styles.linkBtn}
+                  onPress={switchToForgot}
+                  disabled={busy}
+                  activeOpacity={0.85}
+                >
+                  <Text style={styles.linkBtnText}>forgot password?</Text>
+                </TouchableOpacity>
+              ) : null}
+            </>
+          ) : null}
 
           {error ? <Text style={styles.error}>{error}</Text> : null}
           {confirmationSent ? (
@@ -130,21 +219,28 @@ export default function AuthScreen() {
             </Text>
           ) : null}
           {resendNotice ? <Text style={styles.success}>{resendNotice}</Text> : null}
+          {resetSent ? (
+            <Text style={styles.success}>
+              reset link sent. check your email and open the link to choose a new password.
+            </Text>
+          ) : null}
 
           <TouchableOpacity
             style={styles.primaryBtn}
-            onPress={handleContinue}
+            onPress={mode === 'forgot' ? handleForgotPassword : handleContinue}
             disabled={busy}
             activeOpacity={0.85}
           >
             {busy ? (
               <ActivityIndicator color="#FFFFFF" />
             ) : (
-              <Text style={styles.primaryBtnText}>go</Text>
+              <Text style={styles.primaryBtnText}>
+                {mode === 'forgot' ? 'send reset link' : 'go'}
+              </Text>
             )}
           </TouchableOpacity>
 
-          {confirmationSent && isConfigured ? (
+          {mode === 'sign_in' && confirmationSent && isConfigured ? (
             <TouchableOpacity
               style={styles.secondaryBtn}
               onPress={handleResendConfirmation}
@@ -172,6 +268,17 @@ const styles = StyleSheet.create({
   centered: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  backBtn: {
+    width: 36,
+    height: 36,
+    marginBottom: Spacing.md,
+    borderWidth: Border.base,
+    borderColor: Colors.ink,
+    borderRadius: Radius.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.card,
   },
   title: {
     ...Type.screenTitle,
@@ -206,6 +313,17 @@ const styles = StyleSheet.create({
     borderWidth: Border.thick,
     borderColor: Colors.ink,
     borderRadius: Radius.md,
+  },
+  linkBtn: {
+    alignSelf: 'flex-start',
+    marginTop: Spacing.sm,
+    paddingVertical: Spacing.xs,
+  },
+  linkBtnText: {
+    fontSize: FontSize.sm,
+    fontFamily: Slab.bold,
+    color: Colors.ink,
+    textDecorationLine: 'underline',
   },
   error: {
     marginTop: Spacing.md,

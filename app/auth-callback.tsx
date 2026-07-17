@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { View, ActivityIndicator, StyleSheet, Platform } from 'react-native';
 import { Redirect } from 'expo-router';
 import { useAuth } from '../src/authContext';
-import { createSessionFromUrl } from '../src/authRedirect';
+import { createSessionFromUrl, isPasswordRecoveryUrl } from '../src/authRedirect';
 import { getSupabase } from '../src/supabase';
 import { Colors } from '../src/theme';
 
-/** Landing route for Supabase email confirmation and magic-link redirects. */
+/** Landing route for Supabase email confirmation, magic-link, and recovery redirects. */
 export default function AuthCallbackScreen() {
-  const { user, loading } = useAuth();
+  const { user, loading, passwordRecoveryPending, beginPasswordRecovery } = useAuth();
   const [handlingCallback, setHandlingCallback] = useState(true);
 
   useEffect(() => {
@@ -26,10 +26,17 @@ export default function AuthCallbackScreen() {
       return;
     }
 
-    void createSessionFromUrl(supabase, url).finally(() => {
-      setHandlingCallback(false);
-    });
-  }, []);
+    const recovery = isPasswordRecoveryUrl(url);
+    void createSessionFromUrl(supabase, url)
+      .then((ok) => {
+        if (ok && recovery) {
+          beginPasswordRecovery();
+        }
+      })
+      .finally(() => {
+        setHandlingCallback(false);
+      });
+  }, [beginPasswordRecovery]);
 
   if (loading || handlingCallback) {
     return (
@@ -37,6 +44,10 @@ export default function AuthCallbackScreen() {
         <ActivityIndicator size="large" color={Colors.ink} />
       </View>
     );
+  }
+
+  if (user && passwordRecoveryPending) {
+    return <Redirect href="/reset-password" />;
   }
 
   if (user) {
