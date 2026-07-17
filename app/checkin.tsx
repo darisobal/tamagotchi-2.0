@@ -13,6 +13,7 @@ import { router } from 'expo-router';
 import { useAppState } from '../src/context';
 import { MAIN_TRACK, DEFAULT_HABIT_NAME } from '../src/types';
 import { Colors, Spacing, FontSize, Slab, Radius, Border, Type } from '../src/theme';
+import CloseButton from '../src/CloseButton';
 
 export default function CheckInScreen() {
   const { doCheckIn, prefs } = useAppState();
@@ -37,9 +38,7 @@ export default function CheckInScreen() {
         <View style={styles.container}>
           {/* Header */}
           <View style={styles.header}>
-            <TouchableOpacity onPress={() => router.back()} style={styles.closeBtn}>
-              <Text style={styles.closeText}>x</Text>
-            </TouchableOpacity>
+            <CloseButton onPress={() => router.back()} accessibilityLabel="close" />
           </View>
 
           <Text style={styles.trackTitle}>
@@ -92,21 +91,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     marginBottom: Spacing.md,
-  },
-  closeBtn: {
-    width: 40,
-    height: 40,
-    backgroundColor: Colors.card,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: Border.base,
-    borderColor: Colors.ink,
-    borderRadius: Radius.full,
-  },
-  closeText: {
-    fontSize: 18,
-    fontFamily: Slab.black,
-    color: Colors.ink,
   },
   trackTitle: {
     ...Type.screenTitle,

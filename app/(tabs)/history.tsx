@@ -9,6 +9,7 @@ import {
   ScrollView,
   Modal,
   Pressable,
+  Platform,
   useWindowDimensions,
 } from 'react-native';
 import { useAppState } from '../../src/context';
@@ -17,6 +18,7 @@ import { toDateString } from '../../src/logic';
 import { Colors, Spacing, FontSize, Slab, Radius, Border, Type } from '../../src/theme';
 import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
 import { useMoodBackground } from '../../src/useMoodBackground';
+import CloseButton from '../../src/CloseButton';
 
 const WEEKDAY_LABELS = ['s', 'm', 't', 'w', 't', 'f', 's'] as const;
 
@@ -118,18 +120,26 @@ export default function HistoryScreen() {
   }, []);
 
   const handleDelete = (id: string) => {
-    Alert.alert(
-      'delete check-in?',
-      'this will remove the entry and recalculate your track level.',
-      [
-        { text: 'cancel', style: 'cancel' },
-        {
-          text: 'delete',
-          style: 'destructive',
-          onPress: () => deleteCheckInById(id),
+    const title = 'delete check-in?';
+    const message = 'this will remove the entry and recalculate your track level.';
+
+    if (Platform.OS === 'web') {
+      if (typeof window !== 'undefined' && window.confirm(`${title}\n\n${message}`)) {
+        void deleteCheckInById(id);
+      }
+      return;
+    }
+
+    Alert.alert(title, message, [
+      { text: 'cancel', style: 'cancel' },
+      {
+        text: 'delete',
+        style: 'destructive',
+        onPress: () => {
+          void deleteCheckInById(id);
         },
-      ],
-    );
+      },
+    ]);
   };
 
   const selectedItems = selectedIso ? itemsByDay[selectedIso] ?? [] : [];
@@ -261,17 +271,19 @@ export default function HistoryScreen() {
         animationType="fade"
         onRequestClose={() => setSelectedIso(null)}
       >
-        <Pressable style={styles.modalBackdrop} onPress={() => setSelectedIso(null)}>
-          <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation()}>
+        <View style={styles.modalBackdrop}>
+          <Pressable
+            style={StyleSheet.absoluteFill}
+            onPress={() => setSelectedIso(null)}
+            accessibilityLabel="dismiss"
+          />
+          <View style={styles.modalCard}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{formatModalTitle(selectedIso)}</Text>
-              <TouchableOpacity
-                style={styles.modalClose}
+              <CloseButton
                 onPress={() => setSelectedIso(null)}
-                hitSlop={12}
-              >
-                <Text style={styles.modalCloseText}>×</Text>
-              </TouchableOpacity>
+                accessibilityLabel="close"
+              />
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
               {selectedItems.map((item) => (
@@ -283,8 +295,8 @@ export default function HistoryScreen() {
                 />
               ))}
             </ScrollView>
-          </Pressable>
-        </Pressable>
+          </View>
+        </View>
       </Modal>
     </SafeAreaView>
   );
@@ -329,13 +341,12 @@ function HistoryItem({
         <Text style={styles.itemTime}>{time}</Text>
         {item.note ? <Text style={styles.itemNote}>{item.note}</Text> : null}
       </View>
-      <TouchableOpacity
-        style={styles.deleteBtn}
+      <CloseButton
         onPress={() => onDelete(item.id)}
-        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-      >
-        <Text style={styles.deleteText}>x</Text>
-      </TouchableOpacity>
+        accessibilityLabel="delete check-in"
+        size={32}
+        style={styles.deleteBtn}
+      />
     </View>
   );
 }
@@ -473,6 +484,7 @@ const styles = StyleSheet.create({
     borderWidth: Border.thick,
     borderColor: Colors.ink,
     padding: Spacing.md,
+    zIndex: 1,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -486,22 +498,6 @@ const styles = StyleSheet.create({
     fontSize: FontSize.md,
     fontFamily: Slab.black,
     color: Colors.ink,
-  },
-  modalClose: {
-    width: 36,
-    height: 36,
-    borderWidth: Border.base,
-    borderColor: Colors.ink,
-    borderRadius: Radius.sm,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.card,
-  },
-  modalCloseText: {
-    fontSize: 18,
-    fontFamily: Slab.black,
-    color: Colors.ink,
-    marginTop: -2,
   },
   item: {
     flexDirection: 'row',
@@ -544,19 +540,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   deleteBtn: {
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
     marginLeft: Spacing.sm,
-    borderWidth: Border.base,
-    borderColor: Colors.ink,
-    borderRadius: Radius.sm,
-  },
-  deleteText: {
-    fontSize: 16,
-    fontFamily: Slab.black,
-    color: Colors.ink,
   },
   empty: {
     flex: 1,
