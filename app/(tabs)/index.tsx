@@ -19,7 +19,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { router } from 'expo-router';
 import { useAppState } from '../../src/context';
-import { DEFAULT_HABIT_NAME } from '../../src/types';
+import { DEFAULT_HABIT_NAME, MAIN_TRACK } from '../../src/types';
 import { Spacing, FontSize, Slab, Radius, Border, Type } from '../../src/theme';
 import { getStateTheme } from '../../src/stateTheme';
 import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
@@ -36,11 +36,15 @@ import PetEggShell, {
 } from '../../src/PetEggShell';
 import PetLives from '../../src/PetLives';
 import HeroTaskCard from '../../src/HeroTaskCard';
+import RestartPaywall from '../../src/RestartPaywall';
 import { HEART_VIEWBOX } from '../../assets/pet/heart-paths';
 
-/** Outer stage height: 40px pad above/below the egg (room for lying-down pose). */
-const HERO_PET_STAGE_PAD = 40;
-const HERO_PET_STAGE_HEIGHT = HERO_PET_STAGE_PAD + PET_HOME_EGG_HEIGHT + HERO_PET_STAGE_PAD;
+/** Pad above the egg (room for lying-down pose). */
+const HERO_PET_STAGE_PAD_TOP = 40;
+/** Pad below the egg — half of the previous 40 so egg→card gap is 24 with marginBottom. */
+const HERO_PET_STAGE_PAD_BOTTOM = 16;
+const HERO_PET_STAGE_HEIGHT =
+  HERO_PET_STAGE_PAD_TOP + PET_HOME_EGG_HEIGHT + HERO_PET_STAGE_PAD_BOTTOM;
 
 /** Home life hearts — size matches Figma; used to align the egg under them. */
 const HERO_HEART_SIZE = 51;
@@ -51,11 +55,12 @@ const HERO_HEART_HEIGHT = Math.round(
  * Pull the pet stage up so the egg top sits in the same band as the hearts
  * (hearts stay in flow; they layer above the egg via zIndex).
  */
-const HERO_EGG_LIFT = HERO_HEART_HEIGHT + HERO_PET_STAGE_PAD - Spacing.sm;
+const HERO_EGG_LIFT = HERO_HEART_HEIGHT + HERO_PET_STAGE_PAD_TOP - Spacing.sm;
 
 export default function HomeScreen() {
-  const { prefs, computedHabits, mood, lives, refresh } = useAppState();
+  const { prefs, computedHabits, mood, lives, refresh, doCheckIn } = useAppState();
   const [refreshing, setRefreshing] = React.useState(false);
+  const [restartPaywallVisible, setRestartPaywallVisible] = React.useState(false);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -71,6 +76,25 @@ export default function HomeScreen() {
   const habitName = (prefs.habitName || DEFAULT_HABIT_NAME).trim();
   const petName = (prefs.petName || 'champ').trim();
   const petColor = prefs.petColor || theme.pet;
+
+  const openCheckIn = useCallback(() => {
+    if (!habit) return;
+    router.push({ pathname: '/checkin', params: { track: habit.trackType } });
+  }, [habit]);
+
+  const onHeroCheckIn = useCallback(() => {
+    if (!habit) return;
+    if (mood === 'dead') {
+      setRestartPaywallVisible(true);
+      return;
+    }
+    openCheckIn();
+  }, [habit, mood, openCheckIn]);
+
+  const onRestartUnlocked = useCallback(async () => {
+    setRestartPaywallVisible(false);
+    await doCheckIn(MAIN_TRACK, 'medium', null);
+  }, [doCheckIn]);
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]}>
@@ -111,9 +135,7 @@ export default function HomeScreen() {
             buttonColor={theme.cardInk}
             checkInLabel={theme.checkInLabel}
             showCrossOut={theme.showCrossOut}
-            onCheckIn={() =>
-              router.push({ pathname: '/checkin', params: { track: habit.trackType } })
-            }
+            onCheckIn={onHeroCheckIn}
           />
         ) : (
           <View style={[styles.heroCard, { borderColor: theme.cardBorder }]}>
@@ -128,6 +150,12 @@ export default function HomeScreen() {
           </View>
         )}
       </ScrollView>
+
+      <RestartPaywall
+        visible={restartPaywallVisible}
+        onClose={() => setRestartPaywallVisible(false)}
+        onUnlocked={onRestartUnlocked}
+      />
     </SafeAreaView>
   );
 }
@@ -159,7 +187,8 @@ function PetStage({
           style={[
             petEggShellStyles.centered,
             {
-              marginTop: -PET_HOME_EGG_HEIGHT / 2,
+              top: HERO_PET_STAGE_PAD_TOP,
+              marginTop: 0,
               marginLeft: -PET_HOME_EGG_WIDTH / 2 + PET_HOME_EGG_LEFT_INSET,
             },
           ]}
@@ -364,6 +393,9 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    // Match egg band so the in-flow pet stays centered on the egg (asymmetric pads).
+    paddingTop: HERO_PET_STAGE_PAD_TOP,
+    paddingBottom: HERO_PET_STAGE_PAD_BOTTOM,
     position: 'relative',
     overflow: 'visible',
   },
@@ -379,7 +411,8 @@ const styles = StyleSheet.create({
     // Pin near the egg's left edge (+ insets) so the hat stays visible; feet overflow right.
     marginLeft:
       -PET_HOME_EGG_WIDTH / 2 + PET_HOME_EGG_LEFT_INSET + PET_HOME_DEAD_LEFT_INSET,
-    top: '50%',
+    // Center on the egg (not the asymmetric stage).
+    top: HERO_PET_STAGE_PAD_TOP + PET_HOME_EGG_HEIGHT / 2,
     marginTop: -PET_HOME_DEAD_DISPLAY_HEIGHT / 2,
   },
   confettiLayer: {

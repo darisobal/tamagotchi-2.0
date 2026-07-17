@@ -8,19 +8,20 @@ import {
   ComputedHabit,
   PetMoodInfo,
   HABIT_PERIOD_MS,
-  LIFE_THRESHOLDS,
   PET_LIVES_MAX,
   DEFAULT_HABIT_NAME,
 } from './types';
 
 // ─── Pet lives ───────────────────────────────────────────
 
-/** Map remaining-time progress (1 = fresh, 0 = overdue) to lives left. */
-export function computeLives(progress: number, hasCheckIn: boolean): number {
-  if (!hasCheckIn || progress <= 0) return 0;
-  if (progress > LIFE_THRESHOLDS.THREE) return 3;
-  if (progress > LIFE_THRESHOLDS.TWO) return 2;
-  return 1;
+/**
+ * Hearts left after consecutive missed deadlines since the last check-in.
+ * 0 misses → 3, 1 miss → 2, 2 misses → 1, 3+ misses → dead.
+ * Checking in resets the miss streak (back to 3).
+ */
+export function computeLives(missedDeadlines: number, hasCheckIn: boolean): number {
+  if (!hasCheckIn) return 0;
+  return Math.max(0, PET_LIVES_MAX - Math.max(0, missedDeadlines));
 }
 
 export function livesToMood(lives: number): Mood {
@@ -69,11 +70,18 @@ export function computeHabitStatus(
     };
   }
 
-  const deadlineMs = new Date(lastCheckInAtIso).getTime() + periodMs;
-  const timeRemainingMs = Math.max(deadlineMs - nowMs, 0);
-  const progress = Math.min(Math.max(timeRemainingMs / periodMs, 0), 1);
-  const lives = computeLives(progress, true);
+  const startMs = new Date(lastCheckInAtIso).getTime();
+  const elapsedMs = Math.max(nowMs - startMs, 0);
+  const missedDeadlines = Math.floor(elapsedMs / periodMs);
+  const lives = computeLives(missedDeadlines, true);
   const status = livesToStatus(lives);
+
+  // Time left in the current period until the next heart is lost (0 when dead).
+  const msIntoCurrentPeriod = elapsedMs % periodMs;
+  const timeRemainingMs =
+    lives === 0 ? 0 : periodMs - msIntoCurrentPeriod;
+  const progress =
+    lives === 0 ? 0 : Math.min(Math.max(timeRemainingMs / periodMs, 0), 1);
 
   return {
     trackType,
@@ -111,13 +119,13 @@ export function computePetMood(
   const mood = livesToMood(lives);
 
   if (lives === 0) {
-    return { mood, lives, reason: `${name} is overdue` };
+    return { mood, lives, reason: `${name} ran out of hearts` };
   }
   if (lives === 1) {
-    return { mood, lives, reason: `${name} is urgent` };
+    return { mood, lives, reason: `${name} — one heart left` };
   }
   if (lives === 2) {
-    return { mood, lives, reason: `${name} needs attention` };
+    return { mood, lives, reason: `${name} — missed a check-in` };
   }
 
   return { mood, lives, reason: 'keep it up!' };

@@ -66,12 +66,14 @@ export default function HistoryScreen() {
 
   const [selectedIso, setSelectedIso] = useState<string | null>(null);
 
-  const { countByDay, itemsByDay, distinctDays } = useMemo(() => {
+  const { countByDay, paidByDay, itemsByDay, distinctDays } = useMemo(() => {
     const countByDay: Record<string, number> = {};
+    const paidByDay: Record<string, boolean> = {};
     const itemsByDay: Record<string, CheckIn[]> = {};
     for (const ci of checkIns) {
       const day = toDateString(new Date(ci.timestamp));
       countByDay[day] = (countByDay[day] || 0) + 1;
+      if (ci.isPaidRestart) paidByDay[day] = true;
       if (!itemsByDay[day]) itemsByDay[day] = [];
       itemsByDay[day].push(ci);
     }
@@ -82,6 +84,7 @@ export default function HistoryScreen() {
     }
     return {
       countByDay,
+      paidByDay,
       itemsByDay,
       distinctDays: Object.keys(countByDay).length,
     };
@@ -222,6 +225,7 @@ export default function HistoryScreen() {
                   );
                 }
                 const done = (countByDay[cell.iso] ?? 0) > 0;
+                const paid = Boolean(paidByDay[cell.iso]);
                 const isToday = cell.iso === todayIso;
 
                 return (
@@ -232,7 +236,11 @@ export default function HistoryScreen() {
                       {
                         width: cellSize,
                         height: cellSize,
-                        backgroundColor: done ? Colors.ink : Colors.card,
+                        backgroundColor: paid
+                          ? Colors.pet
+                          : done
+                            ? Colors.ink
+                            : Colors.card,
                       },
                       isToday && styles.dayCellToday,
                     ]}
@@ -242,7 +250,10 @@ export default function HistoryScreen() {
                     activeOpacity={0.85}
                   >
                     <Text
-                      style={[styles.dayNum, done ? styles.dayNumOn : styles.dayNumOff]}
+                      style={[
+                        styles.dayNum,
+                        done || paid ? styles.dayNumOn : styles.dayNumOff,
+                      ]}
                     >
                       {cell.dayOfMonth}
                     </Text>
@@ -257,6 +268,10 @@ export default function HistoryScreen() {
           <View style={styles.legendRow}>
             <View style={[styles.legendSwatch, { backgroundColor: Colors.ink }]} />
             <Text style={styles.legendText}>logged</Text>
+          </View>
+          <View style={styles.legendRow}>
+            <View style={[styles.legendSwatch, { backgroundColor: Colors.pet }]} />
+            <Text style={styles.legendText}>paid restart</Text>
           </View>
           <View style={styles.legendRow}>
             <View style={[styles.legendSwatch, styles.legendSwatchEmpty]} />
@@ -338,6 +353,9 @@ function HistoryItem({
             {item.intensity === 'small' ? 10 : item.intensity === 'medium' ? 20 : 30}
           </Text>
         </View>
+        {item.isPaidRestart ? (
+          <Text style={styles.itemPaid}>paid restart · €1</Text>
+        ) : null}
         <Text style={styles.itemTime}>{time}</Text>
         {item.note ? <Text style={styles.itemNote}>{item.note}</Text> : null}
       </View>
@@ -525,6 +543,12 @@ const styles = StyleSheet.create({
     fontSize: FontSize.sm,
     fontFamily: Slab.bold,
     color: Colors.ink,
+  },
+  itemPaid: {
+    fontSize: FontSize.xs,
+    fontFamily: Slab.semiBold,
+    color: Colors.pet,
+    marginBottom: 2,
   },
   itemTime: {
     fontSize: FontSize.xs,

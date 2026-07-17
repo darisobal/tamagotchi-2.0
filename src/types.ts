@@ -23,6 +23,11 @@ export interface CheckIn {
   intensity: Intensity;
   note: string | null;
   timestamp: string; // ISO string
+  /**
+   * True when this check-in restarted the pet after a paid revive (€1 IAP).
+   * History marks that calendar day as a paid day.
+   */
+  isPaidRestart?: boolean;
 }
 
 export interface TrackState {
@@ -129,14 +134,14 @@ export type HabitStatus = 'GREEN' | 'YELLOW' | 'RED' | 'OVERDUE';
 
 export interface ComputedHabit {
   trackType: TrackType;
-  progress: number;        // 0..1, freshness bar
-  timeRemainingMs: number; // ms until overdue
+  progress: number;        // 0..1, fraction of current period still left
+  timeRemainingMs: number; // ms until next missed deadline (0 if dead)
   status: HabitStatus;
   lives: number;           // 0..PET_LIVES_MAX
   lastCheckInAt: string | null;
 }
 
-/** Tamagotchi-style life count — miss two deadlines, die on the third. */
+/** Hearts left — each missed period costs one; die after missing PET_LIVES_MAX in a row. */
 export const PET_LIVES_MAX = 3;
 
 export interface PetMoodInfo {
@@ -164,15 +169,3 @@ export function habitCadenceToPeriodMs(cadence: HabitCadence | undefined): numbe
   if (!cadence) return HABIT_PERIOD_MS.main;
   return HABIT_CADENCE_MS[cadence];
 }
-
-/** Remaining-time fraction above which each life tier holds (thirds of the period). */
-export const LIFE_THRESHOLDS = {
-  THREE: 2 / 3,
-  TWO: 1 / 3,
-} as const;
-
-/** @deprecated Use LIFE_THRESHOLDS — kept for imports that haven't migrated. */
-export const STATUS_THRESHOLDS = {
-  GREEN: LIFE_THRESHOLDS.THREE,
-  YELLOW: LIFE_THRESHOLDS.TWO,
-} as const;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,25 +8,93 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useAppState } from '../src/context';
 import { MAIN_TRACK, DEFAULT_HABIT_NAME } from '../src/types';
 import { Colors, Spacing, FontSize, Slab, Radius, Border, Type } from '../src/theme';
 import CloseButton from '../src/CloseButton';
+import { hasPendingPaidRestart } from '../src/purchases';
+import RestartPaywall from '../src/RestartPaywall';
 
 export default function CheckInScreen() {
-  const { doCheckIn, prefs } = useAppState();
+  const { doCheckIn, prefs, mood } = useAppState();
   const [note, setNote] = useState('');
   const [saving, setSaving] = useState(false);
+  const [paywallVisible, setPaywallVisible] = useState(false);
+  const [unlocked, setUnlocked] = useState(mood !== 'dead');
 
   const habitName = (prefs.habitName || DEFAULT_HABIT_NAME).trim();
 
+  useEffect(() => {
+    if (mood !== 'dead') {
+      setUnlocked(true);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      const pending = await hasPendingPaidRestart();
+      if (cancelled) return;
+      if (pending) {
+        // Pending entitlement from paywall — revive immediately and return home.
+        setUnlocked(true);
+        try {
+          await doCheckIn(MAIN_TRACK, 'medium', null);
+          if (!cancelled) router.back();
+        } catch {
+          if (!cancelled) setPaywallVisible(true);
+        }
+      } else {
+        setPaywallVisible(true);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [mood, doCheckIn]);
+
   const handleSave = async () => {
+    if (mood === 'dead' && !unlocked) {
+      setPaywallVisible(true);
+      return;
+    }
     setSaving(true);
-    await doCheckIn(MAIN_TRACK, 'medium', note.trim() || null);
-    setSaving(false);
-    router.back();
+    try {
+      await doCheckIn(MAIN_TRACK, 'medium', note.trim() || null);
+      router.back();
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message.toLowerCase() : 'could not save check-in';
+      if (Platform.OS === 'web' && typeof window !== 'undefined') {
+        window.alert(message);
+      } else {
+        Alert.alert('oops', message);
+      }
+      if (message.includes('payment')) {
+        setUnlocked(false);
+        setPaywallVisible(true);
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const onRestartUnlocked = async () => {
+    setUnlocked(true);
+    setPaywallVisible(false);
+    try {
+      await doCheckIn(MAIN_TRACK, 'medium', null);
+      router.back();
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message.toLowerCase() : 'could not restart';
+      if (Platform.OS === 'web' && typeof window !== 'undefined') {
+        window.alert(message);
+      } else {
+        Alert.alert('oops', message);
+      }
+    }
   };
 
   return (
@@ -36,18 +104,18 @@ export default function CheckInScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <View style={styles.container}>
-          {/* Header */}
           <View style={styles.header}>
             <CloseButton onPress={() => router.back()} accessibilityLabel="close" />
           </View>
 
-          <Text style={styles.trackTitle}>
-            {habitName}
+          <Text style={styles.trackTitle}>{habitName}</Text>
+
+          <Text style={styles.prompt}>
+            {mood === 'dead'
+              ? 'paid restart unlocked — what will you do first?'
+              : 'nice -- what did you do today?'}
           </Text>
 
-          <Text style={styles.prompt}>nice -- what did you do today?</Text>
-
-          {/* Note */}
           <Text style={styles.label}>note (optional)</Text>
           <TextInput
             style={styles.noteInput}
@@ -61,19 +129,27 @@ export default function CheckInScreen() {
 
           <View style={styles.spacer} />
 
-          {/* Save */}
           <TouchableOpacity
             style={styles.saveBtn}
             onPress={handleSave}
             activeOpacity={0.8}
-            disabled={saving}
+            disabled={saving || (mood === 'dead' && !unlocked)}
           >
             <Text style={styles.saveBtnText}>
-              {saving ? 'saving...' : 'done!'}
+              {saving ? 'saving...' : mood === 'dead' ? 'restart?' : 'done!'}
             </Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
+
+      <RestartPaywall
+        visible={paywallVisible}
+        onClose={() => {
+          setPaywallVisible(false);
+          if (mood === 'dead' && !unlocked) router.back();
+        }}
+        onUnlocked={onRestartUnlocked}
+      />
     </SafeAreaView>
   );
 }

@@ -1,4 +1,4 @@
-import { Mood } from './types';
+import { Mood, PET_LIVES_MAX } from './types';
 import { moodToScene, StateScene } from './stateTheme';
 
 /** Four-state label shown on the home-screen widget (mirrors lives). */
@@ -50,7 +50,7 @@ export function livesToWidgetScene(lives: number): WidgetPetScene {
   }
 }
 
-/** Widget scene at a point in time — transitions at 1/3 and 2/3 of the period. */
+/** Widget scene at a point in time — one heart lost per full missed period. */
 export function widgetSceneAtTime(
   lastCheckInAt: string | null,
   periodMs: number,
@@ -59,12 +59,11 @@ export function widgetSceneAtTime(
   if (!lastCheckInAt) return 'fail';
 
   const startMs = new Date(lastCheckInAt).getTime();
-  const elapsedMs = atMs - startMs;
+  const elapsedMs = Math.max(atMs - startMs, 0);
+  const missedDeadlines = Math.floor(elapsedMs / periodMs);
+  const lives = Math.max(0, PET_LIVES_MAX - missedDeadlines);
 
-  if (elapsedMs >= periodMs) return 'fail';
-  if (elapsedMs >= periodMs * (2 / 3)) return 'sad';
-  if (elapsedMs >= periodMs * (1 / 3)) return 'neutral';
-  return 'well';
+  return livesToWidgetScene(lives);
 }
 
 export type PetStatusWidgetProps = {
@@ -96,9 +95,9 @@ export function buildWidgetTimelineEntries(
   const startMs = new Date(lastCheckInAt).getTime();
   const transitionTimes = [
     { atMs: nowMs, scene: widgetSceneAtTime(lastCheckInAt, periodMs, nowMs) },
-    { atMs: startMs + periodMs * (1 / 3), scene: 'neutral' as const },
-    { atMs: startMs + periodMs * (2 / 3), scene: 'sad' as const },
-    { atMs: startMs + periodMs, scene: 'fail' as const },
+    { atMs: startMs + periodMs, scene: 'neutral' as const },
+    { atMs: startMs + periodMs * 2, scene: 'sad' as const },
+    { atMs: startMs + periodMs * 3, scene: 'fail' as const },
   ];
 
   const seen = new Set<number>();

@@ -20,24 +20,26 @@ function makeTrackState(lastCheckInAt: string | null = null): TrackState {
 }
 
 describe('computeLives', () => {
-  test('full progress → 3 lives', () => {
-    expect(computeLives(1, true)).toBe(3);
-    expect(computeLives(0.71, true)).toBe(3);
+  test('no misses → 3 lives', () => {
+    expect(computeLives(0, true)).toBe(3);
   });
 
-  test('middle third → 2 lives', () => {
-    expect(computeLives(0.5, true)).toBe(2);
-    expect(computeLives(2 / 3, true)).toBe(2);
+  test('one missed deadline → 2 lives', () => {
+    expect(computeLives(1, true)).toBe(2);
   });
 
-  test('final third → 1 life', () => {
-    expect(computeLives(0.2, true)).toBe(1);
-    expect(computeLives(1 / 3, true)).toBe(1);
+  test('two missed deadlines → 1 life', () => {
+    expect(computeLives(2, true)).toBe(1);
   });
 
-  test('no check-in or overdue → 0 lives', () => {
-    expect(computeLives(0, true)).toBe(0);
-    expect(computeLives(0.5, false)).toBe(0);
+  test('three or more misses → 0 lives', () => {
+    expect(computeLives(3, true)).toBe(0);
+    expect(computeLives(5, true)).toBe(0);
+  });
+
+  test('no check-in → 0 lives', () => {
+    expect(computeLives(0, false)).toBe(0);
+    expect(computeLives(1, false)).toBe(0);
   });
 });
 
@@ -52,6 +54,7 @@ describe('livesToMood', () => {
 
 describe('computeHabitStatus', () => {
   const HOUR = 60 * 60 * 1000;
+  const DAY = HABIT_PERIOD_MS.main;
 
   test('just checked in → progress ≈ 1, 3 lives, GREEN', () => {
     const now = Date.now();
@@ -59,7 +62,7 @@ describe('computeHabitStatus', () => {
     expect(result.progress).toBeCloseTo(1, 2);
     expect(result.lives).toBe(3);
     expect(result.status).toBe('GREEN');
-    expect(result.timeRemainingMs).toBeCloseTo(HABIT_PERIOD_MS.main, -3);
+    expect(result.timeRemainingMs).toBeCloseTo(DAY, -3);
   });
 
   test('no check-in ever → 0 lives, OVERDUE', () => {
@@ -70,49 +73,49 @@ describe('computeHabitStatus', () => {
     expect(result.status).toBe('OVERDUE');
   });
 
-  test('one third elapsed → 2 lives, YELLOW', () => {
+  test('still within first period → stays at 3 lives', () => {
     const now = Date.now();
-    const thirdAgo = now - HABIT_PERIOD_MS.main / 3;
-    const result = computeHabitStatus(MAIN_TRACK, new Date(thirdAgo).toISOString(), now);
-    expect(result.progress).toBeCloseTo(2 / 3, 1);
-    expect(result.lives).toBe(2);
-    expect(result.status).toBe('YELLOW');
-  });
-
-  test('half period elapsed → 2 lives, YELLOW', () => {
-    const now = Date.now();
-    const halfAgo = now - HABIT_PERIOD_MS.main / 2;
+    const halfAgo = now - DAY / 2;
     const result = computeHabitStatus(MAIN_TRACK, new Date(halfAgo).toISOString(), now);
+    expect(result.lives).toBe(3);
+    expect(result.status).toBe('GREEN');
     expect(result.progress).toBeCloseTo(0.5, 1);
+  });
+
+  test('almost at first deadline → still 3 lives', () => {
+    const now = Date.now();
+    const almostDay = now - (DAY - HOUR);
+    const result = computeHabitStatus(MAIN_TRACK, new Date(almostDay).toISOString(), now);
+    expect(result.lives).toBe(3);
+    expect(result.status).toBe('GREEN');
+    expect(result.timeRemainingMs).toBeCloseTo(HOUR, -3);
+  });
+
+  test('one missed deadline → 2 lives, YELLOW', () => {
+    const now = Date.now();
+    const dayPlus = now - (DAY + HOUR);
+    const result = computeHabitStatus(MAIN_TRACK, new Date(dayPlus).toISOString(), now);
     expect(result.lives).toBe(2);
     expect(result.status).toBe('YELLOW');
+    expect(result.timeRemainingMs).toBeCloseTo(DAY - HOUR, -3);
   });
 
-  test('two thirds elapsed → 1 life, RED', () => {
+  test('two missed deadlines → 1 life, RED', () => {
     const now = Date.now();
-    const twoThirdsAgo = now - (HABIT_PERIOD_MS.main * 2) / 3;
-    const result = computeHabitStatus(MAIN_TRACK, new Date(twoThirdsAgo).toISOString(), now);
-    expect(result.progress).toBeCloseTo(1 / 3, 1);
+    const twoDaysPlus = now - (DAY * 2 + HOUR);
+    const result = computeHabitStatus(MAIN_TRACK, new Date(twoDaysPlus).toISOString(), now);
     expect(result.lives).toBe(1);
     expect(result.status).toBe('RED');
   });
 
-  test('90% elapsed → 1 life, RED', () => {
+  test('three missed deadlines → 0 lives, OVERDUE', () => {
     const now = Date.now();
-    const elapsed90 = now - HABIT_PERIOD_MS.main * 0.9;
-    const result = computeHabitStatus(MAIN_TRACK, new Date(elapsed90).toISOString(), now);
-    expect(result.progress).toBeCloseTo(0.1, 1);
-    expect(result.lives).toBe(1);
-    expect(result.status).toBe('RED');
-  });
-
-  test('past deadline → 0 lives, OVERDUE', () => {
-    const now = Date.now();
-    const wayPast = now - HABIT_PERIOD_MS.main * 2;
-    const result = computeHabitStatus(MAIN_TRACK, new Date(wayPast).toISOString(), now);
+    const threeDays = now - DAY * 3;
+    const result = computeHabitStatus(MAIN_TRACK, new Date(threeDays).toISOString(), now);
     expect(result.progress).toBe(0);
     expect(result.lives).toBe(0);
     expect(result.status).toBe('OVERDUE');
+    expect(result.timeRemainingMs).toBe(0);
   });
 
   test('main track uses a 24h period', () => {
@@ -127,6 +130,7 @@ describe('computeHabitStatus', () => {
 describe('computePetMood', () => {
   const now = Date.now();
   const HOUR = 60 * 60 * 1000;
+  const DAY = HABIT_PERIOD_MS.main;
 
   function habitFromCheckin(agoMs: number | null): ComputedHabit[] {
     const tracks: TrackState[] = [
@@ -141,14 +145,15 @@ describe('computePetMood', () => {
     expect(info.lives).toBe(3);
   });
 
-  test('still fresh (1h elapsed of 24h) → happy', () => {
-    const { mood } = computePetMood(habitFromCheckin(1 * HOUR), 'workout');
+  test('still within first period → happy', () => {
+    const { mood, lives } = computePetMood(habitFromCheckin(DAY / 2), 'workout');
     expect(mood).toBe('happy');
+    expect(lives).toBe(3);
   });
 
-  test('half of period elapsed → okay (2 lives)', () => {
+  test('one missed deadline → okay (2 lives)', () => {
     const { mood, lives, reason } = computePetMood(
-      habitFromCheckin(HABIT_PERIOD_MS.main * 0.5),
+      habitFromCheckin(DAY + HOUR),
       'read pages',
     );
     expect(mood).toBe('okay');
@@ -156,9 +161,9 @@ describe('computePetMood', () => {
     expect(reason).toContain('read pages');
   });
 
-  test('two thirds of period elapsed → sad (1 life)', () => {
+  test('two missed deadlines → sad (1 life)', () => {
     const { mood, lives, reason } = computePetMood(
-      habitFromCheckin((HABIT_PERIOD_MS.main * 2) / 3),
+      habitFromCheckin(DAY * 2 + HOUR),
       'workout',
     );
     expect(mood).toBe('sad');
@@ -166,8 +171,8 @@ describe('computePetMood', () => {
     expect(reason).toContain('workout');
   });
 
-  test('overdue → dead, 0 lives', () => {
-    const { mood, lives, reason } = computePetMood(habitFromCheckin(30 * HOUR), 'meditate');
+  test('three missed deadlines → dead, 0 lives', () => {
+    const { mood, lives, reason } = computePetMood(habitFromCheckin(DAY * 3), 'meditate');
     expect(mood).toBe('dead');
     expect(lives).toBe(0);
     expect(reason).toContain('meditate');
@@ -213,5 +218,25 @@ describe('processCheckIn', () => {
     const now = new Date();
     const result = processCheckIn(state, 'medium', now);
     expect(result.streak).toBe(4);
+  });
+
+  test('check-in after misses restores 3 lives via fresh deadline', () => {
+    const now = Date.now();
+    const DAY = HABIT_PERIOD_MS.main;
+    const afterTwoMisses = computeHabitStatus(
+      MAIN_TRACK,
+      new Date(now - DAY * 2 - 1000).toISOString(),
+      now,
+    );
+    expect(afterTwoMisses.lives).toBe(1);
+
+    const checkedIn = processCheckIn(
+      makeTrackState(new Date(now - DAY * 2 - 1000).toISOString()),
+      'medium',
+      new Date(now),
+    );
+    const afterCheckIn = computeHabitStatus(MAIN_TRACK, checkedIn.lastCheckInAt, now);
+    expect(afterCheckIn.lives).toBe(3);
+    expect(afterCheckIn.status).toBe('GREEN');
   });
 });

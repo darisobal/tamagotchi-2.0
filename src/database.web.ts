@@ -65,7 +65,10 @@ class WebStorage implements Storage {
       const raw = localStorage.getItem(storageKey());
       if (raw) {
         const data = JSON.parse(raw);
-        this.checkIns = data.checkIns || [];
+        this.checkIns = (data.checkIns || []).map((c: CheckIn) => ({
+          ...c,
+          isPaidRestart: Boolean(c.isPaidRestart),
+        }));
         if (data.tracks) {
           for (const t of data.tracks) this.tracks.set(t.trackType as TrackType, t);
         }

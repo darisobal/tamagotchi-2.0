@@ -19,6 +19,7 @@ import { pullUserSnapshot, pushUserSnapshot, canSyncToCloud } from './sync';
 import { useAuth } from './authContext';
 import { processCheckIn, computeAllHabits, computePetMood, recomputeStreakFromCheckIns } from './logic';
 import { syncPetStatusWidget } from './widgetSync';
+import { consumePendingPaidRestart } from './purchases';
 import * as Crypto from 'expo-crypto';
 
 interface AppState {
@@ -68,6 +69,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [computedHabits, setComputedHabits] = useState<ComputedHabit[]>([]);
   const userIdRef = useRef<string | null>(null);
   const tracksRef = useRef<TrackState[]>([]);
+  const moodRef = useRef<Mood>('okay');
   const habitNameRef = useRef<string>(DEFAULT_HABIT_NAME);
   const habitCadenceRef = useRef(habitCadenceToPeriodMs(DEFAULT_HABIT_CADENCE));
 
@@ -76,6 +78,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const habits = computeAllHabits(currentTracks, nowMs, habitCadenceRef.current);
     const moodInfo = computePetMood(habits, habitNameRef.current);
     setComputedHabits(habits);
+    moodRef.current = moodInfo.mood;
     setMood(moodInfo.mood);
     setLives(moodInfo.lives);
     setPetMoodInfo(moodInfo);
@@ -151,12 +154,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const state = tracksRef.current.find((t) => t.trackType === trackType);
       if (!state) return;
 
+      const restartingFromDeath = moodRef.current === 'dead';
+      let isPaidRestart = false;
+      if (restartingFromDeath) {
+        const paid = await consumePendingPaidRestart();
+        if (!paid) {
+          throw new Error('payment required to start again');
+        }
+        isPaidRestart = true;
+      }
+
       const newCheckIn: CheckIn = {
         id: Crypto.randomUUID(),
         trackType,
         intensity,
         note,
         timestamp: now.toISOString(),
+        isPaidRestart,
       };
 
       const updatedState = processCheckIn(state, intensity, now);

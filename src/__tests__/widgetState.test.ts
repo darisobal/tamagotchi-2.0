@@ -37,14 +37,15 @@ describe('widgetState', () => {
     expect(livesToWidgetScene(0)).toBe('fail');
   });
 
-  test('widgetSceneAtTime transitions at 1/3, 2/3, and 100% of period', () => {
-    const start = Date.now() - DAY / 6;
+  test('widgetSceneAtTime loses one heart per missed period', () => {
+    const start = Date.now();
     const lastCheckInAt = new Date(start).toISOString();
 
     expect(widgetSceneAtTime(lastCheckInAt, DAY, start + 1)).toBe('well');
-    expect(widgetSceneAtTime(lastCheckInAt, DAY, start + DAY * 0.5)).toBe('neutral');
-    expect(widgetSceneAtTime(lastCheckInAt, DAY, start + DAY * 0.75)).toBe('sad');
-    expect(widgetSceneAtTime(lastCheckInAt, DAY, start + DAY)).toBe('fail');
+    expect(widgetSceneAtTime(lastCheckInAt, DAY, start + DAY * 0.5)).toBe('well');
+    expect(widgetSceneAtTime(lastCheckInAt, DAY, start + DAY)).toBe('neutral');
+    expect(widgetSceneAtTime(lastCheckInAt, DAY, start + DAY * 2)).toBe('sad');
+    expect(widgetSceneAtTime(lastCheckInAt, DAY, start + DAY * 3)).toBe('fail');
   });
 
   test('no check-in is always fail', () => {

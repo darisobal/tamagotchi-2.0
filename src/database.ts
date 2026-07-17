@@ -33,6 +33,19 @@ function defaultTrackState(trackType: TrackType): TrackState {
   return { trackType, level: 50, lastCheckInAt: null, streak: 0, lastCompletedDay: null };
 }
 
+type CheckInRow = Omit<CheckIn, 'isPaidRestart'> & { isPaidRestart?: number | boolean | null };
+
+function mapCheckInRow(row: CheckInRow): CheckIn {
+  return {
+    id: row.id,
+    trackType: row.trackType,
+    intensity: row.intensity,
+    note: row.note,
+    timestamp: row.timestamp,
+    isPaidRestart: Boolean(row.isPaidRestart),
+  };
+}
+
 class NativeStorage implements Storage {
   private db: SQLite.SQLiteDatabase | null = null;
 
@@ -46,9 +59,15 @@ class NativeStorage implements Storage {
         trackType TEXT NOT NULL,
         intensity TEXT NOT NULL,
         note TEXT,
-        timestamp TEXT NOT NULL
+        timestamp TEXT NOT NULL,
+        isPaidRestart INTEGER NOT NULL DEFAULT 0
       );
     `);
+    try {
+      await this.db.execAsync(
+        `ALTER TABLE check_ins ADD COLUMN isPaidRestart INTEGER NOT NULL DEFAULT 0`,
+      );
+    } catch {}
     await this.db.execAsync(`
       CREATE TABLE IF NOT EXISTS track_state (
         trackType TEXT PRIMARY KEY NOT NULL,
@@ -98,30 +117,40 @@ class NativeStorage implements Storage {
 
   async getAllCheckIns() {
     const db = await this.getDb();
-    return db.getAllAsync<CheckIn>(`SELECT * FROM check_ins ORDER BY timestamp DESC`);
+    const rows = await db.getAllAsync<CheckInRow>(
+      `SELECT * FROM check_ins ORDER BY timestamp DESC`,
+    );
+    return rows.map(mapCheckInRow);
   }
 
   async getCheckInsForTrack(trackType: TrackType) {
     const db = await this.getDb();
-    return db.getAllAsync<CheckIn>(
-      `SELECT * FROM check_ins WHERE trackType = ? ORDER BY timestamp ASC`, trackType
+    const rows = await db.getAllAsync<CheckInRow>(
+      `SELECT * FROM check_ins WHERE trackType = ? ORDER BY timestamp ASC`,
+      trackType,
     );
+    return rows.map(mapCheckInRow);
   }
 
   async insertCheckIn(checkIn: CheckIn) {
     const db = await this.getDb();
     await db.runAsync(
-      `INSERT INTO check_ins (id, trackType, intensity, note, timestamp) VALUES (?, ?, ?, ?, ?)`,
-      checkIn.id, checkIn.trackType, checkIn.intensity, checkIn.note, checkIn.timestamp
+      `INSERT INTO check_ins (id, trackType, intensity, note, timestamp, isPaidRestart) VALUES (?, ?, ?, ?, ?, ?)`,
+      checkIn.id,
+      checkIn.trackType,
+      checkIn.intensity,
+      checkIn.note,
+      checkIn.timestamp,
+      checkIn.isPaidRestart ? 1 : 0,
     );
   }
 
   async deleteCheckIn(id: string) {
     const db = await this.getDb();
-    const row = await db.getFirstAsync<CheckIn>(`SELECT * FROM check_ins WHERE id = ?`, id);
+    const row = await db.getFirstAsync<CheckInRow>(`SELECT * FROM check_ins WHERE id = ?`, id);
     if (!row) return null;
     await db.runAsync(`DELETE FROM check_ins WHERE id = ?`, id);
-    return row;
+    return mapCheckInRow(row);
   }
 
   async getTrackState(trackType: TrackType) {

@@ -5,7 +5,7 @@ import { Colors } from './theme';
  * Maps the pet's mood to a full visual + copy palette that matches
  * the Figma frames (All good / Neutral / Sad / Dead).
  *
- * Lives → mood → scene:
+ * Lives → mood → scene (one heart lost per missed 24h period):
  *   3 hearts → happy   → allGood
  *   2 hearts → okay    → toDo (neutral)
  *   1 heart  → sad     → sad
@@ -89,7 +89,7 @@ export function getStateTheme(mood: Mood): StateTheme {
       showCrossOut: true,
       greeting: (name = DEFAULT_NAME) => `ugh, ${name}!`,
       motto: () => 'i died waiting.',
-      checkInLabel: 'start again',
+      checkInLabel: 'restart for 1€',
     };
   }
 
