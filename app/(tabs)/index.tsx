@@ -39,6 +39,7 @@ import PetLives from '../../src/PetLives';
 import HeroTaskCard from '../../src/HeroTaskCard';
 import RestartPaywall from '../../src/RestartPaywall';
 import { HEART_VIEWBOX } from '../../assets/pet/heart-paths';
+import { formatLifeTimer } from '../../src/logic';
 
 const EGG_FLIP_MS = 480;
 
@@ -137,6 +138,7 @@ export default function HomeScreen() {
             showConfetti={theme.showConfetti}
             petName={petName}
             flipped={eggFlipped}
+            timeRemainingMs={habit?.timeRemainingMs ?? 0}
           />
         </View>
 
@@ -186,6 +188,7 @@ function PetStage({
   showConfetti,
   petName,
   flipped,
+  timeRemainingMs,
 }: {
   petType: ReturnType<typeof useAppState>['prefs']['petType'];
   mood: ReturnType<typeof useAppState>['mood'];
@@ -195,6 +198,7 @@ function PetStage({
   showConfetti: boolean;
   petName: string;
   flipped: boolean;
+  timeRemainingMs: number;
 }) {
   const useSelfiePixels = petType === 'selfie' && Boolean(customSprite);
   const isDead = mood === 'dead';
@@ -275,13 +279,22 @@ function PetStage({
           style={[styles.eggFace, backFaceStyle]}
         >
           <PetEggShell width={PET_HOME_EGG_WIDTH} style={eggShellStyle} />
-          <View style={styles.eggMessageWrap}>
-            <Text style={styles.eggMessage}>
-              {`miss a day, and ${petName}\nloses a life.`}
-            </Text>
-            <Text style={[styles.eggMessage, styles.eggMessageSecond]}>
-              {`skip three days,\nand ${petName} is gone.`}
-            </Text>
+          <View style={[styles.eggMessageWrap, isDead && styles.eggMessageWrapDead]}>
+            {isDead ? (
+              <Text style={styles.eggDeadMessage}>
+                {'you are your pet\'s\nworst nightmare.'}
+              </Text>
+            ) : (
+              <>
+                <Text style={styles.eggLifeLabel}>to lose a life:</Text>
+                <Text style={[styles.eggLifeTimer, { color: petColor }]}>
+                  {formatLifeTimer(timeRemainingMs)}
+                </Text>
+                <Text style={styles.eggLifeFooter}>
+                  {`skip three days, and ${petName} is gone`}
+                </Text>
+              </>
+            )}
           </View>
         </Animated.View>
       </View>
@@ -459,19 +472,42 @@ const styles = StyleSheet.create({
     height: PET_HOME_EGG_HEIGHT,
     marginLeft: -PET_HOME_EGG_WIDTH / 2 + PET_HOME_EGG_LEFT_INSET,
     paddingHorizontal: Spacing.xl + Spacing.md,
-    justifyContent: 'center',
+    paddingVertical: Spacing.xxl + Spacing.lg,
+    justifyContent: 'space-between',
     alignItems: 'center',
     zIndex: 1,
   },
-  eggMessage: {
+  eggMessageWrapDead: {
+    justifyContent: 'center',
+  },
+  eggLifeLabel: {
+    fontFamily: Slab.bold,
+    fontSize: FontSize.xl,
+    lineHeight: FontSize.xl + 8,
+    color: Colors.ink,
+    textAlign: 'center',
+  },
+  eggLifeTimer: {
+    fontFamily: Slab.black,
+    fontSize: FontSize.hero,
+    lineHeight: FontSize.hero + 4,
+    letterSpacing: -1,
+    textAlign: 'center',
+  },
+  eggLifeFooter: {
     fontFamily: Slab.bold,
     fontSize: FontSize.lg,
     lineHeight: FontSize.lg + 8,
     color: Colors.ink,
     textAlign: 'center',
+    paddingHorizontal: Spacing.sm,
   },
-  eggMessageSecond: {
-    marginTop: Spacing.md,
+  eggDeadMessage: {
+    fontFamily: Slab.bold,
+    fontSize: FontSize.xl,
+    lineHeight: FontSize.xl + 10,
+    color: Colors.ink,
+    textAlign: 'center',
   },
   petForeground: {
     zIndex: 1,

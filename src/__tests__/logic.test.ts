@@ -5,6 +5,7 @@ import {
   computeLives,
   livesToMood,
   formatCountdown,
+  formatLifeTimer,
   processCheckIn,
 } from '../logic';
 import { TrackState, ComputedHabit, HABIT_PERIOD_MS, MAIN_TRACK, PET_LIVES_MAX } from '../types';
@@ -196,6 +197,19 @@ describe('formatCountdown', () => {
   test('overdue returns overdue string', () => {
     expect(formatCountdown(0)).toBe('overdue');
     expect(formatCountdown(-1000)).toBe('overdue');
+  });
+});
+
+describe('formatLifeTimer', () => {
+  const HOUR = 60 * 60 * 1000;
+
+  test('shows HH:MM without suffix', () => {
+    expect(formatLifeTimer(22 * HOUR + 2 * 60 * 1000)).toBe('22:02');
+  });
+
+  test('zero or negative is 00:00', () => {
+    expect(formatLifeTimer(0)).toBe('00:00');
+    expect(formatLifeTimer(-1000)).toBe('00:00');
   });
 });
 

@@ -73,7 +73,7 @@ export function getStateTheme(mood: Mood): StateTheme {
       inkSoft: '#1A1A1A',
       showConfetti: true,
       showCrossOut: false,
-      greeting: () => "dang,\nyou're a\nrockstar!",
+      greeting: () => "you're a\nrockstar!",
       motto: () => 'skip = rip.',
       checkInLabel: CHECK_IN_LABEL,
     };

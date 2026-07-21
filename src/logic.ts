@@ -161,6 +161,16 @@ export function formatCountdown(timeRemainingMs: number): string {
   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')} left`;
 }
 
+/** HH:MM until the next life is lost (egg flip face). */
+export function formatLifeTimer(timeRemainingMs: number): string {
+  if (timeRemainingMs <= 0) return '00:00';
+
+  const totalMinutes = Math.floor(timeRemainingMs / 60_000);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+}
+
 // ─── Streak ──────────────────────────────────────────────
 
 /** Local YYYY-MM-DD; used for streaks and calendar day keys from check-ins. */
