@@ -6,6 +6,7 @@ import {
   ScrollView,
   SafeAreaView,
   RefreshControl,
+  Pressable,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -139,6 +140,7 @@ export default function HomeScreen() {
             petName={petName}
             flipped={eggFlipped}
             timeRemainingMs={habit?.timeRemainingMs ?? 0}
+            onPress={toggleEggFlip}
           />
         </View>
 
@@ -189,6 +191,7 @@ function PetStage({
   petName,
   flipped,
   timeRemainingMs,
+  onPress,
 }: {
   petType: ReturnType<typeof useAppState>['prefs']['petType'];
   mood: ReturnType<typeof useAppState>['mood'];
@@ -199,6 +202,7 @@ function PetStage({
   petName: string;
   flipped: boolean;
   timeRemainingMs: number;
+  onPress: () => void;
 }) {
   const useSelfiePixels = petType === 'selfie' && Boolean(customSprite);
   const isDead = mood === 'dead';
@@ -242,7 +246,12 @@ function PetStage({
   return (
     <View style={styles.petStage}>
       {showConfetti ? <ConfettiBurst /> : null}
-      <View style={styles.petStageCompose}>
+      <Pressable
+        onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel={flipped ? 'hide lives info' : 'show lives info'}
+        style={styles.petStageCompose}
+      >
         <Animated.View style={[styles.eggFace, frontFaceStyle]}>
           <PetEggShell width={PET_HOME_EGG_WIDTH} style={eggShellStyle} />
           <View
@@ -274,10 +283,7 @@ function PetStage({
           </View>
         </Animated.View>
 
-        <Animated.View
-          pointerEvents="none"
-          style={[styles.eggFace, backFaceStyle]}
-        >
+        <Animated.View style={[styles.eggFace, backFaceStyle]}>
           <PetEggShell width={PET_HOME_EGG_WIDTH} style={eggShellStyle} />
           <View style={[styles.eggMessageWrap, isDead && styles.eggMessageWrapDead]}>
             {isDead ? (
@@ -297,7 +303,7 @@ function PetStage({
             )}
           </View>
         </Animated.View>
-      </View>
+      </Pressable>
     </View>
   );
 }
