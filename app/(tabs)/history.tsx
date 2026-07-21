@@ -385,10 +385,7 @@ const styles = StyleSheet.create({
     color: Colors.ink,
   },
   countLabel: {
-    fontSize: FontSize.sm,
-    fontFamily: Slab.regular,
-    color: Colors.textSecondary,
-    marginTop: 4,
+    ...Type.screenDescription,
     marginBottom: 40,
   },
   monthNav: {

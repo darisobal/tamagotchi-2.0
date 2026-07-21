@@ -71,25 +71,23 @@ export default function HomeScreen() {
   const theme = getStateTheme(mood);
   const tabBarExtraPad = useFloatingTabBarExtraPadding();
 
-  // Single-habit app: there's exactly one habit to render.
+  // Single-habit app: card uses the setup name; track status is separate.
   const habit = computedHabits[0] ?? null;
   const habitName = (prefs.habitName || DEFAULT_HABIT_NAME).trim();
   const petName = (prefs.petName || 'champ').trim();
   const petColor = prefs.petColor || theme.pet;
 
   const openCheckIn = useCallback(() => {
-    if (!habit) return;
-    router.push({ pathname: '/checkin', params: { track: habit.trackType } });
-  }, [habit]);
+    router.push({ pathname: '/checkin', params: { track: MAIN_TRACK } });
+  }, []);
 
   const onHeroCheckIn = useCallback(() => {
-    if (!habit) return;
     if (mood === 'dead') {
       setRestartPaywallVisible(true);
       return;
     }
     openCheckIn();
-  }, [habit, mood, openCheckIn]);
+  }, [mood, openCheckIn]);
 
   const onRestartUnlocked = useCallback(async () => {
     setRestartPaywallVisible(false);
@@ -125,27 +123,32 @@ export default function HomeScreen() {
         </View>
 
         {habit ? (
-          <HeroTaskCard
-            habitName={habitName}
-            motto={theme.motto(habitName)}
-            accentColor={petColor}
-            borderColor={theme.cardBorder}
-            backgroundColor={theme.cardBg}
-            mottoColor={theme.mottoInk}
-            buttonColor={theme.cardInk}
-            checkInLabel={theme.checkInLabel}
-            showCrossOut={theme.showCrossOut}
-            onCheckIn={onHeroCheckIn}
-          />
-        ) : (
-          <View style={[styles.heroCard, { borderColor: theme.cardBorder }]}>
-            <Text style={[styles.heroPrelude, { color: theme.cardInk }]}>
-              name your habit in setup
+          <>
+            <HeroTaskCard
+              habitName={habitName}
+              motto={theme.motto(habitName)}
+              accentColor={petColor}
+              borderColor={theme.cardBorder}
+              backgroundColor={theme.cardBg}
+              mottoColor={theme.mottoInk}
+              buttonColor={theme.cardInk}
+              checkInLabel={theme.checkInLabel}
+              showCrossOut={theme.showCrossOut}
+              onCheckIn={onHeroCheckIn}
+            />
+            <Text style={[styles.habitStakes, { color: theme.ink }]}>
+              {`miss a day, and ${petName} loses a life. skip three days, and ${petName} is gone.`}
             </Text>
-            <Text style={[styles.heroNumber, { color: theme.numberInk }]}>0</Text>
-            <Text style={[styles.heroUnit, { color: theme.cardInk }]}>habits</Text>
-            <Text style={[styles.heroCardMotto, { color: theme.mottoInk }]} numberOfLines={2}>
-              {theme.motto(habitName)}
+          </>
+        ) : (
+          <View
+            style={[
+              styles.emptyCard,
+              { borderColor: theme.cardBorder, backgroundColor: theme.cardBg },
+            ]}
+          >
+            <Text style={[styles.emptyCardText, { color: theme.cardInk }]}>
+              name your habit in setup
             </Text>
           </View>
         )}
@@ -338,7 +341,14 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   },
 
-  heroCard: {
+  habitStakes: {
+    fontFamily: Slab.regular,
+    fontSize: FontSize.sm,
+    lineHeight: FontSize.sm + 6,
+    marginTop: -Spacing.sm,
+    marginBottom: Spacing.lg,
+  },
+  emptyCard: {
     borderWidth: Border.hero,
     borderRadius: Radius.lg,
     paddingTop: Spacing.lg + Spacing.xs,
@@ -346,26 +356,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg + Spacing.xs,
     marginBottom: Spacing.lg,
   },
-  heroCardMotto: {
-    fontFamily: Slab.semiBold,
-    fontSize: FontSize.motto,
-    lineHeight: FontSize.motto + 4,
-    letterSpacing: -0.2,
-    marginTop: Spacing.sm,
-    alignSelf: 'flex-start',
-  },
-  heroNumber: {
-    fontFamily: Slab.bold,
-    fontSize: FontSize.habitTitle,
-    lineHeight: FontSize.habitTitle + 11,
-    letterSpacing: -1.5,
-  },
-  heroUnit: {
-    fontFamily: Slab.extraBold,
-    fontSize: FontSize.lg,
-    marginTop: Spacing.xs,
-  },
-  heroPrelude: {
+  emptyCardText: {
     fontFamily: Slab.extraBold,
     fontSize: FontSize.xl,
   },

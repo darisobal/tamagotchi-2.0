@@ -140,12 +140,9 @@ const styles = StyleSheet.create({
   title: {
     ...Type.screenTitle,
     color: Colors.ink,
-    marginBottom: Spacing.xs,
   },
   subtitle: {
-    fontSize: FontSize.lg,
-    fontFamily: Slab.bold,
-    color: Colors.ink,
+    ...Type.screenDescription,
     marginBottom: Spacing.lg,
   },
   label: {

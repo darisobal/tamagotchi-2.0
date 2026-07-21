@@ -171,12 +171,9 @@ const styles = StyleSheet.create({
   trackTitle: {
     ...Type.screenTitle,
     color: Colors.ink,
-    marginBottom: Spacing.xs,
   },
   prompt: {
-    fontSize: FontSize.lg,
-    fontFamily: Slab.bold,
-    color: Colors.ink,
+    ...Type.screenDescription,
     marginBottom: Spacing.xl,
   },
   label: {

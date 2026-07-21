@@ -8,6 +8,7 @@ import {
   Mood,
   ComputedHabit,
   PetMoodInfo,
+  ALL_TRACKS,
   DEFAULT_HABIT_NAME,
   DEFAULT_PET_NAME,
   DEFAULT_PET_COLOR,
@@ -75,7 +76,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const recompute = useCallback((currentTracks: TrackState[]) => {
     const nowMs = Date.now();
-    const habits = computeAllHabits(currentTracks, nowMs, habitCadenceRef.current);
+    // Always evaluate the main habit — empty tracks would otherwise blank the home card.
+    const tracks =
+      currentTracks.length > 0
+        ? currentTracks
+        : ALL_TRACKS.map((trackType) => ({
+            trackType,
+            level: 50,
+            lastCheckInAt: null as string | null,
+            streak: 0,
+            lastCompletedDay: null as string | null,
+          }));
+    if (currentTracks.length === 0) {
+      tracksRef.current = tracks;
+    }
+    const habits = computeAllHabits(tracks, nowMs, habitCadenceRef.current);
     const moodInfo = computePetMood(habits, habitNameRef.current);
     setComputedHabits(habits);
     moodRef.current = moodInfo.mood;

@@ -164,10 +164,17 @@ class NativeStorage implements Storage {
     const db = await this.getDb();
     const states: TrackState[] = [];
     for (const t of ALL_TRACKS) {
-      const row = await db.getFirstAsync<TrackState>(
+      let row = await db.getFirstAsync<TrackState>(
         `SELECT * FROM track_state WHERE trackType = ?`, t
       );
-      if (row) states.push(row);
+      if (!row) {
+        await db.runAsync(
+          `INSERT OR IGNORE INTO track_state (trackType, level, streak) VALUES (?, 50, 0)`,
+          t,
+        );
+        row = defaultTrackState(t);
+      }
+      states.push(row);
     }
     return states;
   }

@@ -121,8 +121,8 @@ export const Font = {
 };
 
 /**
- * Shared type styles. Screen titles (home greeting, setup, history, auth headlines)
- * always use Hepta Slab Black at display size — see `.cursor/rules/screen-titles.mdc`.
+ * Shared type styles. Screen titles + descriptions (auth welcome, setup, history, etc.)
+ * — see `.cursor/rules/screen-titles.mdc`.
  */
 export const Type = {
   screenTitle: {
@@ -130,5 +130,13 @@ export const Type = {
     fontSize: FontSize.display,
     letterSpacing: -1,
     lineHeight: FontSize.display + 4,
+  },
+  /** Supporting line under a screen title (e.g. "your habit has a heartbeat"). */
+  screenDescription: {
+    fontFamily: Slab.bold,
+    fontSize: FontSize.lg,
+    color: Colors.ink,
+    /** Gap from the screen title above (was 4px; +8). */
+    marginTop: 12,
   },
 } as const;

@@ -53,6 +53,7 @@ scripts/       # setup helpers
 - Do not commit secrets (`.env`); see `.env.example` for required vars
 - **Lowercase copy:** all user-facing text (labels, buttons, errors, alerts) is lowercase — no title case or uppercase styling
 - **Screen titles:** use `Type.screenTitle` (`Slab.black`) for page headlines — home greeting, setup, history, auth, check-in — so weight/size stay consistent
+- **Screen descriptions:** use `Type.screenDescription` (`Slab.bold`, `FontSize.lg`) for the supporting line under a title (auth tagline, setup blurb, history count, check-in prompt)
 
 ## Related Cursor config
 

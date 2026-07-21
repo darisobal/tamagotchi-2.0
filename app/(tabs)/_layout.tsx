@@ -1,10 +1,11 @@
-import { Tabs } from 'expo-router';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { Redirect, Tabs } from 'expo-router';
+import { View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
 import { CommonActions } from '@react-navigation/native';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, FontSize, Slab, Border } from '../../src/theme';
 import { useMoodBackground } from '../../src/useMoodBackground';
+import { useAuth } from '../../src/authContext';
 import {
   TAB_BAR_DIVIDER,
   TAB_BAR_INDICATOR,
@@ -130,9 +131,29 @@ const styles = StyleSheet.create({
     marginTop: TAB_BAR_INDICATOR_GAP,
     height: TAB_BAR_INDICATOR,
   },
+  loading: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.bg,
+  },
 });
 
 export default function TabLayout() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" color={Colors.primary} />
+      </View>
+    );
+  }
+
+  if (!user) {
+    return <Redirect href="/auth" />;
+  }
+
   return (
     <Tabs
       initialRouteName="index"

@@ -84,9 +84,12 @@ export default function SettingsScreen() {
           contentContainerStyle={[styles.content, { paddingBottom: Spacing.xxl + tabBarExtraPad }]}
           keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.screenTitle}>your setup</Text>
+          <Text style={styles.screenTitle}>setup</Text>
+          <Text style={styles.description}>
+            build habits. keep your pet alive.
+          </Text>
 
-          <Text style={styles.sectionLabel}>name your habit</Text>
+          <Text style={[styles.sectionLabel, styles.firstSectionLabel]}>name your habit</Text>
           <TextInput
             value={habitDraft}
             onChangeText={setHabitDraft}
@@ -242,6 +245,9 @@ const styles = StyleSheet.create({
   screenTitle: {
     ...Type.screenTitle,
     color: Colors.ink,
+  },
+  description: {
+    ...Type.screenDescription,
     marginBottom: Spacing.lg,
   },
   sectionLabel: {
@@ -250,6 +256,9 @@ const styles = StyleSheet.create({
     color: Colors.ink,
     marginBottom: Spacing.sm,
     marginTop: Spacing.md,
+  },
+  firstSectionLabel: {
+    marginTop: 0,
   },
   helper: {
     fontSize: FontSize.sm,
