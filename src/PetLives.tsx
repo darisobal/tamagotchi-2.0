@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Pressable } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import {
   HEART_CRACK_PATH,
@@ -64,13 +64,20 @@ type PetLivesProps = {
   color: string;
   size?: number;
   gap?: number;
+  onPress?: () => void;
 };
 
 /** Three-heart life bar — filled hearts for remaining lives, broken for lost ones. */
-export default function PetLives({ lives, color, size = 28, gap = 6 }: PetLivesProps) {
+export default function PetLives({
+  lives,
+  color,
+  size = 28,
+  gap = 6,
+  onPress,
+}: PetLivesProps) {
   const clamped = Math.max(0, Math.min(PET_LIVES_MAX, lives));
 
-  return (
+  const hearts = (
     <View style={[styles.row, { gap }]}>
       {Array.from({ length: PET_LIVES_MAX }, (_, i) => {
         const filled = i < clamped;
@@ -81,6 +88,19 @@ export default function PetLives({ lives, color, size = 28, gap = 6 }: PetLivesP
         );
       })}
     </View>
+  );
+
+  if (!onPress) return hearts;
+
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel="how lives work"
+      hitSlop={8}
+    >
+      {hearts}
+    </Pressable>
   );
 }
 

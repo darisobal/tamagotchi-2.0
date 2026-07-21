@@ -16,11 +16,12 @@ import Animated, {
   withDelay,
   Easing,
   cancelAnimation,
+  interpolate,
 } from 'react-native-reanimated';
 import { router } from 'expo-router';
 import { useAppState } from '../../src/context';
 import { DEFAULT_HABIT_NAME, MAIN_TRACK } from '../../src/types';
-import { Spacing, FontSize, Slab, Radius, Border, Type } from '../../src/theme';
+import { Spacing, FontSize, Slab, Radius, Border, Type, Colors } from '../../src/theme';
 import { getStateTheme } from '../../src/stateTheme';
 import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
 import PixelPet from '../../src/PixelPet';
@@ -38,6 +39,8 @@ import PetLives from '../../src/PetLives';
 import HeroTaskCard from '../../src/HeroTaskCard';
 import RestartPaywall from '../../src/RestartPaywall';
 import { HEART_VIEWBOX } from '../../assets/pet/heart-paths';
+
+const EGG_FLIP_MS = 480;
 
 /** Pad above the egg (room for lying-down pose). */
 const HERO_PET_STAGE_PAD_TOP = 40;
@@ -58,9 +61,10 @@ const HERO_HEART_HEIGHT = Math.round(
 const HERO_EGG_LIFT = HERO_HEART_HEIGHT + HERO_PET_STAGE_PAD_TOP - Spacing.sm;
 
 export default function HomeScreen() {
-  const { prefs, computedHabits, mood, lives, refresh, doCheckIn } = useAppState();
+  const { prefs, computedHabits, tracks, mood, lives, refresh, doCheckIn } = useAppState();
   const [refreshing, setRefreshing] = React.useState(false);
   const [restartPaywallVisible, setRestartPaywallVisible] = React.useState(false);
+  const [eggFlipped, setEggFlipped] = React.useState(false);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -76,6 +80,8 @@ export default function HomeScreen() {
   const habitName = (prefs.habitName || DEFAULT_HABIT_NAME).trim();
   const petName = (prefs.petName || 'champ').trim();
   const petColor = prefs.petColor || theme.pet;
+  const streakDays = tracks.find((t) => t.trackType === MAIN_TRACK)?.streak ?? 0;
+  const showTrackedCard = mood === 'happy';
 
   const openCheckIn = useCallback(() => {
     router.push({ pathname: '/checkin', params: { track: MAIN_TRACK } });
@@ -94,6 +100,10 @@ export default function HomeScreen() {
     await doCheckIn(MAIN_TRACK, 'medium', null);
   }, [doCheckIn]);
 
+  const toggleEggFlip = useCallback(() => {
+    setEggFlipped((prev) => !prev);
+  }, []);
+
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]}>
       <ScrollView
@@ -110,7 +120,13 @@ export default function HomeScreen() {
 
         <View style={styles.heroPetBlock}>
           <View style={styles.livesLayer}>
-            <PetLives lives={lives} color={petColor} size={HERO_HEART_SIZE} gap={8} />
+            <PetLives
+              lives={lives}
+              color={petColor}
+              size={HERO_HEART_SIZE}
+              gap={8}
+              onPress={toggleEggFlip}
+            />
           </View>
           <PetStage
             petType={prefs.petType}
@@ -119,27 +135,25 @@ export default function HomeScreen() {
             petColor={petColor}
             petHat={prefs.petHat ?? 'none'}
             showConfetti={theme.showConfetti}
+            petName={petName}
+            flipped={eggFlipped}
           />
         </View>
 
         {habit ? (
-          <>
-            <HeroTaskCard
-              habitName={habitName}
-              motto={theme.motto(habitName)}
-              accentColor={petColor}
-              borderColor={theme.cardBorder}
-              backgroundColor={theme.cardBg}
-              mottoColor={theme.mottoInk}
-              buttonColor={theme.cardInk}
-              checkInLabel={theme.checkInLabel}
-              showCrossOut={theme.showCrossOut}
-              onCheckIn={onHeroCheckIn}
-            />
-            <Text style={[styles.habitStakes, { color: theme.ink }]}>
-              {`miss a day, and ${petName} loses a life. skip three days, and ${petName} is gone.`}
-            </Text>
-          </>
+          <HeroTaskCard
+            habitName={habitName}
+            motto={theme.motto(habitName)}
+            accentColor={petColor}
+            borderColor={theme.cardBorder}
+            backgroundColor={theme.cardBg}
+            mottoColor={theme.mottoInk}
+            buttonColor={theme.cardInk}
+            checkInLabel={theme.checkInLabel}
+            showCrossOut={theme.showCrossOut}
+            streakDays={showTrackedCard ? streakDays : null}
+            onCheckIn={onHeroCheckIn}
+          />
         ) : (
           <View
             style={[
@@ -170,6 +184,8 @@ function PetStage({
   petColor,
   petHat,
   showConfetti,
+  petName,
+  flipped,
 }: {
   petType: ReturnType<typeof useAppState>['prefs']['petType'];
   mood: ReturnType<typeof useAppState>['mood'];
@@ -177,52 +193,97 @@ function PetStage({
   petColor: string;
   petHat: ReturnType<typeof useAppState>['prefs']['petHat'];
   showConfetti: boolean;
+  petName: string;
+  flipped: boolean;
 }) {
   const useSelfiePixels = petType === 'selfie' && Boolean(customSprite);
   const isDead = mood === 'dead';
+  const flipProgress = useSharedValue(flipped ? 1 : 0);
+
+  useEffect(() => {
+    flipProgress.value = withTiming(flipped ? 1 : 0, {
+      duration: EGG_FLIP_MS,
+      easing: Easing.inOut(Easing.cubic),
+    });
+  }, [flipped, flipProgress]);
+
+  const frontFaceStyle = useAnimatedStyle(() => {
+    const rotateY = interpolate(flipProgress.value, [0, 1], [0, 180]);
+    return {
+      transform: [{ perspective: 1200 }, { rotateY: `${rotateY}deg` }],
+      // backfaceVisibility is unreliable on RN web for SVG children — hide past midpoint.
+      opacity: interpolate(flipProgress.value, [0, 0.5, 0.5, 1], [1, 1, 0, 0]),
+      zIndex: flipProgress.value < 0.5 ? 2 : 0,
+    };
+  });
+
+  const backFaceStyle = useAnimatedStyle(() => {
+    const rotateY = interpolate(flipProgress.value, [0, 1], [180, 360]);
+    return {
+      transform: [{ perspective: 1200 }, { rotateY: `${rotateY}deg` }],
+      opacity: interpolate(flipProgress.value, [0, 0.5, 0.5, 1], [0, 0, 1, 1]),
+      zIndex: flipProgress.value >= 0.5 ? 2 : 0,
+    };
+  });
+
+  const eggShellStyle = [
+    petEggShellStyles.centered,
+    {
+      top: HERO_PET_STAGE_PAD_TOP,
+      marginTop: 0,
+      marginLeft: -PET_HOME_EGG_WIDTH / 2 + PET_HOME_EGG_LEFT_INSET,
+    },
+  ];
 
   return (
     <View style={styles.petStage}>
       {showConfetti ? <ConfettiBurst /> : null}
       <View style={styles.petStageCompose}>
-        <PetEggShell
-          width={PET_HOME_EGG_WIDTH}
-          style={[
-            petEggShellStyles.centered,
-            {
-              top: HERO_PET_STAGE_PAD_TOP,
-              marginTop: 0,
-              marginLeft: -PET_HOME_EGG_WIDTH / 2 + PET_HOME_EGG_LEFT_INSET,
-            },
-          ]}
-        />
-        <View
-          style={[
-            styles.petForeground,
-            // Dead pose is wider than the egg — pin its left (head/hat) to the egg's
-            // left edge so only the feet clip on the right.
-            isDead && styles.petForegroundDead,
-          ]}
+        <Animated.View style={[styles.eggFace, frontFaceStyle]}>
+          <PetEggShell width={PET_HOME_EGG_WIDTH} style={eggShellStyle} />
+          <View
+            style={[
+              styles.petForeground,
+              // Dead pose is wider than the egg — pin its left (head/hat) to the egg's
+              // left edge so only the feet clip on the right.
+              isDead && styles.petForegroundDead,
+            ]}
+          >
+            {useSelfiePixels ? (
+              <PixelPet
+                petType={petType}
+                mood={mood}
+                customSprite={customSprite ?? null}
+                color={petColor}
+                pixelSize={7}
+              />
+            ) : (
+              <LineArtPet
+                mood={mood}
+                strokeColor={petColor}
+                displayHeight={
+                  isDead ? PET_HOME_DEAD_DISPLAY_HEIGHT : PET_HOME_DISPLAY_HEIGHT
+                }
+                hat={petHat}
+              />
+            )}
+          </View>
+        </Animated.View>
+
+        <Animated.View
+          pointerEvents="none"
+          style={[styles.eggFace, backFaceStyle]}
         >
-          {useSelfiePixels ? (
-            <PixelPet
-              petType={petType}
-              mood={mood}
-              customSprite={customSprite ?? null}
-              color={petColor}
-              pixelSize={7}
-            />
-          ) : (
-            <LineArtPet
-              mood={mood}
-              strokeColor={petColor}
-              displayHeight={
-                isDead ? PET_HOME_DEAD_DISPLAY_HEIGHT : PET_HOME_DISPLAY_HEIGHT
-              }
-              hat={petHat}
-            />
-          )}
-        </View>
+          <PetEggShell width={PET_HOME_EGG_WIDTH} style={eggShellStyle} />
+          <View style={styles.eggMessageWrap}>
+            <Text style={styles.eggMessage}>
+              {`miss a day, and ${petName}\nloses a life.`}
+            </Text>
+            <Text style={[styles.eggMessage, styles.eggMessageSecond]}>
+              {`skip three days,\nand ${petName} is gone.`}
+            </Text>
+          </View>
+        </Animated.View>
       </View>
     </View>
   );
@@ -341,13 +402,6 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   },
 
-  habitStakes: {
-    fontFamily: Slab.regular,
-    fontSize: FontSize.sm,
-    lineHeight: FontSize.sm + 6,
-    marginTop: -Spacing.sm,
-    marginBottom: Spacing.lg,
-  },
   emptyCard: {
     borderWidth: Border.hero,
     borderRadius: Radius.lg,
@@ -389,6 +443,35 @@ const styles = StyleSheet.create({
     paddingBottom: HERO_PET_STAGE_PAD_BOTTOM,
     position: 'relative',
     overflow: 'visible',
+  },
+  eggFace: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: HERO_PET_STAGE_PAD_TOP,
+    paddingBottom: HERO_PET_STAGE_PAD_BOTTOM,
+  },
+  eggMessageWrap: {
+    position: 'absolute',
+    top: HERO_PET_STAGE_PAD_TOP,
+    left: '50%',
+    width: PET_HOME_EGG_WIDTH,
+    height: PET_HOME_EGG_HEIGHT,
+    marginLeft: -PET_HOME_EGG_WIDTH / 2 + PET_HOME_EGG_LEFT_INSET,
+    paddingHorizontal: Spacing.xl + Spacing.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1,
+  },
+  eggMessage: {
+    fontFamily: Slab.bold,
+    fontSize: FontSize.lg,
+    lineHeight: FontSize.lg + 8,
+    color: Colors.ink,
+    textAlign: 'center',
+  },
+  eggMessageSecond: {
+    marginTop: Spacing.md,
   },
   petForeground: {
     zIndex: 1,

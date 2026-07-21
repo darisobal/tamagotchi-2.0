@@ -13,12 +13,21 @@ export type HeroTaskCardProps = {
   checkInLabel: string;
   /** White X over the habit title (dead / failed state). */
   showCrossOut?: boolean;
+  /**
+   * When set (tracked / all-good), replaces motto + CTA with streak copy.
+   * Uses day/days pluralization from the count.
+   */
+  streakDays?: number | null;
   onCheckIn: () => void;
 };
 
+function formatStreakDays(days: number): string {
+  return `${days} ${days === 1 ? 'day' : 'days'} in a row`;
+}
+
 /**
  * Home habit card — title, motto, and CTA button inside the thick border.
- * Same structure for all moods (including dead / “start again”).
+ * Tracked (happy) state swaps motto + button for the streak line.
  */
 export default function HeroTaskCard({
   habitName,
@@ -30,8 +39,11 @@ export default function HeroTaskCard({
   buttonColor,
   checkInLabel,
   showCrossOut = false,
+  streakDays = null,
   onCheckIn,
 }: HeroTaskCardProps) {
+  const showStreak = streakDays != null;
+
   return (
     <View
       style={[
@@ -50,16 +62,24 @@ export default function HeroTaskCard({
         </Text>
         {showCrossOut ? <CrossOut /> : null}
       </View>
-      <Text style={[styles.motto, { color: mottoColor }]} numberOfLines={2}>
-        {motto}
-      </Text>
-      <TouchableOpacity
-        style={[styles.button, { backgroundColor: buttonColor, borderColor: buttonColor }]}
-        onPress={onCheckIn}
-        activeOpacity={0.85}
-      >
-        <Text style={styles.buttonText}>{checkInLabel}</Text>
-      </TouchableOpacity>
+      {showStreak ? (
+        <Text style={[styles.motto, { color: mottoColor }]} numberOfLines={2}>
+          {formatStreakDays(streakDays)}
+        </Text>
+      ) : (
+        <>
+          <Text style={[styles.motto, { color: mottoColor }]} numberOfLines={2}>
+            {motto}
+          </Text>
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: buttonColor, borderColor: buttonColor }]}
+            onPress={onCheckIn}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.buttonText}>{checkInLabel}</Text>
+          </TouchableOpacity>
+        </>
+      )}
     </View>
   );
 }
