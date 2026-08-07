@@ -181,6 +181,53 @@ export default function HomeScreen() {
   );
 }
 
+/** Two rectangular colon dots that blink once per second — digital-clock feel. */
+function BlinkingColon({ color }: { color: string }) {
+  const opacity = useSharedValue(1);
+
+  useEffect(() => {
+    // Hard on/off every 500ms (classic digital colon tick).
+    opacity.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: 0 }),
+        withDelay(500, withTiming(0, { duration: 0 })),
+        withDelay(500, withTiming(1, { duration: 0 })),
+      ),
+      -1,
+      false,
+    );
+    return () => cancelAnimation(opacity);
+  }, [opacity]);
+
+  const blinkStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
+
+  return (
+    <Animated.View style={[styles.timerColon, blinkStyle]}>
+      <View style={[styles.timerColonDot, { backgroundColor: color }]} />
+      <View style={[styles.timerColonDot, { backgroundColor: color }]} />
+    </Animated.View>
+  );
+}
+
+function LifeTimer({
+  timeRemainingMs,
+  color,
+}: {
+  timeRemainingMs: number;
+  color: string;
+}) {
+  const formatted = formatLifeTimer(timeRemainingMs);
+  const [hours, minutes] = formatted.split(':');
+
+  return (
+    <View style={styles.eggLifeTimerRow} accessibilityLabel={formatted}>
+      <Text style={[styles.eggLifeTimer, { color }]}>{hours}</Text>
+      <BlinkingColon color={color} />
+      <Text style={[styles.eggLifeTimer, { color }]}>{minutes}</Text>
+    </View>
+  );
+}
+
 function PetStage({
   petType,
   mood,
@@ -293,9 +340,7 @@ function PetStage({
             ) : (
               <>
                 <Text style={styles.eggLifeLabel}>to lose a life:</Text>
-                <Text style={[styles.eggLifeTimer, { color: petColor }]}>
-                  {formatLifeTimer(timeRemainingMs)}
-                </Text>
+                <LifeTimer timeRemainingMs={timeRemainingMs} color={petColor} />
                 <Text style={styles.eggLifeFooter}>
                   {`skip three days, and ${petName} is gone`}
                 </Text>
@@ -479,7 +524,7 @@ const styles = StyleSheet.create({
     marginLeft: -PET_HOME_EGG_WIDTH / 2 + PET_HOME_EGG_LEFT_INSET,
     paddingHorizontal: Spacing.xl + Spacing.md,
     paddingVertical: Spacing.xxl + Spacing.lg,
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1,
   },
@@ -488,25 +533,45 @@ const styles = StyleSheet.create({
   },
   eggLifeLabel: {
     fontFamily: Slab.bold,
-    fontSize: FontSize.xl,
-    lineHeight: FontSize.xl + 8,
+    fontSize: FontSize.sm,
+    lineHeight: FontSize.sm + 4,
     color: Colors.ink,
     textAlign: 'center',
+    marginBottom: Spacing.xs,
+  },
+  eggLifeTimerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   eggLifeTimer: {
     fontFamily: Slab.black,
-    fontSize: FontSize.hero,
-    lineHeight: FontSize.hero + 4,
-    letterSpacing: -1,
+    fontSize: 56,
+    lineHeight: 60,
+    letterSpacing: -2,
     textAlign: 'center',
+  },
+  timerColon: {
+    width: 12,
+    height: 56,
+    marginHorizontal: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 10,
+  },
+  timerColonDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 1,
   },
   eggLifeFooter: {
     fontFamily: Slab.bold,
-    fontSize: FontSize.lg,
-    lineHeight: FontSize.lg + 8,
+    fontSize: FontSize.sm,
+    lineHeight: FontSize.sm + 4,
     color: Colors.ink,
     textAlign: 'center',
     paddingHorizontal: Spacing.sm,
+    marginTop: Spacing.sm,
   },
   eggDeadMessage: {
     fontFamily: Slab.bold,

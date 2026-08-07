@@ -6,35 +6,115 @@ import Animated, {
   withTiming,
   Easing,
   cancelAnimation,
+  type SharedValue,
 } from 'react-native-reanimated';
-import { Circle, G, Path } from 'react-native-svg';
+import { Circle, G, Line, Path } from 'react-native-svg';
 
 const AnimatedG = Animated.createAnimatedComponent(G);
+const AnimatedLine = Animated.createAnimatedComponent(Line);
 
 /** ~ centroid of splatter blobs (viewBox coords) for scale origin. */
 const ORIGIN = { x: 77, y: 169 };
 
+/** One blood streak in the fountain — angles are in SVG space (+x = up on screen when dead). */
+const FOUNTAIN_LINES = [
+  { spreadY: -14, launchX: 34, launchY: -6, fallX: -48, fallY: 10, offset: 0, stroke: '#FF1A1A', width: 3 },
+  { spreadY: -6, launchX: 28, launchY: -2, fallX: -42, fallY: 6, offset: 0.14, stroke: '#B71C1C', width: 2.5 },
+  { spreadY: 4, launchX: 30, launchY: 3, fallX: -44, fallY: 14, offset: 0.28, stroke: '#FF5252', width: 2.5 },
+  { spreadY: 12, launchX: 26, launchY: 5, fallX: -38, fallY: 18, offset: 0.42, stroke: '#B71C1C', width: 2 },
+  { spreadY: -10, launchX: 22, launchY: -8, fallX: -36, fallY: 4, offset: 0.56, stroke: '#8B0000', width: 2 },
+  { spreadY: 8, launchX: 24, launchY: 6, fallX: -40, fallY: 16, offset: 0.7, stroke: '#FF1A1A', width: 2.5 },
+  { spreadY: -2, launchX: 36, launchY: 0, fallX: -52, fallY: 8, offset: 0.84, stroke: '#B71C1C', width: 3 },
+] as const;
+
+const CYCLE_MS = 1400;
+
+type FountainLineProps = (typeof FOUNTAIN_LINES)[number] & {
+  phase: SharedValue<number>;
+};
+
+function FountainLine({
+  phase,
+  spreadY,
+  launchX,
+  launchY,
+  fallX,
+  fallY,
+  offset,
+  stroke,
+  width,
+}: FountainLineProps) {
+  const animatedProps = useAnimatedProps(() => {
+    const t = ((phase.value / 360 + offset) % 1);
+    const { x: ox, y: oy } = ORIGIN;
+
+    // 0 → 0.35: spray upward (+x on screen); 0.35 → 1: arc down with gravity (−x).
+    const launch = Math.min(t / 0.35, 1);
+    const fall = Math.max(0, (t - 0.35) / 0.65);
+
+    const tipX = ox + launchX * launch + fallX * fall;
+    const tipY = oy + spreadY * launch + launchY * launch + fallY * fall;
+
+    const tailLaunch = Math.max(0, launch - 0.45);
+    const tailFall = Math.max(0, fall - 0.08);
+    const tailX = ox + launchX * tailLaunch * 0.35 + fallX * tailFall * 0.55;
+    const tailY =
+      oy + spreadY * tailLaunch * 0.35 + launchY * tailLaunch * 0.35 + fallY * tailFall * 0.55;
+
+    const opacity =
+      t < 0.08 ? t / 0.08 : t > 0.88 ? (1 - t) / 0.12 : 0.92;
+
+    return {
+      x1: tailX,
+      y1: tailY,
+      x2: tipX,
+      y2: tipY,
+      opacity,
+      strokeOpacity: opacity,
+    };
+  });
+
+  return (
+    <AnimatedLine
+      animatedProps={animatedProps}
+      stroke={stroke}
+      strokeWidth={width}
+      strokeLinecap="round"
+    />
+  );
+}
+
 /**
- * Messy red splatter on the torso for the lying-down dead pose.
- * Coordinates match the 164×360 pet viewBox (chest / belly region).
+ * Messy red splatter on the torso for the lying-down dead pose, with fountain
+ * blood lines that spray up then drip down. Coordinates match the 164×360 viewBox.
  */
 export default function DeadBloodSplatter() {
-  const phase = useSharedValue(0);
+  const pulse = useSharedValue(0);
+  const fountain = useSharedValue(0);
 
   useEffect(() => {
-    phase.value = 0;
-    phase.value = withRepeat(
+    pulse.value = 0;
+    pulse.value = withRepeat(
       withTiming(360, { duration: 3200, easing: Easing.linear }),
       -1,
       false,
     );
-    return () => {
-      cancelAnimation(phase);
-    };
-  }, [phase]);
 
-  const animatedProps = useAnimatedProps(() => {
-    const rad = (phase.value * Math.PI) / 180;
+    fountain.value = 0;
+    fountain.value = withRepeat(
+      withTiming(360, { duration: CYCLE_MS, easing: Easing.linear }),
+      -1,
+      false,
+    );
+
+    return () => {
+      cancelAnimation(pulse);
+      cancelAnimation(fountain);
+    };
+  }, [pulse, fountain]);
+
+  const splatterProps = useAnimatedProps(() => {
+    const rad = (pulse.value * Math.PI) / 180;
     const opacity = 0.72 + 0.2 * (0.5 + 0.5 * Math.sin(rad));
     const scale = 1 + 0.04 * Math.sin(rad * 1.15 + 0.6);
     const ty = 1.2 * Math.sin(rad * 0.85);
@@ -44,31 +124,37 @@ export default function DeadBloodSplatter() {
   });
 
   return (
-    <AnimatedG animatedProps={animatedProps}>
-      <Circle cx={76} cy={168} r={16} fill="#FF1A1A" />
-      <Circle cx={68} cy={162} r={8} fill="#B71C1C" />
-      <Circle cx={88} cy={176} r={6} fill="#FF5252" />
-      <Path
-        d="M52 178 Q62 195 78 188 T98 182"
-        fill="none"
-        stroke="#B71C1C"
-        strokeWidth={4}
-        strokeLinecap="round"
-      />
-      <Path
-        d="M58 168 L66 182 M72 160 L80 174 M85 170 L92 185"
-        fill="none"
-        stroke="#8B0000"
-        strokeWidth={3}
-        strokeLinecap="round"
-      />
-      <Path
-        d="M95 158 Q102 172 98 188"
-        fill="none"
-        stroke="#FF1A1A"
-        strokeWidth={3}
-        strokeLinecap="round"
-      />
-    </AnimatedG>
+    <>
+      <AnimatedG animatedProps={splatterProps}>
+        <Circle cx={76} cy={168} r={16} fill="#FF1A1A" />
+        <Circle cx={68} cy={162} r={8} fill="#B71C1C" />
+        <Circle cx={88} cy={176} r={6} fill="#FF5252" />
+        <Path
+          d="M52 178 Q62 195 78 188 T98 182"
+          fill="none"
+          stroke="#B71C1C"
+          strokeWidth={4}
+          strokeLinecap="round"
+        />
+        <Path
+          d="M58 168 L66 182 M72 160 L80 174 M85 170 L92 185"
+          fill="none"
+          stroke="#8B0000"
+          strokeWidth={3}
+          strokeLinecap="round"
+        />
+        <Path
+          d="M95 158 Q102 172 98 188"
+          fill="none"
+          stroke="#FF1A1A"
+          strokeWidth={3}
+          strokeLinecap="round"
+        />
+      </AnimatedG>
+
+      {FOUNTAIN_LINES.map((line, i) => (
+        <FountainLine key={i} phase={fountain} {...line} />
+      ))}
+    </>
   );
 }
