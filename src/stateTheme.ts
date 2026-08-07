@@ -52,8 +52,14 @@ const DEFAULT_NAME = 'champ';
 /** Shared copy + palette tokens used across the four Figma home frames. */
 const CHECK_IN_LABEL = 'i did it!!!!!1';
 
-export function getStateTheme(mood: Mood): StateTheme {
+export interface StateThemeOptions {
+  /** Most recent check-in was a paid €1 restart (not a habit log). */
+  lastCheckInWasPaidRestart?: boolean;
+}
+
+export function getStateTheme(mood: Mood, options?: StateThemeOptions): StateTheme {
   const scene = moodToScene(mood);
+  const paidRestart = Boolean(options?.lastCheckInWasPaidRestart);
 
   const shared = {
     ink: Colors.ink,
@@ -73,7 +79,8 @@ export function getStateTheme(mood: Mood): StateTheme {
       inkSoft: '#1A1A1A',
       showConfetti: true,
       showCrossOut: false,
-      greeting: () => "you're a\nrockstar!",
+      greeting: () =>
+        paidRestart ? 'paid for\ngood vibes' : "you're a\nrockstar!",
       motto: () => 'skip = rip.',
       checkInLabel: CHECK_IN_LABEL,
     };

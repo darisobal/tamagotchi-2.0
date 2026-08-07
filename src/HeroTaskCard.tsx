@@ -26,8 +26,8 @@ function formatStreakDays(days: number): string {
 }
 
 /**
- * Home habit card — title, motto, and CTA button inside the thick border.
- * Tracked (happy) state swaps motto + button for the streak line.
+ * Home habit card — title, motto or streak, and CTA button inside the thick border.
+ * Tracked (happy) state shows streak copy above the same check-in CTA.
  */
 export default function HeroTaskCard({
   habitName,
@@ -67,19 +67,17 @@ export default function HeroTaskCard({
           {formatStreakDays(streakDays)}
         </Text>
       ) : (
-        <>
-          <Text style={[styles.motto, { color: mottoColor }]} numberOfLines={2}>
-            {motto}
-          </Text>
-          <TouchableOpacity
-            style={[styles.button, { backgroundColor: buttonColor, borderColor: buttonColor }]}
-            onPress={onCheckIn}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.buttonText}>{checkInLabel}</Text>
-          </TouchableOpacity>
-        </>
+        <Text style={[styles.motto, { color: mottoColor }]} numberOfLines={2}>
+          {motto}
+        </Text>
       )}
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: buttonColor, borderColor: buttonColor }]}
+        onPress={onCheckIn}
+        activeOpacity={0.85}
+      >
+        <Text style={styles.buttonText}>{checkInLabel}</Text>
+      </TouchableOpacity>
     </View>
   );
 }

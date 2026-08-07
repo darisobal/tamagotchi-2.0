@@ -63,7 +63,8 @@ const HERO_HEART_HEIGHT = Math.round(
 const HERO_EGG_LIFT = HERO_HEART_HEIGHT + HERO_PET_STAGE_PAD_TOP - Spacing.sm;
 
 export default function HomeScreen() {
-  const { prefs, computedHabits, tracks, mood, lives, refresh, doCheckIn } = useAppState();
+  const { prefs, computedHabits, tracks, mood, lives, refresh, doCheckIn, checkIns } =
+    useAppState();
   const [refreshing, setRefreshing] = React.useState(false);
   const [restartPaywallVisible, setRestartPaywallVisible] = React.useState(false);
   const [eggFlipped, setEggFlipped] = React.useState(false);
@@ -74,7 +75,10 @@ export default function HomeScreen() {
     setRefreshing(false);
   }, [refresh]);
 
-  const theme = getStateTheme(mood);
+  const lastMainCheckIn = checkIns.find((c) => c.trackType === MAIN_TRACK);
+  const theme = getStateTheme(mood, {
+    lastCheckInWasPaidRestart: Boolean(lastMainCheckIn?.isPaidRestart),
+  });
   const tabBarExtraPad = useFloatingTabBarExtraPadding();
 
   // Single-habit app: card uses the setup name; track status is separate.

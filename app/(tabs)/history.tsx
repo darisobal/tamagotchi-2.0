@@ -345,14 +345,7 @@ function HistoryItem({
   return (
     <View style={styles.item}>
       <View style={styles.itemContent}>
-        <View style={styles.itemHeader}>
-          <Text style={styles.itemTrack}>{habitName}</Text>
-          <Text style={styles.itemIntensity}>
-            {item.intensity}
-            {' +'}
-            {item.intensity === 'small' ? 10 : item.intensity === 'medium' ? 20 : 30}
-          </Text>
-        </View>
+        <Text style={styles.itemTrack}>{habitName}</Text>
         {item.isPaidRestart ? (
           <Text style={styles.itemPaid}>paid restart · €1</Text>
         ) : null}
@@ -525,21 +518,11 @@ const styles = StyleSheet.create({
     borderRadius: Radius.md,
   },
   itemContent: { flex: 1 },
-  itemHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 2,
-  },
   itemTrack: {
     fontSize: FontSize.lg,
     fontFamily: Slab.black,
     color: Colors.ink,
-  },
-  itemIntensity: {
-    fontSize: FontSize.sm,
-    fontFamily: Slab.bold,
-    color: Colors.ink,
+    marginBottom: 2,
   },
   itemPaid: {
     fontSize: FontSize.xs,
