@@ -12,7 +12,7 @@ type PetSuccessBallsProps = {
 
 /** Vertical anchor as a fraction of layout height — torso midpoint per pet type. */
 const TORSO_CENTER_Y: Record<'lineArt' | 'pixel', number> = {
-  lineArt: 0.37,
+  lineArt: 0.65,
   pixel: 0.62,
 };
 
