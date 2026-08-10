@@ -16,6 +16,7 @@ import { Colors } from './theme';
 import PetFigure, { PET_SVG_VB } from './PetFigure';
 import PetHat from './PetHat';
 import DeadBloodSplatter from './DeadBloodSplatter';
+import PetSuccessBalls from './PetSuccessBalls';
 import { PET_HOME_DISPLAY_HEIGHT } from './PetEggShell';
 
 const AnimatedView = Animated.createAnimatedComponent(View);
@@ -37,6 +38,8 @@ type LineArtPetProps = {
    */
   displayHeight?: number;
   hat?: PetHatId;
+  /** Unicode sports-ball emoji pair for progressive success (happy only). */
+  successBallEmoji?: string | null;
 };
 
 /**
@@ -51,6 +54,7 @@ export default function LineArtPet({
   strokeColor = Colors.pet,
   displayHeight = PET_HOME_DISPLAY_HEIGHT,
   hat = 'none',
+  successBallEmoji = null,
 }: LineArtPetProps) {
   const isDead = mood === 'dead';
 
@@ -147,6 +151,9 @@ export default function LineArtPet({
     transform: `rotate(${armWave.value} 82 145)`,
   }));
 
+  const ballSize = Math.max(22, Math.round(displayHeight * 0.11));
+  const showBalls = Boolean(successBallEmoji) && !isDead;
+
   return (
     <AnimatedView style={[styles.wrap, { width: layoutW, height: layoutH }, wrapStyle]}>
       <View
@@ -170,6 +177,9 @@ export default function LineArtPet({
           {isDead ? <DeadBloodSplatter /> : null}
           <PetHat hat={hat} {...HAT_PLACEMENT} strokeColor={strokeColor} />
         </Svg>
+        {showBalls && successBallEmoji ? (
+          <PetSuccessBalls emoji={successBallEmoji} size={ballSize} />
+        ) : null}
       </View>
     </AnimatedView>
   );
@@ -184,6 +194,8 @@ const styles = StyleSheet.create({
   art: {
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'relative',
+    overflow: 'visible',
   },
   artDead: {
     transform: [{ rotate: '-90deg' }],

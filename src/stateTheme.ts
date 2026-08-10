@@ -1,5 +1,6 @@
 import { Mood } from './types';
 import { Colors } from './theme';
+import { resolveSuccessCelebration } from './logic';
 
 /**
  * Maps the pet's mood to a full visual + copy palette that matches
@@ -55,6 +56,27 @@ const CHECK_IN_LABEL = 'i did it!!!!!1';
 export interface StateThemeOptions {
   /** Most recent check-in was a paid €1 restart (not a habit log). */
   lastCheckInWasPaidRestart?: boolean;
+  /**
+   * Current calendar streak for the main habit. Used only for the progressive
+   * allGood celebration after rockstar (balls cycle).
+   */
+  streak?: number;
+  /** True when the first day of the current streak was a paid restart. */
+  streakBeganWithPaidRestart?: boolean;
+}
+
+/** Unicode sports-ball for the pet overlay when celebration is balls; else null. */
+export function getSuccessBallEmoji(
+  mood: Mood,
+  options?: StateThemeOptions,
+): string | null {
+  const celebration = resolveSuccessCelebration({
+    isAllGood: moodToScene(mood) === 'allGood',
+    lastCheckInWasPaidRestart: Boolean(options?.lastCheckInWasPaidRestart),
+    streak: options?.streak ?? 0,
+    streakBeganWithPaidRestart: Boolean(options?.streakBeganWithPaidRestart),
+  });
+  return celebration?.kind === 'balls' ? celebration.emoji : null;
 }
 
 export function getStateTheme(mood: Mood, options?: StateThemeOptions): StateTheme {
@@ -72,6 +94,19 @@ export function getStateTheme(mood: Mood, options?: StateThemeOptions): StateThe
   };
 
   if (scene === 'allGood') {
+    const celebration = resolveSuccessCelebration({
+      isAllGood: true,
+      lastCheckInWasPaidRestart: paidRestart,
+      streak: options?.streak ?? 0,
+      streakBeganWithPaidRestart: Boolean(options?.streakBeganWithPaidRestart),
+    });
+    const greetingText =
+      celebration?.kind === 'paidVibes'
+        ? 'paid for\ngood vibes'
+        : celebration?.kind === 'balls'
+          ? 'holy shit.\nyou actually have balls.'
+          : "you're a\nrockstar!";
+
     return {
       scene,
       ...shared,
@@ -79,8 +114,7 @@ export function getStateTheme(mood: Mood, options?: StateThemeOptions): StateThe
       inkSoft: '#1A1A1A',
       showConfetti: true,
       showCrossOut: false,
-      greeting: () =>
-        paidRestart ? 'paid for\ngood vibes' : "you're a\nrockstar!",
+      greeting: () => greetingText,
       motto: () => 'skip = rip.',
       checkInLabel: CHECK_IN_LABEL,
     };
