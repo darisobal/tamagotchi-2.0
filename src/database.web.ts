@@ -11,6 +11,7 @@ import {
   resolveHabitName,
   resolvePetName,
   normalizeUserPrefs,
+  normalizeTrackState,
 } from './types';
 
 export interface Storage {
@@ -27,7 +28,15 @@ export interface Storage {
 }
 
 function defaultTrackState(trackType: TrackType): TrackState {
-  return { trackType, level: 50, lastCheckInAt: null, streak: 0, lastCompletedDay: null };
+  return {
+    trackType,
+    level: 50,
+    lastCheckInAt: null,
+    streak: 0,
+    lastCompletedDay: null,
+    celebrationCount: 0,
+    celebrationPaidStart: false,
+  };
 }
 
 const DEFAULT_PREFS: UserPrefs = {
@@ -70,7 +79,12 @@ class WebStorage implements Storage {
           isPaidRestart: Boolean(c.isPaidRestart),
         }));
         if (data.tracks) {
-          for (const t of data.tracks) this.tracks.set(t.trackType as TrackType, t);
+          for (const t of data.tracks) {
+            this.tracks.set(
+              t.trackType as TrackType,
+              normalizeTrackState({ ...t, trackType: t.trackType as TrackType }),
+            );
+          }
         }
         if (data.prefs) {
           const normalized = normalizeUserPrefs(data.prefs);
@@ -128,12 +142,14 @@ class WebStorage implements Storage {
 
   async getTrackState(trackType: TrackType) {
     this.load();
-    return this.tracks.get(trackType) || defaultTrackState(trackType);
+    return normalizeTrackState(this.tracks.get(trackType) || defaultTrackState(trackType));
   }
 
   async getAllTrackStates() {
     this.load();
-    return ALL_TRACKS.map((t) => this.tracks.get(t) || defaultTrackState(t));
+    return ALL_TRACKS.map((t) =>
+      normalizeTrackState(this.tracks.get(t) || defaultTrackState(t)),
+    );
   }
 
   async updateTrackState(state: TrackState) {
@@ -180,7 +196,7 @@ class WebStorage implements Storage {
     this.tracks = new Map();
     for (const t of ALL_TRACKS) {
       const found = snapshot.tracks.find((row) => row.trackType === t);
-      this.tracks.set(t, found ?? defaultTrackState(t));
+      this.tracks.set(t, normalizeTrackState(found ?? defaultTrackState(t)));
     }
     this.save();
   }

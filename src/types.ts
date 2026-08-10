@@ -36,6 +36,10 @@ export interface TrackState {
   lastCheckInAt: string | null; // ISO string
   streak: number;
   lastCompletedDay: string | null; // YYYY-MM-DD
+  /** Successful check-ins in the current uninterrupted celebration run (includes same-day repeats). */
+  celebrationCount: number;
+  /** True when this run began with a paid revive check-in. */
+  celebrationPaidStart: boolean;
 }
 
 export type PetHat = 'none' | 'top' | 'beanie' | 'crown';
@@ -164,6 +168,18 @@ export const HABIT_CADENCE_MS: Record<HabitCadence, number> = {
   every2days: 2 * DAY,
   weekly: 7 * DAY,
 };
+
+export function normalizeTrackState(partial: Partial<TrackState> & { trackType: TrackType }): TrackState {
+  return {
+    trackType: partial.trackType,
+    level: partial.level ?? 50,
+    lastCheckInAt: partial.lastCheckInAt ?? null,
+    streak: partial.streak ?? 0,
+    lastCompletedDay: partial.lastCompletedDay ?? null,
+    celebrationCount: partial.celebrationCount ?? partial.streak ?? 0,
+    celebrationPaidStart: partial.celebrationPaidStart ?? false,
+  };
+}
 
 export function habitCadenceToPeriodMs(cadence: HabitCadence | undefined): number {
   if (!cadence) return HABIT_PERIOD_MS.main;

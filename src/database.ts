@@ -12,6 +12,7 @@ import {
   resolveHabitName,
   resolvePetName,
   normalizeUserPrefs,
+  normalizeTrackState,
   PetHat,
   HabitCadence,
 } from './types';
@@ -30,7 +31,15 @@ export interface Storage {
 }
 
 function defaultTrackState(trackType: TrackType): TrackState {
-  return { trackType, level: 50, lastCheckInAt: null, streak: 0, lastCompletedDay: null };
+  return {
+    trackType,
+    level: 50,
+    lastCheckInAt: null,
+    streak: 0,
+    lastCompletedDay: null,
+    celebrationCount: 0,
+    celebrationPaidStart: false,
+  };
 }
 
 type CheckInRow = Omit<CheckIn, 'isPaidRestart'> & { isPaidRestart?: number | boolean | null };
@@ -74,9 +83,21 @@ class NativeStorage implements Storage {
         level REAL NOT NULL DEFAULT 50,
         lastCheckInAt TEXT,
         streak INTEGER NOT NULL DEFAULT 0,
-        lastCompletedDay TEXT
+        lastCompletedDay TEXT,
+        celebrationCount INTEGER NOT NULL DEFAULT 0,
+        celebrationPaidStart INTEGER NOT NULL DEFAULT 0
       );
     `);
+    try {
+      await this.db.execAsync(
+        `ALTER TABLE track_state ADD COLUMN celebrationCount INTEGER NOT NULL DEFAULT 0`,
+      );
+    } catch {}
+    try {
+      await this.db.execAsync(
+        `ALTER TABLE track_state ADD COLUMN celebrationPaidStart INTEGER NOT NULL DEFAULT 0`,
+      );
+    } catch {}
     await this.db.execAsync(`
       CREATE TABLE IF NOT EXISTS user_prefs (
         id INTEGER PRIMARY KEY CHECK (id = 1),
@@ -155,16 +176,20 @@ class NativeStorage implements Storage {
 
   async getTrackState(trackType: TrackType) {
     const db = await this.getDb();
-    return (await db.getFirstAsync<TrackState>(
+    const row = await db.getFirstAsync<TrackState & { celebrationPaidStart?: number | boolean }>(
       `SELECT * FROM track_state WHERE trackType = ?`, trackType
-    ))!;
+    );
+    return normalizeTrackState({
+      ...row!,
+      celebrationPaidStart: Boolean(row?.celebrationPaidStart),
+    });
   }
 
   async getAllTrackStates() {
     const db = await this.getDb();
     const states: TrackState[] = [];
     for (const t of ALL_TRACKS) {
-      let row = await db.getFirstAsync<TrackState>(
+      let row = await db.getFirstAsync<TrackState & { celebrationPaidStart?: number | boolean }>(
         `SELECT * FROM track_state WHERE trackType = ?`, t
       );
       if (!row) {
@@ -174,7 +199,12 @@ class NativeStorage implements Storage {
         );
         row = defaultTrackState(t);
       }
-      states.push(row);
+      states.push(
+        normalizeTrackState({
+          ...row,
+          celebrationPaidStart: Boolean(row.celebrationPaidStart),
+        }),
+      );
     }
     return states;
   }
@@ -182,8 +212,14 @@ class NativeStorage implements Storage {
   async updateTrackState(state: TrackState) {
     const db = await this.getDb();
     await db.runAsync(
-      `UPDATE track_state SET level = ?, lastCheckInAt = ?, streak = ?, lastCompletedDay = ? WHERE trackType = ?`,
-      state.level, state.lastCheckInAt, state.streak, state.lastCompletedDay, state.trackType
+      `UPDATE track_state SET level = ?, lastCheckInAt = ?, streak = ?, lastCompletedDay = ?, celebrationCount = ?, celebrationPaidStart = ? WHERE trackType = ?`,
+      state.level,
+      state.lastCheckInAt,
+      state.streak,
+      state.lastCompletedDay,
+      state.celebrationCount,
+      state.celebrationPaidStart ? 1 : 0,
+      state.trackType,
     );
   }
 

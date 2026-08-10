@@ -1,5 +1,6 @@
 import { Mood } from './types';
 import { Colors } from './theme';
+import { BALLS_GREETING, SuccessCelebration } from './successProgression';
 
 /**
  * Maps the pet's mood to a full visual + copy palette that matches
@@ -27,6 +28,8 @@ export interface StateTheme {
   pet: string;
   showConfetti: boolean;
   showCrossOut: boolean;
+  showSuccessBalls: boolean;
+  successBallEmoji: string | null;
   greeting: (name?: string) => string;
   motto: (firstHabit: string) => string;
   checkInLabel: string;
@@ -55,11 +58,16 @@ const CHECK_IN_LABEL = 'i did it!!!!!1';
 export interface StateThemeOptions {
   /** Most recent check-in was a paid €1 restart (not a habit log). */
   lastCheckInWasPaidRestart?: boolean;
+  /** Streak-based success celebration tier (allGood mood only). */
+  successCelebration?: SuccessCelebration;
 }
 
 export function getStateTheme(mood: Mood, options?: StateThemeOptions): StateTheme {
   const scene = moodToScene(mood);
   const paidRestart = Boolean(options?.lastCheckInWasPaidRestart);
+  const celebration = options?.successCelebration;
+  const showSuccessBalls = celebration?.kind === 'balls' && Boolean(celebration.ballEmoji);
+  const successBallEmoji = showSuccessBalls ? celebration!.ballEmoji! : null;
 
   const shared = {
     ink: Colors.ink,
@@ -79,8 +87,13 @@ export function getStateTheme(mood: Mood, options?: StateThemeOptions): StateThe
       inkSoft: '#1A1A1A',
       showConfetti: true,
       showCrossOut: false,
-      greeting: () =>
-        paidRestart ? 'paid for\ngood vibes' : "you're a\nrockstar!",
+      showSuccessBalls,
+      successBallEmoji,
+      greeting: () => {
+        if (paidRestart) return 'paid for\ngood vibes';
+        if (celebration?.kind === 'balls') return BALLS_GREETING;
+        return "you're a\nrockstar!";
+      },
       motto: () => 'skip = rip.',
       checkInLabel: CHECK_IN_LABEL,
     };
@@ -94,6 +107,8 @@ export function getStateTheme(mood: Mood, options?: StateThemeOptions): StateThe
       inkSoft: '#330000',
       showConfetti: false,
       showCrossOut: true,
+      showSuccessBalls: false,
+      successBallEmoji: null,
       greeting: (name = DEFAULT_NAME) => `ugh, ${name}!`,
       motto: () => 'i died waiting.',
       checkInLabel: 'restart for 1€',
@@ -108,6 +123,8 @@ export function getStateTheme(mood: Mood, options?: StateThemeOptions): StateThe
       inkSoft: '#1A1A1A',
       showConfetti: false,
       showCrossOut: false,
+      showSuccessBalls: false,
+      successBallEmoji: null,
       greeting: (name = DEFAULT_NAME) => `hi ${name}!`,
       motto: () => 'your laziness, my funeral.',
       checkInLabel: CHECK_IN_LABEL,
@@ -122,6 +139,8 @@ export function getStateTheme(mood: Mood, options?: StateThemeOptions): StateThe
     inkSoft: '#1A1A1A',
     showConfetti: false,
     showCrossOut: false,
+    showSuccessBalls: false,
+    successBallEmoji: null,
     greeting: (name = DEFAULT_NAME) => `hi ${name}!`,
     motto: () => "don't make me die cringe.",
     checkInLabel: CHECK_IN_LABEL,

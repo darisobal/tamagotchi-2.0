@@ -10,6 +10,7 @@ import {
   HABIT_PERIOD_MS,
   PET_LIVES_MAX,
   DEFAULT_HABIT_NAME,
+  MAIN_TRACK,
 } from './types';
 
 // ─── Pet lives ───────────────────────────────────────────
@@ -181,7 +182,7 @@ export function toDateString(d: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-function dayBefore(dateStr: string): string {
+export function dayBefore(dateStr: string): string {
   const d = new Date(dateStr + 'T12:00:00');
   d.setDate(d.getDate() - 1);
   return toDateString(d);
@@ -231,14 +232,68 @@ export function recomputeStreakFromCheckIns(checkIns: CheckIn[]): {
   };
 }
 
+export function recomputeCelebrationFromCheckIns(checkIns: CheckIn[]): {
+  celebrationCount: number;
+  celebrationPaidStart: boolean;
+} {
+  const main = checkIns
+    .filter((c) => c.trackType === MAIN_TRACK)
+    .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+
+  if (main.length === 0) {
+    return { celebrationCount: 0, celebrationPaidStart: false };
+  }
+
+  const run: CheckIn[] = [main[main.length - 1]];
+  let earliestDay = toDateString(new Date(run[0].timestamp));
+
+  for (let i = main.length - 2; i >= 0; i--) {
+    const checkIn = main[i];
+    const day = toDateString(new Date(checkIn.timestamp));
+    const runStartDay = toDateString(new Date(run[0].timestamp));
+
+    if (day === runStartDay) {
+      run.unshift(checkIn);
+      continue;
+    }
+
+    if (day === dayBefore(earliestDay)) {
+      run.unshift(checkIn);
+      earliestDay = day;
+      continue;
+    }
+
+    break;
+  }
+
+  return {
+    celebrationCount: run.length,
+    celebrationPaidStart: Boolean(run[0].isPaidRestart),
+  };
+}
+
 // ─── Check-in processing ─────────────────────────────────
 
 export function processCheckIn(
   state: TrackState,
   _intensity: Intensity,
-  now: Date
+  now: Date,
+  isPaidRestart = false,
 ): TrackState {
+  const today = toDateString(now);
   const { streak, lastCompletedDay } = computeStreakAfterCheckIn(state, now);
+
+  let celebrationCount = state.celebrationCount ?? 0;
+  let celebrationPaidStart = state.celebrationPaidStart ?? false;
+
+  if (state.lastCompletedDay === today) {
+    celebrationCount += 1;
+  } else if (state.lastCompletedDay && state.lastCompletedDay === dayBefore(today)) {
+    celebrationCount += 1;
+  } else {
+    celebrationCount = 1;
+    celebrationPaidStart = isPaidRestart;
+  }
 
   return {
     ...state,
@@ -246,6 +301,8 @@ export function processCheckIn(
     lastCheckInAt: now.toISOString(),
     streak,
     lastCompletedDay,
+    celebrationCount,
+    celebrationPaidStart,
   };
 }
 

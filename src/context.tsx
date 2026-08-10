@@ -18,7 +18,7 @@ import {
 import * as repo from './repository';
 import { pullUserSnapshot, pushUserSnapshot, canSyncToCloud } from './sync';
 import { useAuth } from './authContext';
-import { processCheckIn, computeAllHabits, computePetMood, recomputeStreakFromCheckIns } from './logic';
+import { processCheckIn, computeAllHabits, computePetMood, recomputeStreakFromCheckIns, recomputeCelebrationFromCheckIns } from './logic';
 import { syncPetStatusWidget } from './widgetSync';
 import { consumePendingPaidRestart } from './purchases';
 import * as Crypto from 'expo-crypto';
@@ -86,6 +86,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             lastCheckInAt: null as string | null,
             streak: 0,
             lastCompletedDay: null as string | null,
+            celebrationCount: 0,
+            celebrationPaidStart: false,
           }));
     if (currentTracks.length === 0) {
       tracksRef.current = tracks;
@@ -188,7 +190,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         isPaidRestart,
       };
 
-      const updatedState = processCheckIn(state, intensity, now);
+      const updatedState = processCheckIn(state, intensity, now, isPaidRestart);
 
       await repo.insertCheckIn(newCheckIn);
       await repo.updateTrackState(updatedState);
@@ -206,6 +208,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const trackType = deleted.trackType;
       const remaining = await repo.getCheckInsForTrack(trackType);
       const { streak, lastCompletedDay } = recomputeStreakFromCheckIns(remaining);
+      const { celebrationCount, celebrationPaidStart } =
+        recomputeCelebrationFromCheckIns(remaining);
 
       const current = await repo.getTrackState(trackType);
       const lastCheckIn = remaining.length > 0 ? remaining[remaining.length - 1].timestamp : null;
@@ -216,6 +220,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         streak,
         lastCompletedDay,
         lastCheckInAt: lastCheckIn,
+        celebrationCount,
+        celebrationPaidStart,
       });
 
       await refresh();

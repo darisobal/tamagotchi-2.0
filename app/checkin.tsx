@@ -110,11 +110,11 @@ export default function CheckInScreen() {
 
           <Text style={styles.trackTitle}>{habitName}</Text>
 
-          <Text style={styles.prompt}>
-            {mood === 'dead'
-              ? 'paid restart unlocked — what will you do first?'
-              : 'nice -- what did you do today?'}
-          </Text>
+          {mood === 'dead' && (
+            <Text style={styles.prompt}>
+              paid restart unlocked — what will you do first?
+            </Text>
+          )}
 
           <Text style={styles.label}>note (optional)</Text>
           <TextInput

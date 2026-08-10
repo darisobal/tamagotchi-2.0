@@ -19,7 +19,6 @@ import Animated, {
   cancelAnimation,
   interpolate,
 } from 'react-native-reanimated';
-import { router } from 'expo-router';
 import { useAppState } from '../../src/context';
 import { DEFAULT_HABIT_NAME, MAIN_TRACK } from '../../src/types';
 import { Spacing, FontSize, Slab, Radius, Border, Type, Colors } from '../../src/theme';
@@ -39,8 +38,15 @@ import PetEggShell, {
 import PetLives from '../../src/PetLives';
 import HeroTaskCard from '../../src/HeroTaskCard';
 import RestartPaywall from '../../src/RestartPaywall';
+import CheckInConfirmModal from '../../src/CheckInConfirmModal';
+import {
+  CheckInConfirmCopy,
+  pickCheckInConfirmCopy,
+} from '../../src/checkInConfirmCopy';
 import { HEART_VIEWBOX } from '../../assets/pet/heart-paths';
 import { formatLifeTimer } from '../../src/logic';
+import { getSuccessCelebration } from '../../src/successProgression';
+import PetSuccessBalls from '../../src/PetSuccessBalls';
 
 const EGG_FLIP_MS = 480;
 
@@ -67,6 +73,8 @@ export default function HomeScreen() {
     useAppState();
   const [refreshing, setRefreshing] = React.useState(false);
   const [restartPaywallVisible, setRestartPaywallVisible] = React.useState(false);
+  const [confirmVisible, setConfirmVisible] = React.useState(false);
+  const [confirmCopy, setConfirmCopy] = React.useState<CheckInConfirmCopy | null>(null);
   const [eggFlipped, setEggFlipped] = React.useState(false);
 
   const onRefresh = useCallback(async () => {
@@ -76,8 +84,15 @@ export default function HomeScreen() {
   }, [refresh]);
 
   const lastMainCheckIn = checkIns.find((c) => c.trackType === MAIN_TRACK);
+  const mainTrack = tracks.find((t) => t.trackType === MAIN_TRACK);
+  const successCelebration = getSuccessCelebration({
+    celebrationCount: mainTrack?.celebrationCount ?? 0,
+    lastCheckInWasPaidRestart: Boolean(lastMainCheckIn?.isPaidRestart),
+    celebrationPaidStart: Boolean(mainTrack?.celebrationPaidStart),
+  });
   const theme = getStateTheme(mood, {
     lastCheckInWasPaidRestart: Boolean(lastMainCheckIn?.isPaidRestart),
+    successCelebration,
   });
   const tabBarExtraPad = useFloatingTabBarExtraPadding();
 
@@ -89,17 +104,23 @@ export default function HomeScreen() {
   const streakDays = tracks.find((t) => t.trackType === MAIN_TRACK)?.streak ?? 0;
   const showTrackedCard = mood === 'happy';
 
-  const openCheckIn = useCallback(() => {
-    router.push({ pathname: '/checkin', params: { track: MAIN_TRACK } });
-  }, []);
-
   const onHeroCheckIn = useCallback(() => {
     if (mood === 'dead') {
       setRestartPaywallVisible(true);
       return;
     }
-    openCheckIn();
-  }, [mood, openCheckIn]);
+    setConfirmCopy(pickCheckInConfirmCopy());
+    setConfirmVisible(true);
+  }, [mood]);
+
+  const onConfirmCheckIn = useCallback(() => {
+    setConfirmVisible(false);
+    void doCheckIn(MAIN_TRACK, 'medium', null);
+  }, [doCheckIn]);
+
+  const onCancelConfirm = useCallback(() => {
+    setConfirmVisible(false);
+  }, []);
 
   const onRestartUnlocked = useCallback(async () => {
     setRestartPaywallVisible(false);
@@ -141,6 +162,7 @@ export default function HomeScreen() {
             petColor={petColor}
             petHat={prefs.petHat ?? 'none'}
             showConfetti={theme.showConfetti}
+            successBallEmoji={theme.successBallEmoji}
             petName={petName}
             flipped={eggFlipped}
             timeRemainingMs={habit?.timeRemainingMs ?? 0}
@@ -180,6 +202,15 @@ export default function HomeScreen() {
         visible={restartPaywallVisible}
         onClose={() => setRestartPaywallVisible(false)}
         onUnlocked={onRestartUnlocked}
+      />
+
+      <CheckInConfirmModal
+        visible={confirmVisible}
+        copy={confirmCopy}
+        backgroundColor={theme.bg}
+        faceColor={petColor}
+        onConfirm={onConfirmCheckIn}
+        onCancel={onCancelConfirm}
       />
     </SafeAreaView>
   );
@@ -232,6 +263,9 @@ function LifeTimer({
   );
 }
 
+const PIXEL_PET_GRID = 16;
+const PIXEL_PET_SIZE = 7;
+
 function PetStage({
   petType,
   mood,
@@ -239,6 +273,7 @@ function PetStage({
   petColor,
   petHat,
   showConfetti,
+  successBallEmoji,
   petName,
   flipped,
   timeRemainingMs,
@@ -250,6 +285,7 @@ function PetStage({
   petColor: string;
   petHat: ReturnType<typeof useAppState>['prefs']['petHat'];
   showConfetti: boolean;
+  successBallEmoji: string | null;
   petName: string;
   flipped: boolean;
   timeRemainingMs: number;
@@ -257,6 +293,8 @@ function PetStage({
 }) {
   const useSelfiePixels = petType === 'selfie' && Boolean(customSprite);
   const isDead = mood === 'dead';
+  const showSuccessBalls = mood === 'happy' && Boolean(successBallEmoji);
+  const pixelPetSize = PIXEL_PET_GRID * PIXEL_PET_SIZE;
   const flipProgress = useSharedValue(flipped ? 1 : 0);
 
   useEffect(() => {
@@ -314,13 +352,23 @@ function PetStage({
             ]}
           >
             {useSelfiePixels ? (
-              <PixelPet
-                petType={petType}
-                mood={mood}
-                customSprite={customSprite ?? null}
-                color={petColor}
-                pixelSize={7}
-              />
+              <View style={styles.pixelPetWrap}>
+                <PixelPet
+                  petType={petType}
+                  mood={mood}
+                  customSprite={customSprite ?? null}
+                  color={petColor}
+                  pixelSize={PIXEL_PET_SIZE}
+                />
+                {showSuccessBalls && successBallEmoji ? (
+                  <PetSuccessBalls
+                    emoji={successBallEmoji}
+                    layoutWidth={pixelPetSize}
+                    layoutHeight={pixelPetSize}
+                    variant="pixel"
+                  />
+                ) : null}
+              </View>
             ) : (
               <LineArtPet
                 mood={mood}
@@ -329,6 +377,7 @@ function PetStage({
                   isDead ? PET_HOME_DEAD_DISPLAY_HEIGHT : PET_HOME_DISPLAY_HEIGHT
                 }
                 hat={petHat}
+                ballEmoji={showSuccessBalls ? successBallEmoji : null}
               />
             )}
           </View>
@@ -589,6 +638,10 @@ const styles = StyleSheet.create({
     overflow: 'visible',
     // Keep upright pet aligned with the egg's horizontal offset.
     marginLeft: PET_HOME_EGG_LEFT_INSET,
+  },
+  pixelPetWrap: {
+    position: 'relative',
+    overflow: 'visible',
   },
   petForegroundDead: {
     position: 'absolute',

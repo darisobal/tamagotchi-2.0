@@ -17,6 +17,8 @@ function makeTrackState(lastCheckInAt: string | null = null): TrackState {
     lastCheckInAt,
     streak: 0,
     lastCompletedDay: null,
+    celebrationCount: 0,
+    celebrationPaidStart: false,
   };
 }
 
@@ -228,10 +230,25 @@ describe('processCheckIn', () => {
       ...makeTrackState(),
       streak: 3,
       lastCompletedDay: yesterday.toISOString().slice(0, 10),
+      celebrationCount: 3,
     };
     const now = new Date();
     const result = processCheckIn(state, 'medium', now);
     expect(result.streak).toBe(4);
+    expect(result.celebrationCount).toBe(4);
+  });
+
+  test('same-day check-in advances celebration but not streak', () => {
+    const today = new Date().toISOString().slice(0, 10);
+    const state: TrackState = {
+      ...makeTrackState(new Date().toISOString()),
+      streak: 1,
+      lastCompletedDay: today,
+      celebrationCount: 1,
+    };
+    const result = processCheckIn(state, 'medium', new Date());
+    expect(result.streak).toBe(1);
+    expect(result.celebrationCount).toBe(2);
   });
 
   test('check-in after misses restores 3 lives via fresh deadline', () => {

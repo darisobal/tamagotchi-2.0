@@ -16,6 +16,7 @@ import { Colors } from './theme';
 import PetFigure, { PET_SVG_VB } from './PetFigure';
 import PetHat from './PetHat';
 import DeadBloodSplatter from './DeadBloodSplatter';
+import PetSuccessBalls from './PetSuccessBalls';
 import { PET_HOME_DISPLAY_HEIGHT } from './PetEggShell';
 
 const AnimatedView = Animated.createAnimatedComponent(View);
@@ -37,6 +38,8 @@ type LineArtPetProps = {
    */
   displayHeight?: number;
   hat?: PetHatId;
+  /** When set on a happy pet, renders two sports-ball emoji on the lower torso. */
+  ballEmoji?: string | null;
 };
 
 /**
@@ -51,6 +54,7 @@ export default function LineArtPet({
   strokeColor = Colors.pet,
   displayHeight = PET_HOME_DISPLAY_HEIGHT,
   hat = 'none',
+  ballEmoji = null,
 }: LineArtPetProps) {
   const isDead = mood === 'dead';
 
@@ -171,6 +175,14 @@ export default function LineArtPet({
           <PetHat hat={hat} {...HAT_PLACEMENT} strokeColor={strokeColor} />
         </Svg>
       </View>
+      {mood === 'happy' && ballEmoji ? (
+        <PetSuccessBalls
+          emoji={ballEmoji}
+          layoutWidth={layoutW}
+          layoutHeight={layoutH}
+          variant="lineArt"
+        />
+      ) : null}
     </AnimatedView>
   );
 }
