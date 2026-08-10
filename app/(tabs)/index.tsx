@@ -39,6 +39,11 @@ import PetEggShell, {
 import PetLives from '../../src/PetLives';
 import HeroTaskCard from '../../src/HeroTaskCard';
 import RestartPaywall from '../../src/RestartPaywall';
+import CheckInConfirmModal from '../../src/CheckInConfirmModal';
+import {
+  CheckInConfirmCopy,
+  pickCheckInConfirmCopy,
+} from '../../src/checkInConfirmCopy';
 import { HEART_VIEWBOX } from '../../assets/pet/heart-paths';
 import { formatLifeTimer } from '../../src/logic';
 
@@ -67,6 +72,8 @@ export default function HomeScreen() {
     useAppState();
   const [refreshing, setRefreshing] = React.useState(false);
   const [restartPaywallVisible, setRestartPaywallVisible] = React.useState(false);
+  const [confirmVisible, setConfirmVisible] = React.useState(false);
+  const [confirmCopy, setConfirmCopy] = React.useState<CheckInConfirmCopy | null>(null);
   const [eggFlipped, setEggFlipped] = React.useState(false);
 
   const onRefresh = useCallback(async () => {
@@ -98,8 +105,18 @@ export default function HomeScreen() {
       setRestartPaywallVisible(true);
       return;
     }
+    setConfirmCopy(pickCheckInConfirmCopy());
+    setConfirmVisible(true);
+  }, [mood]);
+
+  const onConfirmCheckIn = useCallback(() => {
+    setConfirmVisible(false);
     openCheckIn();
-  }, [mood, openCheckIn]);
+  }, [openCheckIn]);
+
+  const onCancelConfirm = useCallback(() => {
+    setConfirmVisible(false);
+  }, []);
 
   const onRestartUnlocked = useCallback(async () => {
     setRestartPaywallVisible(false);
@@ -175,6 +192,13 @@ export default function HomeScreen() {
           </View>
         )}
       </ScrollView>
+
+      <CheckInConfirmModal
+        visible={confirmVisible}
+        copy={confirmCopy}
+        onConfirm={onConfirmCheckIn}
+        onCancel={onCancelConfirm}
+      />
 
       <RestartPaywall
         visible={restartPaywallVisible}
