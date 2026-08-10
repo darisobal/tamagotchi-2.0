@@ -151,7 +151,7 @@ export default function LineArtPet({
     transform: `rotate(${armWave.value} 82 145)`,
   }));
 
-  const ballSize = Math.max(18, Math.round(displayHeight * 0.09));
+  const ballSize = Math.max(22, Math.round(displayHeight * 0.11));
   const showBalls = Boolean(successBallEmoji) && !isDead;
 
   return (

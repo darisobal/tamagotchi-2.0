@@ -45,7 +45,8 @@ const styles = StyleSheet.create({
   /** Horizontally centered pair — slight bias matches the line-art body's center. */
   pair: {
     position: 'absolute',
-    top: '37%',
+    // Lower abdomen / bottom of torso (~y 145 in 360 viewBox).
+    top: '40%',
     left: '6%',
     right: '10%',
     flexDirection: 'row',
