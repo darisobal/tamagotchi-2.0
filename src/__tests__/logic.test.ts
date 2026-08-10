@@ -12,6 +12,8 @@ import {
   shiftDateString,
   SUCCESS_BALL_EMOJIS,
   toDateString,
+  parseSuccessDemo,
+  celebrationToThemeOptions,
 } from '../logic';
 import { TrackState, ComputedHabit, HABIT_PERIOD_MS, MAIN_TRACK, PET_LIVES_MAX, CheckIn } from '../types';
 import { getStateTheme, getSuccessBallEmoji } from '../stateTheme';
@@ -414,5 +416,32 @@ describe('getStateTheme balls greeting', () => {
     expect(getSuccessBallEmoji('happy', { streak: 2 })).toBe('⚽');
     expect(getSuccessBallEmoji('happy', { streak: 3 })).toBe('🎾');
     expect(getSuccessBallEmoji('okay', { streak: 5 })).toBeNull();
+  });
+});
+
+describe('parseSuccessDemo', () => {
+  test('parses paid / rockstar / balls with ball index', () => {
+    expect(parseSuccessDemo('paid')).toEqual({ kind: 'paidVibes' });
+    expect(parseSuccessDemo('rockstar')).toEqual({ kind: 'rockstar' });
+    expect(parseSuccessDemo('balls')).toEqual({
+      kind: 'balls',
+      ballIndex: 0,
+      emoji: SUCCESS_BALL_EMOJIS[0],
+    });
+    expect(parseSuccessDemo('balls', '3')).toEqual({
+      kind: 'balls',
+      ballIndex: 2,
+      emoji: SUCCESS_BALL_EMOJIS[2],
+    });
+  });
+
+  test('celebrationToThemeOptions maps balls streak', () => {
+    expect(
+      celebrationToThemeOptions({
+        kind: 'balls',
+        ballIndex: 1,
+        emoji: SUCCESS_BALL_EMOJIS[1],
+      }).streak,
+    ).toBe(3);
   });
 });

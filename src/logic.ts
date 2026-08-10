@@ -333,6 +333,72 @@ export function resolveSuccessCelebration(options: {
   return { kind: 'rockstar' };
 }
 
+/**
+ * Localhost / QA preview via URL query params (does not write to storage).
+ *
+ *   /?demo=paid
+ *   /?demo=rockstar
+ *   /?demo=balls          → soccer (index 0)
+ *   /?demo=balls&ball=2   → tennis (1-based: 1…5)
+ */
+export function parseSuccessDemo(
+  demoRaw: string | string[] | undefined,
+  ballRaw?: string | string[] | undefined,
+): SuccessCelebration | null {
+  const demo = Array.isArray(demoRaw) ? demoRaw[0] : demoRaw;
+  if (!demo) return null;
+
+  const key = demo.trim().toLowerCase();
+  if (key === 'paid' || key === 'paidvibes' || key === 'vibes') {
+    return { kind: 'paidVibes' };
+  }
+  if (key === 'rockstar') {
+    return { kind: 'rockstar' };
+  }
+  if (key === 'balls' || key === 'ball') {
+    const ballParam = Array.isArray(ballRaw) ? ballRaw[0] : ballRaw;
+    const parsed = ballParam ? Number.parseInt(ballParam, 10) : 1;
+    const oneBased = Number.isFinite(parsed) && parsed >= 1 ? parsed : 1;
+    const ballIndex = (oneBased - 1) % SUCCESS_BALL_EMOJIS.length;
+    return {
+      kind: 'balls',
+      ballIndex,
+      emoji: SUCCESS_BALL_EMOJIS[ballIndex],
+    };
+  }
+  return null;
+}
+
+/** Map a celebration (including demos) to theme options that force that greeting. */
+export function celebrationToThemeOptions(
+  celebration: SuccessCelebration,
+): {
+  lastCheckInWasPaidRestart: boolean;
+  streak: number;
+  streakBeganWithPaidRestart: boolean;
+} {
+  if (celebration.kind === 'paidVibes') {
+    return {
+      lastCheckInWasPaidRestart: true,
+      streak: 1,
+      streakBeganWithPaidRestart: true,
+    };
+  }
+  if (celebration.kind === 'rockstar') {
+    return {
+      lastCheckInWasPaidRestart: false,
+      streak: 1,
+      streakBeganWithPaidRestart: false,
+    };
+  }
+  // Normal ladder: balls start at streak 2 + ballIndex
+  return {
+    lastCheckInWasPaidRestart: false,
+    streak: 2 + celebration.ballIndex,
+    streakBeganWithPaidRestart: false,
+  };
+}
+
 // ─── Legacy compat (kept for imports that haven't migrated) ──
 
 export function applyDecay(state: TrackState, _now: Date): TrackState {
