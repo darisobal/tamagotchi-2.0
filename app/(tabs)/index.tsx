@@ -19,7 +19,6 @@ import Animated, {
   cancelAnimation,
   interpolate,
 } from 'react-native-reanimated';
-import { router } from 'expo-router';
 import { useAppState } from '../../src/context';
 import { DEFAULT_HABIT_NAME, MAIN_TRACK } from '../../src/types';
 import { Spacing, FontSize, Slab, Radius, Border, Type, Colors } from '../../src/theme';
@@ -96,10 +95,6 @@ export default function HomeScreen() {
   const streakDays = tracks.find((t) => t.trackType === MAIN_TRACK)?.streak ?? 0;
   const showTrackedCard = mood === 'happy';
 
-  const openCheckIn = useCallback(() => {
-    router.push({ pathname: '/checkin', params: { track: MAIN_TRACK } });
-  }, []);
-
   const onHeroCheckIn = useCallback(() => {
     if (mood === 'dead') {
       setRestartPaywallVisible(true);
@@ -111,8 +106,8 @@ export default function HomeScreen() {
 
   const onConfirmCheckIn = useCallback(() => {
     setConfirmVisible(false);
-    openCheckIn();
-  }, [openCheckIn]);
+    void doCheckIn(MAIN_TRACK, 'medium', null);
+  }, [doCheckIn]);
 
   const onCancelConfirm = useCallback(() => {
     setConfirmVisible(false);
