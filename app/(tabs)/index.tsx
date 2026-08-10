@@ -23,7 +23,7 @@ import { router } from 'expo-router';
 import { useAppState } from '../../src/context';
 import { DEFAULT_HABIT_NAME, MAIN_TRACK } from '../../src/types';
 import { Spacing, FontSize, Slab, Radius, Border, Type, Colors } from '../../src/theme';
-import { getStateTheme } from '../../src/stateTheme';
+import { getStateTheme, getSuccessBallEmoji } from '../../src/stateTheme';
 import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
 import PixelPet from '../../src/PixelPet';
 import LineArtPet from '../../src/LineArtPet';
@@ -39,8 +39,9 @@ import PetEggShell, {
 import PetLives from '../../src/PetLives';
 import HeroTaskCard from '../../src/HeroTaskCard';
 import RestartPaywall from '../../src/RestartPaywall';
+import PetSuccessBalls from '../../src/PetSuccessBalls';
 import { HEART_VIEWBOX } from '../../assets/pet/heart-paths';
-import { formatLifeTimer } from '../../src/logic';
+import { formatLifeTimer, streakBeganWithPaidRestart } from '../../src/logic';
 
 const EGG_FLIP_MS = 480;
 
@@ -76,9 +77,17 @@ export default function HomeScreen() {
   }, [refresh]);
 
   const lastMainCheckIn = checkIns.find((c) => c.trackType === MAIN_TRACK);
-  const theme = getStateTheme(mood, {
+  const streakDays = tracks.find((t) => t.trackType === MAIN_TRACK)?.streak ?? 0;
+  const lastCompletedDay =
+    tracks.find((t) => t.trackType === MAIN_TRACK)?.lastCompletedDay ?? null;
+  const beganPaid = streakBeganWithPaidRestart(checkIns, streakDays, lastCompletedDay);
+  const themeOptions = {
     lastCheckInWasPaidRestart: Boolean(lastMainCheckIn?.isPaidRestart),
-  });
+    streak: streakDays,
+    streakBeganWithPaidRestart: beganPaid,
+  };
+  const theme = getStateTheme(mood, themeOptions);
+  const successBallEmoji = getSuccessBallEmoji(mood, themeOptions);
   const tabBarExtraPad = useFloatingTabBarExtraPadding();
 
   // Single-habit app: card uses the setup name; track status is separate.
@@ -86,7 +95,6 @@ export default function HomeScreen() {
   const habitName = (prefs.habitName || DEFAULT_HABIT_NAME).trim();
   const petName = (prefs.petName || 'champ').trim();
   const petColor = prefs.petColor || theme.pet;
-  const streakDays = tracks.find((t) => t.trackType === MAIN_TRACK)?.streak ?? 0;
   const showTrackedCard = mood === 'happy';
 
   const openCheckIn = useCallback(() => {
@@ -141,6 +149,7 @@ export default function HomeScreen() {
             petColor={petColor}
             petHat={prefs.petHat ?? 'none'}
             showConfetti={theme.showConfetti}
+            successBallEmoji={successBallEmoji}
             petName={petName}
             flipped={eggFlipped}
             timeRemainingMs={habit?.timeRemainingMs ?? 0}
@@ -239,6 +248,7 @@ function PetStage({
   petColor,
   petHat,
   showConfetti,
+  successBallEmoji,
   petName,
   flipped,
   timeRemainingMs,
@@ -250,6 +260,7 @@ function PetStage({
   petColor: string;
   petHat: ReturnType<typeof useAppState>['prefs']['petHat'];
   showConfetti: boolean;
+  successBallEmoji: string | null;
   petName: string;
   flipped: boolean;
   timeRemainingMs: number;
@@ -314,13 +325,21 @@ function PetStage({
             ]}
           >
             {useSelfiePixels ? (
-              <PixelPet
-                petType={petType}
-                mood={mood}
-                customSprite={customSprite ?? null}
-                color={petColor}
-                pixelSize={7}
-              />
+              <View style={styles.selfiePetWrap}>
+                <PixelPet
+                  petType={petType}
+                  mood={mood}
+                  customSprite={customSprite ?? null}
+                  color={petColor}
+                  pixelSize={7}
+                />
+                {successBallEmoji && !isDead ? (
+                  <PetSuccessBalls
+                    emoji={successBallEmoji}
+                    size={Math.max(16, Math.round(PET_HOME_DISPLAY_HEIGHT * 0.07))}
+                  />
+                ) : null}
+              </View>
             ) : (
               <LineArtPet
                 mood={mood}
@@ -329,6 +348,7 @@ function PetStage({
                   isDead ? PET_HOME_DEAD_DISPLAY_HEIGHT : PET_HOME_DISPLAY_HEIGHT
                 }
                 hat={petHat}
+                successBallEmoji={successBallEmoji}
               />
             )}
           </View>
@@ -589,6 +609,10 @@ const styles = StyleSheet.create({
     overflow: 'visible',
     // Keep upright pet aligned with the egg's horizontal offset.
     marginLeft: PET_HOME_EGG_LEFT_INSET,
+  },
+  selfiePetWrap: {
+    position: 'relative',
+    overflow: 'visible',
   },
   petForegroundDead: {
     position: 'absolute',

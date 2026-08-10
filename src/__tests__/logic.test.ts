@@ -7,8 +7,14 @@ import {
   formatCountdown,
   formatLifeTimer,
   processCheckIn,
+  resolveSuccessCelebration,
+  streakBeganWithPaidRestart,
+  shiftDateString,
+  SUCCESS_BALL_EMOJIS,
+  toDateString,
 } from '../logic';
-import { TrackState, ComputedHabit, HABIT_PERIOD_MS, MAIN_TRACK, PET_LIVES_MAX } from '../types';
+import { TrackState, ComputedHabit, HABIT_PERIOD_MS, MAIN_TRACK, PET_LIVES_MAX, CheckIn } from '../types';
+import { getStateTheme, getSuccessBallEmoji } from '../stateTheme';
 
 function makeTrackState(lastCheckInAt: string | null = null): TrackState {
   return {
@@ -252,5 +258,161 @@ describe('processCheckIn', () => {
     const afterCheckIn = computeHabitStatus(MAIN_TRACK, checkedIn.lastCheckInAt, now);
     expect(afterCheckIn.lives).toBe(3);
     expect(afterCheckIn.status).toBe('GREEN');
+  });
+});
+
+describe('resolveSuccessCelebration', () => {
+  test('null when not allGood', () => {
+    expect(
+      resolveSuccessCelebration({
+        isAllGood: false,
+        lastCheckInWasPaidRestart: false,
+        streak: 5,
+        streakBeganWithPaidRestart: false,
+      }),
+    ).toBeNull();
+  });
+
+  test('paid restart wins over streak', () => {
+    expect(
+      resolveSuccessCelebration({
+        isAllGood: true,
+        lastCheckInWasPaidRestart: true,
+        streak: 4,
+        streakBeganWithPaidRestart: true,
+      }),
+    ).toEqual({ kind: 'paidVibes' });
+  });
+
+  test('first success day is rockstar', () => {
+    expect(
+      resolveSuccessCelebration({
+        isAllGood: true,
+        lastCheckInWasPaidRestart: false,
+        streak: 1,
+        streakBeganWithPaidRestart: false,
+      }),
+    ).toEqual({ kind: 'rockstar' });
+  });
+
+  test('consecutive day after rockstar starts balls cycle', () => {
+    expect(
+      resolveSuccessCelebration({
+        isAllGood: true,
+        lastCheckInWasPaidRestart: false,
+        streak: 2,
+        streakBeganWithPaidRestart: false,
+      }),
+    ).toEqual({ kind: 'balls', ballIndex: 0, emoji: SUCCESS_BALL_EMOJIS[0] });
+  });
+
+  test('balls cycle through five sports emoji then wrap', () => {
+    for (let i = 0; i < 10; i++) {
+      const result = resolveSuccessCelebration({
+        isAllGood: true,
+        lastCheckInWasPaidRestart: false,
+        streak: 2 + i,
+        streakBeganWithPaidRestart: false,
+      });
+      expect(result).toEqual({
+        kind: 'balls',
+        ballIndex: i % 5,
+        emoji: SUCCESS_BALL_EMOJIS[i % 5],
+      });
+    }
+  });
+
+  test('after paid restart, day 2 stays rockstar before balls', () => {
+    expect(
+      resolveSuccessCelebration({
+        isAllGood: true,
+        lastCheckInWasPaidRestart: false,
+        streak: 2,
+        streakBeganWithPaidRestart: true,
+      }),
+    ).toEqual({ kind: 'rockstar' });
+
+    expect(
+      resolveSuccessCelebration({
+        isAllGood: true,
+        lastCheckInWasPaidRestart: false,
+        streak: 3,
+        streakBeganWithPaidRestart: true,
+      }),
+    ).toEqual({ kind: 'balls', ballIndex: 0, emoji: SUCCESS_BALL_EMOJIS[0] });
+  });
+});
+
+describe('streakBeganWithPaidRestart', () => {
+  test('detects paid restart on streak start day', () => {
+    const today = toDateString(new Date());
+    const start = shiftDateString(today, -2);
+    const mid = shiftDateString(today, -1);
+    const checkIns: CheckIn[] = [
+      {
+        id: '1',
+        trackType: MAIN_TRACK,
+        intensity: 'medium',
+        note: null,
+        timestamp: `${start}T10:00:00.000Z`,
+        isPaidRestart: true,
+      },
+      {
+        id: '2',
+        trackType: MAIN_TRACK,
+        intensity: 'medium',
+        note: null,
+        timestamp: `${mid}T10:00:00.000Z`,
+      },
+      {
+        id: '3',
+        trackType: MAIN_TRACK,
+        intensity: 'medium',
+        note: null,
+        timestamp: `${today}T10:00:00.000Z`,
+      },
+    ];
+    expect(streakBeganWithPaidRestart(checkIns, 3, today)).toBe(true);
+  });
+
+  test('false when streak did not start with paid restart', () => {
+    const today = toDateString(new Date());
+    const yesterday = shiftDateString(today, -1);
+    const checkIns: CheckIn[] = [
+      {
+        id: '1',
+        trackType: MAIN_TRACK,
+        intensity: 'medium',
+        note: null,
+        timestamp: `${yesterday}T10:00:00.000Z`,
+      },
+      {
+        id: '2',
+        trackType: MAIN_TRACK,
+        intensity: 'medium',
+        note: null,
+        timestamp: `${today}T10:00:00.000Z`,
+      },
+    ];
+    expect(streakBeganWithPaidRestart(checkIns, 2, today)).toBe(false);
+  });
+});
+
+describe('getStateTheme balls greeting', () => {
+  test('preserves paid vibes and rockstar copy', () => {
+    expect(
+      getStateTheme('happy', { lastCheckInWasPaidRestart: true }).greeting(),
+    ).toBe('paid for\ngood vibes');
+    expect(
+      getStateTheme('happy', { streak: 1 }).greeting(),
+    ).toBe("you're a\nrockstar!");
+  });
+
+  test('balls greeting and emoji after consecutive success', () => {
+    const theme = getStateTheme('happy', { streak: 2 });
+    expect(theme.greeting()).toBe('holy shit.\nyou actually have balls.');
+    expect(getSuccessBallEmoji('happy', { streak: 2 })).toBe('⚽');
+    expect(getSuccessBallEmoji('happy', { streak: 3 })).toBe('🎾');
+    expect(getSuccessBallEmoji('okay', { streak: 5 })).toBeNull();
   });
 });

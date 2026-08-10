@@ -254,6 +254,85 @@ export function isCompletedToday(state: TrackState): boolean {
   return state.lastCompletedDay === toDateString(new Date());
 }
 
+// ─── Progressive success celebration (allGood) ───────────
+
+/**
+ * Sports-ball emoji cycle shown after rockstar on consecutive happy days.
+ * Unicode only — platform/system emoji fonts render these (no bundled art).
+ *
+ * Support (all Emoji 1.0 / Unicode ≤8.0, well before Expo SDK 54 targets):
+ *   ⚽ U+26BD, 🎾 U+1F3BE, 🏀 U+1F3C0, 🏐 U+1F3D0, 🏈 U+1F3C8
+ */
+export const SUCCESS_BALL_EMOJIS = ['⚽', '🎾', '🏀', '🏐', '🏈'] as const;
+
+export type SuccessCelebrationKind = 'paidVibes' | 'rockstar' | 'balls';
+
+export type SuccessCelebration =
+  | { kind: 'paidVibes' }
+  | { kind: 'rockstar' }
+  | { kind: 'balls'; ballIndex: number; emoji: (typeof SUCCESS_BALL_EMOJIS)[number] };
+
+/** YYYY-MM-DD shifted by `deltaDays` (negative = earlier). */
+export function shiftDateString(dateStr: string, deltaDays: number): string {
+  const d = new Date(dateStr + 'T12:00:00');
+  d.setDate(d.getDate() + deltaDays);
+  return toDateString(d);
+}
+
+/**
+ * True when the first calendar day of the current streak had a paid €1 restart.
+ * Used so the ladder stays: paid vibes → rockstar → balls (not paid → balls).
+ */
+export function streakBeganWithPaidRestart(
+  checkIns: CheckIn[],
+  streak: number,
+  lastCompletedDay: string | null,
+): boolean {
+  if (streak < 1 || !lastCompletedDay) return false;
+  const startDay = shiftDateString(lastCompletedDay, -(streak - 1));
+  return checkIns.some(
+    (c) =>
+      Boolean(c.isPaidRestart) &&
+      toDateString(new Date(c.timestamp)) === startDay,
+  );
+}
+
+/**
+ * Happy-window celebration tier derived from streak + paid-restart history.
+ * Advances only when streak advances (new successful habit day) — not on reload.
+ */
+export function resolveSuccessCelebration(options: {
+  isAllGood: boolean;
+  lastCheckInWasPaidRestart: boolean;
+  streak: number;
+  streakBeganWithPaidRestart: boolean;
+}): SuccessCelebration | null {
+  const {
+    isAllGood,
+    lastCheckInWasPaidRestart,
+    streak,
+    streakBeganWithPaidRestart: beganPaid,
+  } = options;
+
+  if (!isAllGood) return null;
+  if (lastCheckInWasPaidRestart) return { kind: 'paidVibes' };
+
+  // After a paid-restart day: streak 2 is still rockstar; balls from streak 3.
+  // Normal streak: rockstar on day 1, balls from day 2.
+  const ballsFromStreak = beganPaid ? 3 : 2;
+  if (streak >= ballsFromStreak) {
+    const ballIndex =
+      (streak - ballsFromStreak) % SUCCESS_BALL_EMOJIS.length;
+    return {
+      kind: 'balls',
+      ballIndex,
+      emoji: SUCCESS_BALL_EMOJIS[ballIndex],
+    };
+  }
+
+  return { kind: 'rockstar' };
+}
+
 // ─── Legacy compat (kept for imports that haven't migrated) ──
 
 export function applyDecay(state: TrackState, _now: Date): TrackState {
