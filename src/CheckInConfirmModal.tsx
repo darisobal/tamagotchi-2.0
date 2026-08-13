@@ -12,6 +12,10 @@ import CloseButton from './CloseButton';
 import ConfirmationFace from './ConfirmationFace';
 import { CheckInConfirmCopy } from './checkInConfirmCopy';
 
+/** Scaled down from `Type.screenTitle` so the longest question, face, and CTAs fit without scrolling. */
+const CONFIRM_MESSAGE_FONT = 34;
+const CONFIRM_FACE_WIDTH = 100;
+
 type Props = {
   visible: boolean;
   copy: CheckInConfirmCopy | null;
@@ -51,37 +55,39 @@ export default function CheckInConfirmModal({
     >
       <SafeAreaView style={[styles.safe, { backgroundColor }]}>
         <View style={styles.container}>
-          <View style={styles.header}>
-            <CloseButton onPress={onCancel} accessibilityLabel="close" />
+          <View style={styles.top}>
+            <View style={styles.header}>
+              <CloseButton onPress={onCancel} accessibilityLabel="close" />
+            </View>
+
+            <Text style={styles.message}>{message}</Text>
+
+            <View style={styles.faceWrap}>
+              <ConfirmationFace color={faceColor} width={CONFIRM_FACE_WIDTH} />
+            </View>
           </View>
 
-          <Text style={styles.message}>{message}</Text>
+          <View style={styles.footer}>
+            <TouchableOpacity
+              style={styles.secondaryBtn}
+              onPress={onCancel}
+              activeOpacity={0.85}
+              accessibilityRole="button"
+              accessibilityLabel={negativeLabel || 'cancel'}
+            >
+              <Text style={styles.secondaryBtnText}>{negativeLabel}</Text>
+            </TouchableOpacity>
 
-          <View style={styles.faceWrap}>
-            <ConfirmationFace color={faceColor} />
+            <TouchableOpacity
+              style={styles.primaryBtn}
+              onPress={onConfirm}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel={positiveLabel || 'confirm'}
+            >
+              <Text style={styles.primaryBtnText}>{positiveLabel}</Text>
+            </TouchableOpacity>
           </View>
-
-          <View style={styles.spacer} />
-
-          <TouchableOpacity
-            style={styles.secondaryBtn}
-            onPress={onCancel}
-            activeOpacity={0.85}
-            accessibilityRole="button"
-            accessibilityLabel={negativeLabel || 'cancel'}
-          >
-            <Text style={styles.secondaryBtnText}>{negativeLabel}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.primaryBtn}
-            onPress={onConfirm}
-            activeOpacity={0.8}
-            accessibilityRole="button"
-            accessibilityLabel={positiveLabel || 'confirm'}
-          >
-            <Text style={styles.primaryBtnText}>{positiveLabel}</Text>
-          </TouchableOpacity>
         </View>
       </SafeAreaView>
     </Modal>
@@ -92,26 +98,36 @@ const styles = StyleSheet.create({
   safe: { flex: 1 },
   container: {
     flex: 1,
+    justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.md,
-    paddingBottom: Spacing.xl,
+    paddingBottom: Spacing.lg,
+  },
+  top: {
+    flexShrink: 1,
+    minHeight: 0,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.sm,
   },
   message: {
     ...Type.screenTitle,
+    fontSize: CONFIRM_MESSAGE_FONT,
+    lineHeight: CONFIRM_MESSAGE_FONT + 4,
     color: Colors.ink,
   },
   faceWrap: {
-    marginTop: Spacing.xl,
+    marginTop: Spacing.md,
     alignSelf: 'flex-start',
   },
-  spacer: { flex: 1 },
+  footer: {
+    flexShrink: 0,
+    paddingTop: Spacing.lg,
+  },
   primaryBtn: {
-    paddingVertical: Spacing.md + 4,
+    paddingVertical: Spacing.md,
     alignItems: 'center',
     backgroundColor: Colors.ink,
     borderWidth: Border.thick,
@@ -126,7 +142,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   secondaryBtn: {
-    paddingVertical: Spacing.md + 4,
+    paddingVertical: Spacing.md,
     alignItems: 'center',
     backgroundColor: 'transparent',
     borderWidth: Border.thick,

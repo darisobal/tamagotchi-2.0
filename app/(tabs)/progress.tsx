@@ -7,8 +7,6 @@ import {
   Alert,
   SafeAreaView,
   ScrollView,
-  Modal,
-  Pressable,
   Platform,
   useWindowDimensions,
 } from 'react-native';
@@ -18,7 +16,7 @@ import { toDateString } from '../../src/logic';
 import { Colors, Spacing, FontSize, Slab, Radius, Border, Type } from '../../src/theme';
 import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
 import { useMoodBackground } from '../../src/useMoodBackground';
-import CloseButton from '../../src/CloseButton';
+import TrashButton from '../../src/TrashButton';
 
 const WEEKDAY_LABELS = ['s', 'm', 't', 'w', 't', 'f', 's'] as const;
 
@@ -48,7 +46,17 @@ function chunk<T>(arr: T[], size: number): T[][] {
   return out;
 }
 
-export default function HistoryScreen() {
+function formatDayTitle(iso: string): string {
+  const d = new Date(iso + 'T12:00:00');
+  return d.toLocaleDateString(undefined, {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  }).toLowerCase();
+}
+
+export default function ProgressScreen() {
   const { checkIns, deleteCheckInById, prefs } = useAppState();
   const screenBg = useMoodBackground();
   const tabBarExtraPad = useFloatingTabBarExtraPadding();
@@ -64,9 +72,7 @@ export default function HistoryScreen() {
     return { y: n.getFullYear(), m: n.getMonth() };
   });
 
-  const [selectedIso, setSelectedIso] = useState<string | null>(null);
-
-  const { countByDay, paidByDay, itemsByDay, distinctDays } = useMemo(() => {
+  const { countByDay, paidByDay, itemsByDay, distinctDays, sortedDays } = useMemo(() => {
     const countByDay: Record<string, number> = {};
     const paidByDay: Record<string, boolean> = {};
     const itemsByDay: Record<string, CheckIn[]> = {};
@@ -82,11 +88,13 @@ export default function HistoryScreen() {
         (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
       );
     }
+    const sortedDays = Object.keys(itemsByDay).sort((a, b) => b.localeCompare(a));
     return {
       countByDay,
       paidByDay,
       itemsByDay,
-      distinctDays: Object.keys(countByDay).length,
+      distinctDays: sortedDays.length,
+      sortedDays,
     };
   }, [checkIns]);
 
@@ -145,8 +153,6 @@ export default function HistoryScreen() {
     ]);
   };
 
-  const selectedItems = selectedIso ? itemsByDay[selectedIso] ?? [] : [];
-
   if (checkIns.length === 0) {
     return (
       <SafeAreaView style={[styles.safe, { backgroundColor: screenBg }]}>
@@ -171,7 +177,7 @@ export default function HistoryScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.headerBar}>
-          <Text style={styles.screenTitle}>history</Text>
+          <Text style={styles.screenTitle}>progress</Text>
           <Text style={styles.countLabel}>
             {checkIns.length} {checkIns.length === 1 ? 'entry' : 'entries'} · {distinctDays}{' '}
             day{distinctDays === 1 ? '' : 's'}
@@ -229,7 +235,7 @@ export default function HistoryScreen() {
                 const isToday = cell.iso === todayIso;
 
                 return (
-                  <TouchableOpacity
+                  <View
                     key={cell.iso}
                     style={[
                       styles.dayCell,
@@ -244,10 +250,6 @@ export default function HistoryScreen() {
                       },
                       isToday && styles.dayCellToday,
                     ]}
-                    onPress={() => {
-                      if ((countByDay[cell.iso] ?? 0) > 0) setSelectedIso(cell.iso);
-                    }}
-                    activeOpacity={0.85}
                   >
                     <Text
                       style={[
@@ -257,7 +259,7 @@ export default function HistoryScreen() {
                     >
                       {cell.dayOfMonth}
                     </Text>
-                  </TouchableOpacity>
+                  </View>
                 );
               })}
             </View>
@@ -278,57 +280,28 @@ export default function HistoryScreen() {
             <Text style={styles.legendText}>no entry</Text>
           </View>
         </View>
-      </ScrollView>
 
-      <Modal
-        visible={selectedIso !== null && selectedItems.length > 0}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setSelectedIso(null)}
-      >
-        <View style={styles.modalBackdrop}>
-          <Pressable
-            style={StyleSheet.absoluteFill}
-            onPress={() => setSelectedIso(null)}
-            accessibilityLabel="dismiss"
-          />
-          <View style={styles.modalCard}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{formatModalTitle(selectedIso)}</Text>
-              <CloseButton
-                onPress={() => setSelectedIso(null)}
-                accessibilityLabel="close"
-              />
-            </View>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              {selectedItems.map((item) => (
-                <HistoryItem
+        <View style={styles.logSection}>
+          {sortedDays.map((iso) => (
+            <View key={iso} style={styles.daySection}>
+              <Text style={styles.dayTitle}>{formatDayTitle(iso)}</Text>
+              {(itemsByDay[iso] ?? []).map((item) => (
+                <LogItem
                   key={item.id}
                   item={item}
                   habitName={habitName}
                   onDelete={handleDelete}
                 />
               ))}
-            </ScrollView>
-          </View>
+            </View>
+          ))}
         </View>
-      </Modal>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
-function formatModalTitle(iso: string | null): string {
-  if (!iso) return '';
-  const d = new Date(iso + 'T12:00:00');
-  return d.toLocaleDateString(undefined, {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  }).toLowerCase();
-}
-
-function HistoryItem({
+function LogItem({
   item,
   habitName,
   onDelete,
@@ -352,10 +325,10 @@ function HistoryItem({
         <Text style={styles.itemTime}>{time}</Text>
         {item.note ? <Text style={styles.itemNote}>{item.note}</Text> : null}
       </View>
-      <CloseButton
+      <TrashButton
         onPress={() => onDelete(item.id)}
         accessibilityLabel="delete check-in"
-        size={32}
+        size={24}
         style={styles.deleteBtn}
       />
     </View>
@@ -476,43 +449,26 @@ const styles = StyleSheet.create({
     fontFamily: Slab.regular,
     color: Colors.textSecondary,
   },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.35)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: Spacing.lg,
-  },
-  modalCard: {
+  logSection: {
     width: '100%',
-    maxWidth: 380,
-    maxHeight: '80%',
-    backgroundColor: Colors.stateTodoBg,
-    borderRadius: Radius.lg,
-    borderWidth: Border.thick,
-    borderColor: Colors.ink,
-    padding: Spacing.md,
-    zIndex: 1,
+    maxWidth: 400,
+    marginTop: Spacing.xl,
+    gap: Spacing.lg,
   },
-  modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    marginBottom: Spacing.sm,
+  daySection: {
     gap: Spacing.sm,
   },
-  modalTitle: {
-    flex: 1,
+  dayTitle: {
     fontSize: FontSize.md,
     fontFamily: Slab.black,
     color: Colors.ink,
+    marginBottom: Spacing.xs,
   },
   item: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Colors.card,
     padding: Spacing.md,
-    marginBottom: Spacing.sm,
     borderWidth: Border.thick,
     borderColor: Colors.ink,
     borderRadius: Radius.md,
