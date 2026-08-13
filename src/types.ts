@@ -86,12 +86,15 @@ export const ALL_TRACKS: TrackType[] = [MAIN_TRACK];
 
 export const DEFAULT_HABIT_NAME = 'read 10 pages';
 
+/** Silent hard cap for habit name input/storage — not shown in the UI. */
+export const HABIT_NAME_MAX = 300;
+
 /** Previous placeholder default — migrate so existing users see the new example. */
 export const LEGACY_DEFAULT_HABIT_NAME = 'my habit';
 
 export function resolveHabitName(stored: string | null | undefined): string {
   if (!stored || stored === LEGACY_DEFAULT_HABIT_NAME) return DEFAULT_HABIT_NAME;
-  return stored;
+  return stored.length > HABIT_NAME_MAX ? stored.slice(0, HABIT_NAME_MAX) : stored;
 }
 
 export const DEFAULT_PET_NAME = 'noodle';

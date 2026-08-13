@@ -16,6 +16,7 @@ import { useAuth } from '../../src/authContext';
 import {
   DEFAULT_HABIT_NAME,
   DEFAULT_PET_NAME,
+  HABIT_NAME_MAX,
   PET_COLOR_OPTIONS,
   PET_HAT_OPTIONS,
   PetHat,
@@ -33,7 +34,6 @@ import {
   PET_SETUP_DISPLAY_HEIGHT,
 } from '../../src/PetEggShell';
 
-const HABIT_NAME_MAX = 40;
 const PET_NAME_MAX = 30;
 
 export default function SettingsScreen() {
@@ -54,12 +54,13 @@ export default function SettingsScreen() {
   }, [prefs.petName]);
 
   const persistHabitName = useCallback(async () => {
-    const trimmed = habitDraft.trim();
+    const trimmed = habitDraft.trim().slice(0, HABIT_NAME_MAX);
     if (trimmed.length === 0) {
       // Don't persist empty; revert to current saved value.
       setHabitDraft(prefs.habitName ?? DEFAULT_HABIT_NAME);
       return;
     }
+    if (trimmed !== habitDraft) setHabitDraft(trimmed);
     if (trimmed === prefs.habitName) return;
     await updatePrefs({ habitName: trimmed });
   }, [habitDraft, prefs.habitName, updatePrefs]);
@@ -92,16 +93,18 @@ export default function SettingsScreen() {
           <Text style={[styles.sectionLabel, styles.firstSectionLabel]}>name your habit</Text>
           <TextInput
             value={habitDraft}
-            onChangeText={setHabitDraft}
+            onChangeText={(text) => setHabitDraft(text.slice(0, HABIT_NAME_MAX))}
             onBlur={persistHabitName}
             onEndEditing={persistHabitName}
             placeholder="e.g. walk 20 minutes"
             placeholderTextColor={Colors.textMuted}
-            style={styles.habitInput}
+            style={[styles.habitInput, styles.habitNameInput]}
             maxLength={HABIT_NAME_MAX}
+            multiline
             autoCorrect={false}
             autoCapitalize="none"
             returnKeyType="done"
+            blurOnSubmit
           />
 
           <Text style={styles.sectionLabel}>cadence</Text>
@@ -277,6 +280,10 @@ const styles = StyleSheet.create({
     borderColor: Colors.ink,
     borderRadius: Radius.md,
     marginBottom: Spacing.md,
+  },
+  habitNameInput: {
+    minHeight: 56,
+    textAlignVertical: 'top',
   },
   avatarSection: {
     alignItems: 'center',

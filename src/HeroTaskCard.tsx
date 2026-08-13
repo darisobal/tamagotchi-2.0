@@ -52,14 +52,7 @@ export default function HeroTaskCard({
       ]}
     >
       <View style={styles.titleRow}>
-        <Text
-          style={[styles.title, { color: accentColor }]}
-          numberOfLines={1}
-          adjustsFontSizeToFit
-          minimumFontScale={0.45}
-        >
-          {habitName}
-        </Text>
+        <Text style={[styles.title, { color: accentColor }]}>{habitName}</Text>
         {showCrossOut ? <CrossOut /> : null}
       </View>
       {showStreak ? (
