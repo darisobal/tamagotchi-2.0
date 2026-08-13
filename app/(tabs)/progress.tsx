@@ -233,32 +233,47 @@ export default function ProgressScreen() {
                 const done = (countByDay[cell.iso] ?? 0) > 0;
                 const paid = Boolean(paidByDay[cell.iso]);
                 const isToday = cell.iso === todayIso;
+                // Ring must contrast with both the cell fill AND the calendar
+                // card background (Colors.card = white). Default to the blue
+                // "pet" color; only switch to ink when the cell itself is blue
+                // (paid restart) so the ring stays visible.
+                const todayRingColor = paid ? Colors.ink : Colors.pet;
+                const innerSize = isToday ? cellSize - 6 : cellSize;
 
                 return (
                   <View
                     key={cell.iso}
                     style={[
-                      styles.dayCell,
-                      {
-                        width: cellSize,
-                        height: cellSize,
-                        backgroundColor: paid
-                          ? Colors.pet
-                          : done
-                            ? Colors.ink
-                            : Colors.card,
-                      },
-                      isToday && styles.dayCellToday,
+                      styles.dayCellSlot,
+                      { width: cellSize, height: cellSize },
+                      isToday && styles.dayCellTodayWrap,
+                      isToday && { borderColor: todayRingColor },
                     ]}
                   >
-                    <Text
+                    <View
                       style={[
-                        styles.dayNum,
-                        done || paid ? styles.dayNumOn : styles.dayNumOff,
+                        styles.dayCell,
+                        {
+                          width: innerSize,
+                          height: innerSize,
+                          backgroundColor: paid
+                            ? Colors.pet
+                            : done
+                              ? Colors.ink
+                              : Colors.card,
+                        },
                       ]}
                     >
-                      {cell.dayOfMonth}
-                    </Text>
+                      <Text
+                        style={[
+                          styles.dayNum,
+                          done || paid ? styles.dayNumOn : styles.dayNumOff,
+                          isToday && styles.dayNumToday,
+                        ]}
+                      >
+                        {cell.dayOfMonth}
+                      </Text>
+                    </View>
                   </View>
                 );
               })}
@@ -274,10 +289,6 @@ export default function ProgressScreen() {
           <View style={styles.legendRow}>
             <View style={[styles.legendSwatch, { backgroundColor: Colors.pet }]} />
             <Text style={styles.legendText}>paid restart</Text>
-          </View>
-          <View style={styles.legendRow}>
-            <View style={[styles.legendSwatch, styles.legendSwatchEmpty]} />
-            <Text style={styles.legendText}>no entry</Text>
           </View>
         </View>
 
@@ -413,6 +424,10 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   dayCellPlaceholder: {},
+  dayCellSlot: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   dayCell: {
     borderRadius: Radius.sm,
     borderWidth: Border.base,
@@ -420,12 +435,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  dayCellToday: {
+  dayCellTodayWrap: {
     borderWidth: Border.thick,
+    borderRadius: Radius.sm,
   },
   dayNum: {
     fontSize: FontSize.sm,
     fontFamily: Slab.bold,
+  },
+  dayNumToday: {
+    fontFamily: Slab.black,
   },
   dayNumOn: { color: Colors.card },
   dayNumOff: { color: Colors.ink },
@@ -443,7 +462,6 @@ const styles = StyleSheet.create({
     borderWidth: Border.base,
     borderColor: Colors.ink,
   },
-  legendSwatchEmpty: { backgroundColor: Colors.card },
   legendText: {
     fontSize: FontSize.sm,
     fontFamily: Slab.regular,
