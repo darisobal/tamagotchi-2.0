@@ -101,6 +101,7 @@ export default function SettingsScreen() {
             style={[styles.habitInput, styles.habitNameInput]}
             maxLength={HABIT_NAME_MAX}
             multiline
+            scrollEnabled={false}
             autoCorrect={false}
             autoCapitalize="none"
             returnKeyType="done"
@@ -284,6 +285,14 @@ const styles = StyleSheet.create({
   habitNameInput: {
     minHeight: 56,
     textAlignVertical: 'top',
+    // Grow with content so the full habit name stays visible while editing.
+    ...(Platform.OS === 'web'
+      ? ({
+          fieldSizing: 'content',
+          wordBreak: 'break-word',
+          overflowWrap: 'anywhere',
+        } as object)
+      : null),
   },
   avatarSection: {
     alignItems: 'center',

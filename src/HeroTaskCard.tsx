@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { Spacing, FontSize, Slab, Radius, Border } from './theme';
 
 export type HeroTaskCardProps = {
@@ -52,7 +52,9 @@ export default function HeroTaskCard({
       ]}
     >
       <View style={styles.titleRow}>
-        <Text style={[styles.title, { color: accentColor }]}>{habitName}</Text>
+        <Text style={[styles.title, { color: accentColor }]} selectable={false}>
+          {habitName}
+        </Text>
         {showCrossOut ? <CrossOut /> : null}
       </View>
       {showStreak ? (
@@ -95,16 +97,19 @@ const styles = StyleSheet.create({
   },
   titleRow: {
     position: 'relative',
-    flexDirection: 'row',
-    alignItems: 'flex-end',
+    width: '100%',
   },
   title: {
     fontFamily: Slab.bold,
     fontSize: FontSize.habitTitle,
     lineHeight: FontSize.habitTitle + 6,
     letterSpacing: -1,
-    flex: 1,
-    minWidth: 0,
+    width: '100%',
+    // Keep long unbroken habit names inside the card on web + native.
+    flexShrink: 1,
+    ...(Platform.OS === 'web'
+      ? ({ wordBreak: 'break-word', overflowWrap: 'anywhere' } as object)
+      : null),
   },
   motto: {
     fontFamily: Slab.semiBold,
