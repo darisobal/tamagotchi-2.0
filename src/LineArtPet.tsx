@@ -14,7 +14,7 @@ import Animated, {
 import { Mood, PetHat as PetHatId } from './types';
 import { Colors } from './theme';
 import PetFigure, { PET_SVG_VB } from './PetFigure';
-import SleepingPetFigure, { SLEEPING_SCENE_VB } from './SleepingPetFigure';
+import SleepingPetFigure, { SLEEPING_SCENE_VB, SleepZzzOverlay } from './SleepingPetFigure';
 import PetHat from './PetHat';
 import DeadBloodSplatter from './DeadBloodSplatter';
 import PetSuccessBalls from './PetSuccessBalls';
@@ -207,6 +207,9 @@ export default function LineArtPet({
           )}
         </Svg>
       </View>
+      {isSleeping ? (
+        <SleepZzzOverlay color={strokeColor} layoutW={layoutW} layoutH={layoutH} />
+      ) : null}
       {mood === 'happy' && ballEmoji ? (
         <PetSuccessBalls
           emoji={ballEmoji}

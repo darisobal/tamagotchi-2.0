@@ -31,7 +31,6 @@ import PetEggShell, {
   PET_HOME_DEAD_DISPLAY_HEIGHT,
   PET_HOME_DEAD_LEFT_INSET,
   PET_HOME_DISPLAY_HEIGHT,
-  PET_HOME_SLEEPING_DISPLAY_HEIGHT,
   PET_HOME_EGG_HEIGHT,
   PET_HOME_EGG_LEFT_INSET,
   PET_HOME_EGG_WIDTH,
@@ -382,11 +381,7 @@ function PetStage({
                 mood={mood}
                 strokeColor={petColor}
                 displayHeight={
-                  isDead
-                    ? PET_HOME_DEAD_DISPLAY_HEIGHT
-                    : isSleeping
-                      ? PET_HOME_SLEEPING_DISPLAY_HEIGHT
-                      : PET_HOME_DISPLAY_HEIGHT
+                  isDead ? PET_HOME_DEAD_DISPLAY_HEIGHT : PET_HOME_DISPLAY_HEIGHT
                 }
                 hat={petHat}
                 ballEmoji={showSuccessBalls ? successBallEmoji : null}
