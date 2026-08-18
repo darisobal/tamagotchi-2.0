@@ -68,12 +68,12 @@ describe('computeHabitStatus', () => {
     expect(result.timeRemainingMs).toBeCloseTo(DAY, -3);
   });
 
-  test('no check-in ever → 0 lives, OVERDUE', () => {
+  test('no check-in ever → sleeping, 3 lives', () => {
     const result = computeHabitStatus(MAIN_TRACK, null, Date.now());
-    expect(result.progress).toBe(0);
-    expect(result.lives).toBe(0);
-    expect(result.timeRemainingMs).toBe(0);
-    expect(result.status).toBe('OVERDUE');
+    expect(result.progress).toBe(1);
+    expect(result.lives).toBe(3);
+    expect(result.timeRemainingMs).toBe(DAY);
+    expect(result.status).toBe('GREEN');
   });
 
   test('still within first period → stays at 3 lives', () => {
@@ -181,10 +181,10 @@ describe('computePetMood', () => {
     expect(reason).toContain('meditate');
   });
 
-  test('no check-ins ever → dead', () => {
+  test('no check-ins ever → sleeping, 3 lives', () => {
     const { mood, lives } = computePetMood(habitFromCheckin(null), 'workout');
-    expect(mood).toBe('dead');
-    expect(lives).toBe(0);
+    expect(mood).toBe('sleeping');
+    expect(lives).toBe(3);
   });
 });
 

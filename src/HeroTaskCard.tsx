@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Pressable, Platform } from 'react-native';
 import { Spacing, FontSize, Slab, Radius, Border } from './theme';
 
 export type HeroTaskCardProps = {
@@ -19,6 +19,7 @@ export type HeroTaskCardProps = {
    */
   streakDays?: number | null;
   onCheckIn: () => void;
+  onHabitNamePress?: () => void;
 };
 
 function formatStreakDays(days: number): string {
@@ -41,6 +42,7 @@ export default function HeroTaskCard({
   showCrossOut = false,
   streakDays = null,
   onCheckIn,
+  onHabitNamePress,
 }: HeroTaskCardProps) {
   const showStreak = streakDays != null;
 
@@ -52,9 +54,17 @@ export default function HeroTaskCard({
       ]}
     >
       <View style={styles.titleRow}>
-        <Text style={[styles.title, { color: accentColor }]} selectable={false}>
-          {habitName}
-        </Text>
+        <Pressable
+          onPress={onHabitNamePress}
+          disabled={!onHabitNamePress}
+          accessibilityRole={onHabitNamePress ? 'button' : undefined}
+          accessibilityLabel={onHabitNamePress ? 'edit habit name' : undefined}
+          style={({ pressed }) => [pressed && onHabitNamePress ? styles.titlePressed : null]}
+        >
+          <Text style={[styles.title, { color: accentColor }]} selectable={false}>
+            {habitName}
+          </Text>
+        </Pressable>
         {showCrossOut ? <CrossOut /> : null}
       </View>
       {showStreak ? (
@@ -98,6 +108,9 @@ const styles = StyleSheet.create({
   titleRow: {
     position: 'relative',
     width: '100%',
+  },
+  titlePressed: {
+    opacity: 0.7,
   },
   title: {
     fontFamily: Slab.bold,

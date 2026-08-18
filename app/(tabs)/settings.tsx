@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { useAppState } from '../../src/context';
 import { useAuth } from '../../src/authContext';
 import {
@@ -39,10 +39,13 @@ const PET_NAME_MAX = 30;
 export default function SettingsScreen() {
   const { prefs, updatePrefs, mood } = useAppState();
   const { user, signOut } = useAuth();
+  const { focusHabit } = useLocalSearchParams<{ focusHabit?: string }>();
   const screenBg = useMoodBackground();
   const tabBarExtraPad = useFloatingTabBarExtraPadding();
+  const habitInputRef = useRef<TextInput>(null);
   const [habitDraft, setHabitDraft] = useState(prefs.habitName ?? DEFAULT_HABIT_NAME);
   const [petDraft, setPetDraft] = useState(prefs.petName ?? DEFAULT_PET_NAME);
+  const [selectHabitOnFocus, setSelectHabitOnFocus] = useState(false);
 
   // Keep the draft in sync if prefs.habitName changes from elsewhere (e.g. reset).
   useEffect(() => {
@@ -52,6 +55,18 @@ export default function SettingsScreen() {
   useEffect(() => {
     setPetDraft(prefs.petName ?? DEFAULT_PET_NAME);
   }, [prefs.petName]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (focusHabit !== '1') return;
+      setSelectHabitOnFocus(true);
+      const timer = setTimeout(() => {
+        habitInputRef.current?.focus();
+        router.setParams({ focusHabit: undefined });
+      }, 150);
+      return () => clearTimeout(timer);
+    }, [focusHabit]),
+  );
 
   const persistHabitName = useCallback(async () => {
     const trimmed = habitDraft.trim().slice(0, HABIT_NAME_MAX);
@@ -92,10 +107,12 @@ export default function SettingsScreen() {
 
           <Text style={[styles.sectionLabel, styles.firstSectionLabel]}>name your habit</Text>
           <TextInput
+            ref={habitInputRef}
             value={habitDraft}
             onChangeText={(text) => setHabitDraft(text.slice(0, HABIT_NAME_MAX))}
             onBlur={persistHabitName}
             onEndEditing={persistHabitName}
+            onFocus={() => setSelectHabitOnFocus(false)}
             placeholder="e.g. walk 20 minutes"
             placeholderTextColor={Colors.textMuted}
             style={[styles.habitInput, styles.habitNameInput]}
@@ -106,6 +123,7 @@ export default function SettingsScreen() {
             autoCapitalize="none"
             returnKeyType="done"
             blurOnSubmit
+            selectTextOnFocus={selectHabitOnFocus}
           />
 
           <Text style={styles.sectionLabel}>cadence</Text>

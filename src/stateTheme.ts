@@ -13,7 +13,7 @@ import { BALLS_GREETING, SuccessCelebration } from './successProgression';
  *   0 hearts → dead    → failed
  */
 
-export type StateScene = 'allGood' | 'toDo' | 'sad' | 'failed';
+export type StateScene = 'allGood' | 'toDo' | 'sad' | 'failed' | 'sleeping';
 
 export interface StateTheme {
   scene: StateScene;
@@ -45,6 +45,8 @@ export function moodToScene(mood: Mood): StateScene {
       return 'sad';
     case 'dead':
       return 'failed';
+    case 'sleeping':
+      return 'sleeping';
     default:
       return 'toDo';
   }
@@ -128,6 +130,22 @@ export function getStateTheme(mood: Mood, options?: StateThemeOptions): StateThe
       greeting: (name = DEFAULT_NAME) => `hi ${name}!`,
       motto: () => 'your laziness, my funeral.',
       checkInLabel: CHECK_IN_LABEL,
+    };
+  }
+
+  if (scene === 'sleeping') {
+    return {
+      scene,
+      ...shared,
+      bg: Colors.stateGoodBg,
+      inkSoft: '#1A1A1A',
+      showConfetti: false,
+      showCrossOut: false,
+      showSuccessBalls: false,
+      successBallEmoji: null,
+      greeting: () => 'keep your pet alive',
+      motto: () => 'your first check-in wakes them up.',
+      checkInLabel: 'start tracking',
     };
   }
 

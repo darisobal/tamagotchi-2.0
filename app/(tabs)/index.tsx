@@ -19,6 +19,7 @@ import Animated, {
   cancelAnimation,
   interpolate,
 } from 'react-native-reanimated';
+import { router } from 'expo-router';
 import { useAppState } from '../../src/context';
 import { DEFAULT_HABIT_NAME, MAIN_TRACK } from '../../src/types';
 import { Spacing, FontSize, Slab, Radius, Border, Type, Colors } from '../../src/theme';
@@ -30,6 +31,7 @@ import PetEggShell, {
   PET_HOME_DEAD_DISPLAY_HEIGHT,
   PET_HOME_DEAD_LEFT_INSET,
   PET_HOME_DISPLAY_HEIGHT,
+  PET_HOME_SLEEPING_DISPLAY_HEIGHT,
   PET_HOME_EGG_HEIGHT,
   PET_HOME_EGG_LEFT_INSET,
   PET_HOME_EGG_WIDTH,
@@ -131,6 +133,10 @@ export default function HomeScreen() {
     setEggFlipped((prev) => !prev);
   }, []);
 
+  const onEditHabitName = useCallback(() => {
+    router.navigate('/(tabs)/settings?focusHabit=1');
+  }, []);
+
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]}>
       <ScrollView
@@ -183,6 +189,7 @@ export default function HomeScreen() {
             showCrossOut={theme.showCrossOut}
             streakDays={showTrackedCard ? streakDays : null}
             onCheckIn={onHeroCheckIn}
+            onHabitNamePress={onEditHabitName}
           />
         ) : (
           <View
@@ -293,6 +300,7 @@ function PetStage({
 }) {
   const useSelfiePixels = petType === 'selfie' && Boolean(customSprite);
   const isDead = mood === 'dead';
+  const isSleeping = mood === 'sleeping';
   const showSuccessBalls = mood === 'happy' && Boolean(successBallEmoji);
   const pixelPetSize = PIXEL_PET_GRID * PIXEL_PET_SIZE;
   const flipProgress = useSharedValue(flipped ? 1 : 0);
@@ -374,7 +382,11 @@ function PetStage({
                 mood={mood}
                 strokeColor={petColor}
                 displayHeight={
-                  isDead ? PET_HOME_DEAD_DISPLAY_HEIGHT : PET_HOME_DISPLAY_HEIGHT
+                  isDead
+                    ? PET_HOME_DEAD_DISPLAY_HEIGHT
+                    : isSleeping
+                      ? PET_HOME_SLEEPING_DISPLAY_HEIGHT
+                      : PET_HOME_DISPLAY_HEIGHT
                 }
                 hat={petHat}
                 ballEmoji={showSuccessBalls ? successBallEmoji : null}
@@ -390,6 +402,16 @@ function PetStage({
               <Text style={styles.eggDeadMessage}>
                 {'you are your pet\'s\nworst nightmare.'}
               </Text>
+            ) : isSleeping ? (
+              <>
+                <Text style={styles.eggLifeLabel}>still dreaming...</Text>
+                <Text style={[styles.eggSleepHint, { color: petColor }]}>
+                  check in to wake up
+                </Text>
+                <Text style={styles.eggLifeFooter}>
+                  {`${petName} has all three hearts — for now`}
+                </Text>
+              </>
             ) : (
               <>
                 <Text style={styles.eggLifeLabel}>to lose a life:</Text>
@@ -632,6 +654,13 @@ const styles = StyleSheet.create({
     lineHeight: FontSize.xl + 10,
     color: Colors.ink,
     textAlign: 'center',
+  },
+  eggSleepHint: {
+    fontFamily: Slab.black,
+    fontSize: FontSize.xl,
+    lineHeight: FontSize.xl + 8,
+    textAlign: 'center',
+    marginBottom: Spacing.sm,
   },
   petForeground: {
     zIndex: 1,

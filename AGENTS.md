@@ -26,6 +26,7 @@ Expo (SDK 54) + React Native app with expo-router. Pixel-pet Tamagotchi with loc
 | Task | Command |
 |------|---------|
 | Start dev server | `npm start` |
+| Web (with auto-restart watchdog) | `npm run dev:watch` |
 | Web | `npm run web` |
 | iOS | `npm run ios` |
 | Android | `npm run android` |

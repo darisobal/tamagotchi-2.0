@@ -63,10 +63,10 @@ export function computeHabitStatus(
   if (!lastCheckInAtIso) {
     return {
       trackType,
-      progress: 0,
-      timeRemainingMs: 0,
-      status: 'OVERDUE',
-      lives: 0,
+      progress: 1,
+      timeRemainingMs: periodMs,
+      status: 'GREEN',
+      lives: PET_LIVES_MAX,
       lastCheckInAt: null,
     };
   }
@@ -111,11 +111,16 @@ export function computePetMood(
   habitName: string = DEFAULT_HABIT_NAME,
 ): PetMoodInfo {
   if (habits.length === 0) {
-    return { mood: 'dead', reason: '', lives: 0 };
+    return { mood: 'sleeping', reason: 'keep your pet alive', lives: PET_LIVES_MAX };
   }
 
   const habit = habits[0];
   const name = habitName || DEFAULT_HABIT_NAME;
+
+  if (habit.lastCheckInAt === null) {
+    return { mood: 'sleeping', lives: PET_LIVES_MAX, reason: 'keep your pet alive' };
+  }
+
   const lives = habit.lives;
   const mood = livesToMood(lives);
 
@@ -140,6 +145,7 @@ export function getMoodEmoji(mood: Mood): string {
     case 'okay': return '(-.-)';
     case 'sad': return '(;_;)';
     case 'dead': return '(x_x)';
+    case 'sleeping': return '(-.-)zzZ';
   }
 }
 

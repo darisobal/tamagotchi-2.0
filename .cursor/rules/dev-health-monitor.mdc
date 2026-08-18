@@ -1,0 +1,24 @@
+---
+description: Dev server health checks and browser refresh loop
+alwaysApply: true
+---
+
+# Dev health monitor
+
+The Expo web dev server should stay running via `npm run dev:watch`. When asked to monitor dev health (or on a `/loop 5m` tick):
+
+## Every health check
+
+1. Confirm port **8081** responds: `curl -s -o /dev/null -w "%{http_code}" http://localhost:8081`
+2. If unreachable, start or restart the watchdog: `npm run dev:watch` (background). Wait ~10s before retrying curl.
+3. List browser tabs (`browser_tabs` action `list`). If a Tamagotchi tab exists on `localhost:8081`, reload it via `browser_navigate` to the same URL (or `browser_cdp` `Page.reload`). If none exists, open `http://localhost:8081`.
+4. Take a screenshot to confirm the app loaded (not a connection error page).
+5. Report briefly: server status, browser status, any errors in the dev terminal.
+
+## After code changes
+
+Still reload the browser immediately after edits (see auto-reload-browser rule) — do not wait for the 5-minute loop.
+
+## Stop monitoring
+
+If the user asks to stop the health loop, kill the background loop shell and optionally stop `dev:watch`.

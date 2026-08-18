@@ -23,6 +23,7 @@ export const WIDGET_SCENE_LABEL: Record<WidgetPetScene, string> = {
 export function sceneToWidgetScene(scene: StateScene): WidgetPetScene {
   switch (scene) {
     case 'allGood':
+    case 'sleeping':
       return 'well';
     case 'sad':
       return 'sad';
@@ -56,7 +57,7 @@ export function widgetSceneAtTime(
   periodMs: number,
   atMs: number,
 ): WidgetPetScene {
-  if (!lastCheckInAt) return 'fail';
+  if (!lastCheckInAt) return 'well';
 
   const startMs = new Date(lastCheckInAt).getTime();
   const elapsedMs = Math.max(atMs - startMs, 0);
@@ -89,7 +90,7 @@ export function buildWidgetTimelineEntries(
   });
 
   if (!lastCheckInAt) {
-    return [{ date: new Date(nowMs), props: makeProps('fail') }];
+    return [{ date: new Date(nowMs), props: makeProps('well') }];
   }
 
   const startMs = new Date(lastCheckInAt).getTime();

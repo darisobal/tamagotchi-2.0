@@ -14,7 +14,7 @@ const AnimatedG = Animated.createAnimatedComponent(G);
 const AnimatedLine = Animated.createAnimatedComponent(Line);
 
 /** ~ centroid of splatter blobs (viewBox coords) for scale origin. */
-const ORIGIN = { x: 77, y: 169 };
+const ORIGIN = { x: 82, y: 188 };
 
 /** One blood streak in the fountain — angles are in SVG space (+x = up on screen when dead). */
 const FOUNTAIN_LINES = [
@@ -126,25 +126,25 @@ export default function DeadBloodSplatter() {
   return (
     <>
       <AnimatedG animatedProps={splatterProps}>
-        <Circle cx={76} cy={168} r={16} fill="#FF1A1A" />
-        <Circle cx={68} cy={162} r={8} fill="#B71C1C" />
-        <Circle cx={88} cy={176} r={6} fill="#FF5252" />
+        <Circle cx={82} cy={188} r={16} fill="#FF1A1A" />
+        <Circle cx={74} cy={182} r={8} fill="#B71C1C" />
+        <Circle cx={94} cy={196} r={6} fill="#FF5252" />
         <Path
-          d="M52 178 Q62 195 78 188 T98 182"
+          d="M58 198 Q68 215 84 208 T104 202"
           fill="none"
           stroke="#B71C1C"
           strokeWidth={4}
           strokeLinecap="round"
         />
         <Path
-          d="M58 168 L66 182 M72 160 L80 174 M85 170 L92 185"
+          d="M64 188 L72 202 M78 180 L86 194 M91 190 L98 205"
           fill="none"
           stroke="#8B0000"
           strokeWidth={3}
           strokeLinecap="round"
         />
         <Path
-          d="M95 158 Q102 172 98 188"
+          d="M101 178 Q108 192 104 208"
           fill="none"
           stroke="#FF1A1A"
           strokeWidth={3}

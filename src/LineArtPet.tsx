@@ -14,6 +14,7 @@ import Animated, {
 import { Mood, PetHat as PetHatId } from './types';
 import { Colors } from './theme';
 import PetFigure, { PET_SVG_VB } from './PetFigure';
+import SleepingPetFigure, { SLEEPING_SCENE_VB } from './SleepingPetFigure';
 import PetHat from './PetHat';
 import DeadBloodSplatter from './DeadBloodSplatter';
 import PetSuccessBalls from './PetSuccessBalls';
@@ -21,10 +22,10 @@ import { PET_HOME_DISPLAY_HEIGHT } from './PetEggShell';
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 
-/** Where to drop the hat for the upright body (sits just above the hair tuft). */
+/** Where to drop the hat for the upright body (sits on top of the round head). */
 const HAT_PLACEMENT = {
-  cx: 70,
-  baseY: 28,
+  cx: 82,
+  baseY: 10,
   width: 66,
   height: 26,
 } as const;
@@ -57,20 +58,24 @@ export default function LineArtPet({
   ballEmoji = null,
 }: LineArtPetProps) {
   const isDead = mood === 'dead';
+  const isSleeping = mood === 'sleeping';
 
   /**
    * Art is always laid out upright in local space, then the wrapper rotates when dead.
-   * Dead: local width becomes on-screen height → local width = displayHeight.
-   * Upright: local height = displayHeight.
+   * Sleeping uses a wide side-view figure; upright moods use the tall standing figure.
    */
-  const artW = isDead
+  const artW = isSleeping
+    ? (displayHeight * SLEEPING_SCENE_VB.w) / SLEEPING_SCENE_VB.h
+    : isDead
+      ? displayHeight
+      : (displayHeight * PET_SVG_VB.w) / PET_SVG_VB.h;
+  const artH = isSleeping
     ? displayHeight
-    : (displayHeight * PET_SVG_VB.w) / PET_SVG_VB.h;
-  const artH = isDead
-    ? (displayHeight * PET_SVG_VB.h) / PET_SVG_VB.w
-    : displayHeight;
+    : isDead
+      ? (displayHeight * PET_SVG_VB.h) / PET_SVG_VB.w
+      : displayHeight;
 
-  /** Posed layout box (accounts for −90° rotation). */
+  /** Posed layout box (accounts for −90° rotation when dead). */
   const layoutW = isDead ? artH : artW;
   const layoutH = isDead ? artW : artH;
 
@@ -102,6 +107,23 @@ export default function LineArtPet({
         withSequence(
           withTiming(1.006, { duration: 5000, easing: slow }),
           withTiming(1, { duration: 5000, easing: slow }),
+        ),
+        -1,
+        false,
+      );
+    } else if (mood === 'sleeping') {
+      bob.value = withRepeat(
+        withSequence(
+          withTiming(-2, { duration: 3200, easing: slow }),
+          withTiming(0, { duration: 3200, easing: slow }),
+        ),
+        -1,
+        false,
+      );
+      breathe.value = withRepeat(
+        withSequence(
+          withTiming(1.018, { duration: 3400, easing: slow }),
+          withTiming(1, { duration: 3400, easing: slow }),
         ),
         -1,
         false,
@@ -148,7 +170,7 @@ export default function LineArtPet({
   }));
 
   const armsAnimatedProps = useAnimatedProps(() => ({
-    transform: `rotate(${armWave.value} 82 145)`,
+    transform: `rotate(${armWave.value} 82 135)`,
   }));
 
   return (
@@ -163,16 +185,26 @@ export default function LineArtPet({
         <Svg
           width={artW}
           height={artH}
-          viewBox={`0 0 ${PET_SVG_VB.w} ${PET_SVG_VB.h}`}
+          viewBox={
+            isSleeping
+              ? `${SLEEPING_SCENE_VB.x} ${SLEEPING_SCENE_VB.y} ${SLEEPING_SCENE_VB.w} ${SLEEPING_SCENE_VB.h}`
+              : `0 0 ${PET_SVG_VB.w} ${PET_SVG_VB.h}`
+          }
           preserveAspectRatio="xMidYMid meet"
         >
-          <PetFigure
-            mood={mood}
-            strokeColor={strokeColor}
-            armsAnimatedProps={armsAnimatedProps}
-          />
-          {isDead ? <DeadBloodSplatter /> : null}
-          <PetHat hat={hat} {...HAT_PLACEMENT} strokeColor={strokeColor} />
+          {isSleeping ? (
+            <SleepingPetFigure color={strokeColor} hat={hat} />
+          ) : (
+            <>
+              <PetFigure
+                mood={mood}
+                strokeColor={strokeColor}
+                armsAnimatedProps={armsAnimatedProps}
+              />
+              {isDead ? <DeadBloodSplatter /> : null}
+              <PetHat hat={hat} {...HAT_PLACEMENT} strokeColor={strokeColor} />
+            </>
+          )}
         </Svg>
       </View>
       {mood === 'happy' && ballEmoji ? (

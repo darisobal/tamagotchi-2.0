@@ -26,6 +26,10 @@ describe('widgetState', () => {
     expect(moodToWidgetScene('sad')).toBe('sad');
   });
 
+  test('sleeping mood maps to well', () => {
+    expect(moodToWidgetScene('sleeping')).toBe('well');
+  });
+
   test('dead mood maps to fail', () => {
     expect(moodToWidgetScene('dead')).toBe('fail');
   });
@@ -48,8 +52,8 @@ describe('widgetState', () => {
     expect(widgetSceneAtTime(lastCheckInAt, DAY, start + DAY * 3)).toBe('fail');
   });
 
-  test('no check-in is always fail', () => {
-    expect(widgetSceneAtTime(null, DAY, Date.now())).toBe('fail');
+  test('no check-in shows well (sleeping first session)', () => {
+    expect(widgetSceneAtTime(null, DAY, Date.now())).toBe('well');
   });
 
   test('buildWidgetTimelineEntries schedules future transitions', () => {

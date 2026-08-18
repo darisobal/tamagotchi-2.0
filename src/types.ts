@@ -12,7 +12,7 @@ export type Intensity = 'small' | 'medium' | 'big';
 
 export type PetType = 'dino' | 'bird' | 'selfie';
 
-export type Mood = 'happy' | 'okay' | 'sad' | 'dead';
+export type Mood = 'happy' | 'okay' | 'sad' | 'dead' | 'sleeping';
 
 /** How long until the next check-in is due (single-habit app). */
 export type HabitCadence = 'daily' | 'every2days' | 'weekly';
