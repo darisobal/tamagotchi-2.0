@@ -111,14 +111,14 @@ export function computePetMood(
   habitName: string = DEFAULT_HABIT_NAME,
 ): PetMoodInfo {
   if (habits.length === 0) {
-    return { mood: 'sleeping', reason: 'keep your pet alive', lives: PET_LIVES_MAX };
+    return { mood: 'sleeping', reason: "you've got zero progress.", lives: PET_LIVES_MAX };
   }
 
   const habit = habits[0];
   const name = habitName || DEFAULT_HABIT_NAME;
 
   if (habit.lastCheckInAt === null) {
-    return { mood: 'sleeping', lives: PET_LIVES_MAX, reason: 'keep your pet alive' };
+    return { mood: 'sleeping', lives: PET_LIVES_MAX, reason: "you've got zero progress." };
   }
 
   const lives = habit.lives;

@@ -143,7 +143,7 @@ export function getStateTheme(mood: Mood, options?: StateThemeOptions): StateThe
       showCrossOut: false,
       showSuccessBalls: false,
       successBallEmoji: null,
-      greeting: () => 'keep your pet alive',
+      greeting: () => "you've got zero progress.",
       motto: () => 'your first check-in wakes them up.',
       checkInLabel: 'start tracking',
     };
