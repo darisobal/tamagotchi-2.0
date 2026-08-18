@@ -17,6 +17,7 @@ import { Colors, Spacing, FontSize, Slab, Radius, Border, Type } from '../../src
 import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
 import { useMoodBackground } from '../../src/useMoodBackground';
 import TrashButton from '../../src/TrashButton';
+import EmptyFace from '../../src/EmptyFace';
 
 const WEEKDAY_LABELS = ['s', 'm', 't', 'w', 't', 'f', 's'] as const;
 
@@ -61,6 +62,8 @@ export default function ProgressScreen() {
   const screenBg = useMoodBackground();
   const tabBarExtraPad = useFloatingTabBarExtraPadding();
   const habitName = (prefs.habitName || DEFAULT_HABIT_NAME).trim();
+  const petColor = prefs.petColor || Colors.pet;
+  const petHat = prefs.petHat ?? 'none';
   const { width } = useWindowDimensions();
   const contentWidth = Math.min(width - Spacing.lg * 2, 400);
   const cellGap = Spacing.xs;
@@ -157,10 +160,12 @@ export default function ProgressScreen() {
     return (
       <SafeAreaView style={[styles.safe, { backgroundColor: screenBg }]}>
         <View style={[styles.empty, { paddingBottom: Spacing.xl + tabBarExtraPad }]}>
-          <Text style={styles.emptyIcon}>[ ]</Text>
+          <View style={styles.emptyPet}>
+            <EmptyFace color={petColor} hat={petHat} />
+          </View>
           <Text style={styles.emptyTitle}>no check-ins yet</Text>
           <Text style={styles.emptySubtitle}>
-            complete your first habit to see it here!
+            prove you're not all talk
           </Text>
         </View>
       </SafeAreaView>
@@ -526,11 +531,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: Spacing.xl,
   },
-  emptyIcon: {
-    fontSize: 36,
-    fontFamily: Slab.black,
+  emptyPet: {
     marginBottom: Spacing.md,
-    color: Colors.ink,
   },
   emptyTitle: {
     fontSize: FontSize.xl,
