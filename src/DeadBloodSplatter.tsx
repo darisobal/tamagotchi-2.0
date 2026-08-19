@@ -8,13 +8,14 @@ import Animated, {
   cancelAnimation,
   type SharedValue,
 } from 'react-native-reanimated';
+import { HAPPY_PET_TORSO_ORIGIN } from '../assets/pet/happy-paths';
 import { Circle, G, Line, Path } from 'react-native-svg';
 
 const AnimatedG = Animated.createAnimatedComponent(G);
 const AnimatedLine = Animated.createAnimatedComponent(Line);
 
 /** ~ centroid of splatter blobs (viewBox coords) for scale origin. */
-const ORIGIN = { x: 82, y: 188 };
+const ORIGIN = HAPPY_PET_TORSO_ORIGIN;
 
 /** One blood streak in the fountain — angles are in SVG space (+x = up on screen when dead). */
 const FOUNTAIN_LINES = [
@@ -126,25 +127,25 @@ export default function DeadBloodSplatter() {
   return (
     <>
       <AnimatedG animatedProps={splatterProps}>
-        <Circle cx={82} cy={188} r={16} fill="#FF1A1A" />
-        <Circle cx={74} cy={182} r={8} fill="#B71C1C" />
-        <Circle cx={94} cy={196} r={6} fill="#FF5252" />
+        <Circle cx={76} cy={139} r={16} fill="#FF1A1A" />
+        <Circle cx={68} cy={133} r={8} fill="#B71C1C" />
+        <Circle cx={88} cy={147} r={6} fill="#FF5252" />
         <Path
-          d="M58 198 Q68 215 84 208 T104 202"
+          d="M52 149 Q62 166 78 159 T98 153"
           fill="none"
           stroke="#B71C1C"
           strokeWidth={4}
           strokeLinecap="round"
         />
         <Path
-          d="M64 188 L72 202 M78 180 L86 194 M91 190 L98 205"
+          d="M58 139 L66 153 M72 131 L80 145 M85 141 L92 156"
           fill="none"
           stroke="#8B0000"
           strokeWidth={3}
           strokeLinecap="round"
         />
         <Path
-          d="M101 178 Q108 192 104 208"
+          d="M95 129 Q102 143 98 159"
           fill="none"
           stroke="#FF1A1A"
           strokeWidth={3}

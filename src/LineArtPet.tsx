@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Svg from 'react-native-svg';
+import Svg, { G } from 'react-native-svg';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -13,6 +13,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Mood, PetHat as PetHatId } from './types';
 import { Colors } from './theme';
+import { HAPPY_PET_ARM_PIVOT, HAPPY_PET_HAT, HAPPY_PET_SCENE_PAD_TOP, HAPPY_PET_SCENE_VB } from '../assets/pet/happy-paths';
 import PetFigure, { PET_SVG_VB } from './PetFigure';
 import SleepingPetFigure, { SLEEPING_SCENE_VB } from './SleepingPetFigure';
 import PetHat from './PetHat';
@@ -22,13 +23,7 @@ import { PET_HOME_DISPLAY_HEIGHT } from './PetEggShell';
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 
-/** Where to drop the hat for the upright body (sits on top of the round head). */
-const HAT_PLACEMENT = {
-  cx: 82,
-  baseY: 10,
-  width: 66,
-  height: 26,
-} as const;
+const HAT_PLACEMENT = HAPPY_PET_HAT;
 
 type LineArtPetProps = {
   mood: Mood;
@@ -68,7 +63,7 @@ export default function LineArtPet({
     ? (displayHeight * SLEEPING_SCENE_VB.w) / SLEEPING_SCENE_VB.h
     : isDead
       ? displayHeight
-      : (displayHeight * PET_SVG_VB.w) / PET_SVG_VB.h;
+      : (displayHeight * HAPPY_PET_SCENE_VB.w) / HAPPY_PET_SCENE_VB.h;
   const artH = isSleeping
     ? displayHeight
     : isDead
@@ -170,7 +165,7 @@ export default function LineArtPet({
   }));
 
   const armsAnimatedProps = useAnimatedProps(() => ({
-    transform: `rotate(${armWave.value} 82 135)`,
+    transform: `rotate(${armWave.value} ${HAPPY_PET_ARM_PIVOT.x} ${HAPPY_PET_ARM_PIVOT.y})`,
   }));
 
   return (
@@ -188,14 +183,15 @@ export default function LineArtPet({
           viewBox={
             isSleeping
               ? `${SLEEPING_SCENE_VB.x} ${SLEEPING_SCENE_VB.y} ${SLEEPING_SCENE_VB.w} ${SLEEPING_SCENE_VB.h}`
-              : `0 0 ${PET_SVG_VB.w} ${PET_SVG_VB.h}`
+              : `${HAPPY_PET_SCENE_VB.x} ${HAPPY_PET_SCENE_VB.y} ${HAPPY_PET_SCENE_VB.w} ${HAPPY_PET_SCENE_VB.h}`
           }
+          overflow="visible"
           preserveAspectRatio="xMidYMid meet"
         >
           {isSleeping ? (
             <SleepingPetFigure color={strokeColor} hat={hat} />
           ) : (
-            <>
+            <G transform={`translate(0, ${HAPPY_PET_SCENE_PAD_TOP})`}>
               <PetFigure
                 mood={mood}
                 strokeColor={strokeColor}
@@ -203,7 +199,7 @@ export default function LineArtPet({
               />
               {isDead ? <DeadBloodSplatter /> : null}
               <PetHat hat={hat} {...HAT_PLACEMENT} strokeColor={strokeColor} />
-            </>
+            </G>
           )}
         </Svg>
       </View>
