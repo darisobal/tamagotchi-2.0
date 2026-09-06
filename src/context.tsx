@@ -19,6 +19,7 @@ import * as repo from './repository';
 import { pullUserSnapshot, pushUserSnapshot, canSyncToCloud } from './sync';
 import { useAuth } from './authContext';
 import { processCheckIn, computeAllHabits, computePetMood, recomputeStreakFromCheckIns, recomputeCelebrationFromCheckIns } from './logic';
+import { checkInEarnsCoupon } from './coupons';
 import { syncPetStatusWidget } from './widgetSync';
 import { consumePendingPaidRestart } from './purchases';
 import * as Crypto from 'expo-crypto';
@@ -34,6 +35,9 @@ interface AppState {
   computedHabits: ComputedHabit[];
   refresh: () => Promise<void>;
   doCheckIn: (trackType: TrackType, intensity: Intensity, note: string | null) => Promise<void>;
+  collectCoupon: (checkInId: string) => Promise<void>;
+  /** Set only right after a full-lives check-in — drives the coupon overlay once. */
+  couponRevealCheckInId: string | null;
   deleteCheckInById: (id: string) => Promise<void>;
   updatePrefs: (prefs: Partial<UserPrefs>) => Promise<void>;
   resetAll: () => Promise<void>;
@@ -68,6 +72,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [lives, setLives] = useState<number>(3);
   const [petMoodInfo, setPetMoodInfo] = useState<PetMoodInfo>({ mood: 'okay', reason: '', lives: 3 });
   const [computedHabits, setComputedHabits] = useState<ComputedHabit[]>([]);
+  const [couponRevealCheckInId, setCouponRevealCheckInId] = useState<string | null>(null);
   const userIdRef = useRef<string | null>(null);
   const tracksRef = useRef<TrackState[]>([]);
   const moodRef = useRef<Mood>('okay');
@@ -181,6 +186,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         isPaidRestart = true;
       }
 
+      const habits = computeAllHabits(tracksRef.current, now.getTime(), habitCadenceRef.current);
+      const livesBeforeCheckIn = computePetMood(habits, habitNameRef.current).lives;
+      const couponEarned = checkInEarnsCoupon(livesBeforeCheckIn, isPaidRestart);
+
       const newCheckIn: CheckIn = {
         id: Crypto.randomUUID(),
         trackType,
@@ -188,6 +197,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         note,
         timestamp: now.toISOString(),
         isPaidRestart,
+        couponEarned,
+        couponCollected: couponEarned ? false : true,
       };
 
       const updatedState = processCheckIn(state, intensity, now, isPaidRestart);
@@ -196,8 +207,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       await repo.updateTrackState(updatedState);
       await refresh();
       await syncToCloud();
+
+      if (couponEarned) {
+        setCouponRevealCheckInId(newCheckIn.id);
+      }
     },
     [refresh, syncToCloud]
+  );
+
+  const collectCoupon = useCallback(
+    async (checkInId: string) => {
+      await repo.markCouponCollected(checkInId);
+      setCouponRevealCheckInId(null);
+      await refresh();
+      await syncToCloud();
+    },
+    [refresh, syncToCloud],
   );
 
   const deleteCheckInById = useCallback(
@@ -253,6 +278,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const resetAll = useCallback(async () => {
     await repo.resetAllData();
+    setCouponRevealCheckInId(null);
     await refresh();
     await syncToCloud();
   }, [refresh, syncToCloud]);
@@ -270,6 +296,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         computedHabits,
         refresh,
         doCheckIn,
+        collectCoupon,
+        couponRevealCheckInId,
         deleteCheckInById,
         updatePrefs,
         resetAll,

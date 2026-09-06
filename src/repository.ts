@@ -8,6 +8,10 @@ export async function insertCheckIn(checkIn: CheckIn): Promise<void> {
   return getStorage().insertCheckIn(checkIn);
 }
 
+export async function markCouponCollected(id: string): Promise<void> {
+  return getStorage().markCouponCollected(id);
+}
+
 export async function deleteCheckIn(id: string): Promise<CheckIn | null> {
   return getStorage().deleteCheckIn(id);
 }

@@ -46,8 +46,8 @@ import {
 } from '../../src/checkInConfirmCopy';
 import { HEART_VIEWBOX } from '../../assets/pet/heart-paths';
 import { formatLifeTimer } from '../../src/logic';
-import { getSuccessCelebration } from '../../src/successProgression';
-import PetSuccessBalls from '../../src/PetSuccessBalls';
+import CouponRewardOverlay from '../../src/CouponRewardOverlay';
+import { findCouponForReveal } from '../../src/coupons';
 
 const EGG_FLIP_MS = 480;
 
@@ -70,7 +70,7 @@ const HERO_HEART_HEIGHT = Math.round(
 const HERO_EGG_LIFT = HERO_HEART_HEIGHT + HERO_PET_STAGE_PAD_TOP - Spacing.sm;
 
 export default function HomeScreen() {
-  const { prefs, computedHabits, tracks, mood, lives, refresh, doCheckIn, checkIns } =
+  const { prefs, computedHabits, tracks, mood, lives, refresh, doCheckIn, checkIns, collectCoupon, couponRevealCheckInId } =
     useAppState();
   const [refreshing, setRefreshing] = React.useState(false);
   const [restartPaywallVisible, setRestartPaywallVisible] = React.useState(false);
@@ -85,15 +85,9 @@ export default function HomeScreen() {
   }, [refresh]);
 
   const lastMainCheckIn = checkIns.find((c) => c.trackType === MAIN_TRACK);
-  const mainTrack = tracks.find((t) => t.trackType === MAIN_TRACK);
-  const successCelebration = getSuccessCelebration({
-    celebrationCount: mainTrack?.celebrationCount ?? 0,
-    lastCheckInWasPaidRestart: Boolean(lastMainCheckIn?.isPaidRestart),
-    celebrationPaidStart: Boolean(mainTrack?.celebrationPaidStart),
-  });
+  const pendingCoupon = findCouponForReveal(checkIns, couponRevealCheckInId);
   const theme = getStateTheme(mood, {
     lastCheckInWasPaidRestart: Boolean(lastMainCheckIn?.isPaidRestart),
-    successCelebration,
   });
   const tabBarExtraPad = useFloatingTabBarExtraPadding();
 
@@ -166,8 +160,6 @@ export default function HomeScreen() {
             customSprite={prefs.customSprite}
             petColor={petColor}
             petHat={prefs.petHat ?? 'none'}
-            showConfetti={theme.showConfetti}
-            successBallEmoji={theme.successBallEmoji}
             petName={petName}
             flipped={eggFlipped}
             timeRemainingMs={habit?.timeRemainingMs ?? 0}
@@ -217,6 +209,13 @@ export default function HomeScreen() {
         faceColor={petColor}
         onConfirm={onConfirmCheckIn}
         onCancel={onCancelConfirm}
+      />
+
+      <CouponRewardOverlay
+        visible={Boolean(pendingCoupon)}
+        pendingCheckIn={pendingCoupon}
+        checkIns={checkIns}
+        onCollected={collectCoupon}
       />
     </SafeAreaView>
   );
@@ -269,7 +268,6 @@ function LifeTimer({
   );
 }
 
-const PIXEL_PET_GRID = 16;
 const PIXEL_PET_SIZE = 7;
 
 function PetStage({
@@ -278,8 +276,6 @@ function PetStage({
   customSprite,
   petColor,
   petHat,
-  showConfetti,
-  successBallEmoji,
   petName,
   flipped,
   timeRemainingMs,
@@ -290,8 +286,6 @@ function PetStage({
   customSprite: string | null | undefined;
   petColor: string;
   petHat: ReturnType<typeof useAppState>['prefs']['petHat'];
-  showConfetti: boolean;
-  successBallEmoji: string | null;
   petName: string;
   flipped: boolean;
   timeRemainingMs: number;
@@ -300,8 +294,6 @@ function PetStage({
   const useSelfiePixels = petType === 'selfie' && Boolean(customSprite);
   const isDead = mood === 'dead';
   const isSleeping = mood === 'sleeping';
-  const showSuccessBalls = mood === 'happy' && Boolean(successBallEmoji);
-  const pixelPetSize = PIXEL_PET_GRID * PIXEL_PET_SIZE;
   const flipProgress = useSharedValue(flipped ? 1 : 0);
 
   useEffect(() => {
@@ -341,7 +333,6 @@ function PetStage({
 
   return (
     <View style={styles.petStage}>
-      {showConfetti ? <ConfettiBurst /> : null}
       <Pressable
         onPress={onPress}
         accessibilityRole="button"
@@ -367,14 +358,6 @@ function PetStage({
                   color={petColor}
                   pixelSize={PIXEL_PET_SIZE}
                 />
-                {showSuccessBalls && successBallEmoji ? (
-                  <PetSuccessBalls
-                    emoji={successBallEmoji}
-                    layoutWidth={pixelPetSize}
-                    layoutHeight={pixelPetSize}
-                    variant="pixel"
-                  />
-                ) : null}
               </View>
             ) : (
               <LineArtPet
@@ -384,7 +367,6 @@ function PetStage({
                   isDead ? PET_HOME_DEAD_DISPLAY_HEIGHT : PET_HOME_DISPLAY_HEIGHT
                 }
                 hat={petHat}
-                ballEmoji={showSuccessBalls ? successBallEmoji : null}
               />
             )}
           </View>
@@ -420,99 +402,6 @@ function PetStage({
         </Animated.View>
       </Pressable>
     </View>
-  );
-}
-
-type ConfettiDotSpec = {
-  x: number;
-  y: number;
-  color: string;
-  size: number;
-  /** Vertical drift amplitude in px (each dot floats up & down). */
-  drift: number;
-  /** Animation period in ms — each dot uses a slightly different period. */
-  period: number;
-  /** Rotation amplitude in deg. */
-  rotate: number;
-  /** Phase delay in ms so the dots don't all move in unison. */
-  delay: number;
-};
-
-const CONFETTI_DOTS: ConfettiDotSpec[] = [
-  { x: 6,  y: 6,  color: '#A66CFF', size: 14, drift: 14, period: 2600, rotate: 35, delay: 0 },
-  { x: 60, y: 20, color: '#FF6F61', size: 12, drift: 10, period: 2200, rotate: 28, delay: 350 },
-  { x: 88, y: 4,  color: '#FF8FB1', size: 14, drift: 16, period: 2900, rotate: 40, delay: 120 },
-  { x: 4,  y: 38, color: '#1F1AE6', size: 10, drift: 12, period: 2400, rotate: 25, delay: 800 },
-  { x: 92, y: 50, color: '#FFD93D', size: 12, drift: 14, period: 2700, rotate: 32, delay: 600 },
-  { x: 30, y: 90, color: '#000000', size: 10, drift: 10, period: 2100, rotate: 30, delay: 950 },
-  { x: 70, y: 88, color: '#1F1AE6', size: 12, drift: 12, period: 2500, rotate: 28, delay: 200 },
-  { x: 50, y: 60, color: '#FF6F61', size: 10, drift: 14, period: 2300, rotate: 35, delay: 450 },
-  { x: 18, y: 64, color: '#FFD93D', size: 8,  drift: 10, period: 2050, rotate: 22, delay: 700 },
-  { x: 82, y: 72, color: '#A66CFF', size: 9,  drift: 12, period: 2350, rotate: 30, delay: 250 },
-];
-
-function ConfettiBurst() {
-  return (
-    <View pointerEvents="none" style={styles.confettiLayer}>
-      {CONFETTI_DOTS.map((d, i) => (
-        <ConfettiDot key={i} spec={d} />
-      ))}
-    </View>
-  );
-}
-
-function ConfettiDot({ spec }: { spec: ConfettiDotSpec }) {
-  const t = useSharedValue(0);
-
-  useEffect(() => {
-    t.value = 0;
-    t.value = withDelay(
-      spec.delay,
-      withRepeat(
-        withSequence(
-          withTiming(1, {
-            duration: spec.period / 2,
-            easing: Easing.inOut(Easing.sin),
-          }),
-          withTiming(0, {
-            duration: spec.period / 2,
-            easing: Easing.inOut(Easing.sin),
-          }),
-        ),
-        -1,
-        false,
-      ),
-    );
-    return () => {
-      cancelAnimation(t);
-    };
-  }, [t, spec.delay, spec.period]);
-
-  const animatedStyle = useAnimatedStyle(() => {
-    // t goes 0 → 1 → 0 each cycle; map to symmetric -drift … +drift float.
-    const ty = (t.value - 0.5) * 2 * spec.drift;
-    const rot = (t.value - 0.5) * 2 * spec.rotate;
-    const scale = 0.92 + t.value * 0.16;
-    return {
-      transform: [{ translateY: ty }, { rotate: `${rot}deg` }, { scale }],
-    };
-  });
-
-  return (
-    <Animated.View
-      style={[
-        {
-          position: 'absolute',
-          left: `${spec.x}%`,
-          top: `${spec.y}%`,
-          width: spec.size,
-          height: spec.size,
-          borderRadius: spec.size / 2,
-          backgroundColor: spec.color,
-        },
-        animatedStyle,
-      ]}
-    />
   );
 }
 
@@ -676,12 +565,5 @@ const styles = StyleSheet.create({
     // Center on the egg (not the asymmetric stage).
     top: HERO_PET_STAGE_PAD_TOP + PET_HOME_EGG_HEIGHT / 2,
     marginTop: -PET_HOME_DEAD_DISPLAY_HEIGHT / 2,
-  },
-  confettiLayer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
   },
 });

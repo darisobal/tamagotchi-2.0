@@ -18,6 +18,7 @@ export interface Storage {
   getAllCheckIns(): Promise<CheckIn[]>;
   getCheckInsForTrack(trackType: TrackType): Promise<CheckIn[]>;
   insertCheckIn(checkIn: CheckIn): Promise<void>;
+  markCouponCollected(id: string): Promise<void>;
   deleteCheckIn(id: string): Promise<CheckIn | null>;
   getTrackState(trackType: TrackType): Promise<TrackState>;
   getAllTrackStates(): Promise<TrackState[]>;
@@ -77,6 +78,9 @@ class WebStorage implements Storage {
         this.checkIns = (data.checkIns || []).map((c: CheckIn) => ({
           ...c,
           isPaidRestart: Boolean(c.isPaidRestart),
+          couponEarned: c.couponEarned === undefined ? undefined : Boolean(c.couponEarned),
+          couponCollected:
+            c.couponCollected === undefined ? undefined : Boolean(c.couponCollected),
         }));
         if (data.tracks) {
           for (const t of data.tracks) {
@@ -127,7 +131,21 @@ class WebStorage implements Storage {
 
   async insertCheckIn(checkIn: CheckIn) {
     this.load();
-    this.checkIns.push(checkIn);
+    const couponEarned = Boolean(checkIn.couponEarned);
+    this.checkIns.push({
+      ...checkIn,
+      couponEarned,
+      couponCollected:
+        checkIn.couponCollected ?? (couponEarned ? false : true),
+    });
+    this.save();
+  }
+
+  async markCouponCollected(id: string) {
+    this.load();
+    const row = this.checkIns.find((c) => c.id === id);
+    if (!row) return;
+    row.couponCollected = true;
     this.save();
   }
 

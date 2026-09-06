@@ -21,6 +21,7 @@ export interface Storage {
   getAllCheckIns(): Promise<CheckIn[]>;
   getCheckInsForTrack(trackType: TrackType): Promise<CheckIn[]>;
   insertCheckIn(checkIn: CheckIn): Promise<void>;
+  markCouponCollected(id: string): Promise<void>;
   deleteCheckIn(id: string): Promise<CheckIn | null>;
   getTrackState(trackType: TrackType): Promise<TrackState>;
   getAllTrackStates(): Promise<TrackState[]>;
@@ -42,7 +43,11 @@ function defaultTrackState(trackType: TrackType): TrackState {
   };
 }
 
-type CheckInRow = Omit<CheckIn, 'isPaidRestart'> & { isPaidRestart?: number | boolean | null };
+type CheckInRow = Omit<CheckIn, 'isPaidRestart' | 'couponCollected' | 'couponEarned'> & {
+  isPaidRestart?: number | boolean | null;
+  couponCollected?: number | boolean | null;
+  couponEarned?: number | boolean | null;
+};
 
 function mapCheckInRow(row: CheckInRow): CheckIn {
   return {
@@ -52,6 +57,14 @@ function mapCheckInRow(row: CheckInRow): CheckIn {
     note: row.note,
     timestamp: row.timestamp,
     isPaidRestart: Boolean(row.isPaidRestart),
+    couponEarned:
+      row.couponEarned === undefined || row.couponEarned === null
+        ? undefined
+        : Boolean(row.couponEarned),
+    couponCollected:
+      row.couponCollected === undefined || row.couponCollected === null
+        ? undefined
+        : Boolean(row.couponCollected),
   };
 }
 
@@ -75,6 +88,16 @@ class NativeStorage implements Storage {
     try {
       await this.db.execAsync(
         `ALTER TABLE check_ins ADD COLUMN isPaidRestart INTEGER NOT NULL DEFAULT 0`,
+      );
+    } catch {}
+    try {
+      await this.db.execAsync(
+        `ALTER TABLE check_ins ADD COLUMN couponCollected INTEGER NOT NULL DEFAULT 1`,
+      );
+    } catch {}
+    try {
+      await this.db.execAsync(
+        `ALTER TABLE check_ins ADD COLUMN couponEarned INTEGER NOT NULL DEFAULT 0`,
       );
     } catch {}
     await this.db.execAsync(`
@@ -155,15 +178,31 @@ class NativeStorage implements Storage {
 
   async insertCheckIn(checkIn: CheckIn) {
     const db = await this.getDb();
+    const couponEarned = checkIn.couponEarned ? 1 : 0;
+    const couponCollected =
+      checkIn.couponCollected === undefined
+        ? couponEarned
+          ? 0
+          : 1
+        : checkIn.couponCollected
+          ? 1
+          : 0;
     await db.runAsync(
-      `INSERT INTO check_ins (id, trackType, intensity, note, timestamp, isPaidRestart) VALUES (?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO check_ins (id, trackType, intensity, note, timestamp, isPaidRestart, couponCollected, couponEarned) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       checkIn.id,
       checkIn.trackType,
       checkIn.intensity,
       checkIn.note,
       checkIn.timestamp,
       checkIn.isPaidRestart ? 1 : 0,
+      couponCollected,
+      couponEarned,
     );
+  }
+
+  async markCouponCollected(id: string) {
+    const db = await this.getDb();
+    await db.runAsync(`UPDATE check_ins SET couponCollected = 1 WHERE id = ?`, id);
   }
 
   async deleteCheckIn(id: string) {

@@ -18,8 +18,11 @@ import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
 import { useMoodBackground } from '../../src/useMoodBackground';
 import TrashButton from '../../src/TrashButton';
 import EmptyFace from '../../src/EmptyFace';
+import CouponsTabContent from '../../src/CouponsTabContent';
 
 const WEEKDAY_LABELS = ['s', 'm', 't', 'w', 't', 'f', 's'] as const;
+
+type ProgressTab = 'logs' | 'coupons';
 
 type GridCell =
   | { kind: 'empty' }
@@ -74,6 +77,7 @@ export default function ProgressScreen() {
     const n = new Date();
     return { y: n.getFullYear(), m: n.getMonth() };
   });
+  const [activeTab, setActiveTab] = useState<ProgressTab>('logs');
 
   const { countByDay, paidByDay, itemsByDay, distinctDays, sortedDays } = useMemo(() => {
     const countByDay: Record<string, number> = {};
@@ -135,7 +139,7 @@ export default function ProgressScreen() {
 
   const handleDelete = (id: string) => {
     const title = 'delete check-in?';
-    const message = 'this will remove the entry and recalculate your track level.';
+    const message = 'this will remove the entry and recalculate your streak.';
 
     if (Platform.OS === 'web') {
       if (typeof window !== 'undefined' && window.confirm(`${title}\n\n${message}`)) {
@@ -189,6 +193,33 @@ export default function ProgressScreen() {
           </Text>
         </View>
 
+        <View style={styles.tabBar}>
+          <TouchableOpacity
+            style={[styles.tabBtn, activeTab === 'logs' && styles.tabBtnActive]}
+            onPress={() => setActiveTab('logs')}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: activeTab === 'logs' }}
+          >
+            <Text style={[styles.tabBtnText, activeTab === 'logs' && styles.tabBtnTextActive]}>
+              logs
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.tabBtn, activeTab === 'coupons' && styles.tabBtnActive]}
+            onPress={() => setActiveTab('coupons')}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: activeTab === 'coupons' }}
+          >
+            <Text style={[styles.tabBtnText, activeTab === 'coupons' && styles.tabBtnTextActive]}>
+              coupons
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {activeTab === 'coupons' ? (
+          <CouponsTabContent checkIns={checkIns} />
+        ) : (
+          <>
         <View style={styles.monthNav}>
           <TouchableOpacity
             style={styles.navBtn}
@@ -312,6 +343,8 @@ export default function ProgressScreen() {
             </View>
           ))}
         </View>
+          </>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -368,7 +401,34 @@ const styles = StyleSheet.create({
   },
   countLabel: {
     ...Type.screenDescription,
-    marginBottom: 40,
+    marginBottom: Spacing.md,
+  },
+  tabBar: {
+    width: '100%',
+    maxWidth: 400,
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    marginBottom: Spacing.lg,
+  },
+  tabBtn: {
+    flex: 1,
+    paddingVertical: Spacing.sm + 2,
+    borderWidth: Border.thick,
+    borderColor: Colors.ink,
+    borderRadius: Radius.sm,
+    backgroundColor: Colors.card,
+    alignItems: 'center',
+  },
+  tabBtnActive: {
+    backgroundColor: Colors.ink,
+  },
+  tabBtnText: {
+    fontFamily: Slab.bold,
+    fontSize: FontSize.md,
+    color: Colors.ink,
+  },
+  tabBtnTextActive: {
+    color: Colors.card,
   },
   monthNav: {
     width: '100%',

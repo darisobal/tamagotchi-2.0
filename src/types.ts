@@ -28,6 +28,15 @@ export interface CheckIn {
    * History marks that calendar day as a paid day.
    */
   isPaidRestart?: boolean;
+  /**
+   * True when this check-in earned a power coupon (full lives at check-in time).
+   */
+  couponEarned?: boolean;
+  /**
+   * False until the user tears off the power coupon overlay for this check-in.
+   * Omitted / undefined on legacy rows — treated as already collected.
+   */
+  couponCollected?: boolean;
 }
 
 export interface TrackState {
