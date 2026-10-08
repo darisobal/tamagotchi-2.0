@@ -15,12 +15,16 @@ Every change must work on **both mobile and web**. That does not mean duplicatin
 - Prefer `Platform.OS` checks or `.web.ts` / `.native.ts` file extensions over copy-pasting whole screens or components.
 - When adding a feature, verify it behaves correctly on web and on mobile — not just the platform you are currently testing.
 
-### Product copy
+### Minimal design and purposeful copy
 
-- Lead with a brief heading that makes the requested user action clear.
-- Add one short description only when the heading needs essential context. Never add a third layer of explanatory copy.
-- Use precise, natural wording; remove repetition and unnecessary words.
-- Review copy twice before delivery: first for clarity and accuracy, then for brevity and redundancy.
+- Start with the minimum information and controls needed to complete the user's task.
+- Every word, control, graphic, and visual element must serve a clear, necessary purpose. If it is optional or merely decorative, omit it by default.
+- Before adding an element, ask: what would the user be unable to understand or do without it? If there is no concrete answer, do not add it.
+- Make the next action obvious. Add a heading only when needed for orientation or instruction, and one short description only when the heading is insufficient. Never add a third layer of explanatory copy.
+- Avoid redundant labels, repeated instructions, competing actions, and graphics that distract from the task. Keep each screen focused.
+- Reveal secondary controls only when they become necessary in the flow; do not display them preemptively.
+- Keep necessary accessibility labels, feedback, error recovery, and information required for an informed decision. Minimal design must remain understandable and usable.
+- Review twice before delivery: first for necessity and clarity, then for brevity and visual focus. Remove anything that does not earn its place.
 
 ---
 
