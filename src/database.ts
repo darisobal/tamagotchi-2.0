@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SQLite from 'expo-sqlite';
 import {
   CheckIn,
@@ -29,6 +30,7 @@ export interface Storage {
   getUserPrefs(): Promise<UserPrefs>;
   updateUserPrefs(prefs: Partial<UserPrefs>): Promise<void>;
   resetAll(): Promise<void>;
+  importSnapshot(snapshot: { prefs: UserPrefs; tracks: TrackState[]; checkIns: CheckIn[] }): Promise<void>;
 }
 
 function defaultTrackState(trackType: TrackType): TrackState {
@@ -69,11 +71,27 @@ function mapCheckInRow(row: CheckInRow): CheckIn {
 }
 
 class NativeStorage implements Storage {
+  constructor(private readonly userId: string | null) {}
+  private opening: Promise<SQLite.SQLiteDatabase> | null = null;
   private db: SQLite.SQLiteDatabase | null = null;
 
   private async getDb(): Promise<SQLite.SQLiteDatabase> {
-    if (this.db) return this.db;
-    this.db = await SQLite.openDatabaseAsync('tamagotchi.db');
+    if (this.opening) return this.opening;
+    if (!this.opening) this.opening = this.openDb();
+    return this.opening;
+  }
+
+  private async openDb(): Promise<SQLite.SQLiteDatabase> {
+    // Claim the pre-profile database once, for the first resolved identity.
+    // Its contents remain in place; subsequent accounts get separate databases.
+    const identity = this.userId ?? 'guest';
+    let owner = await AsyncStorage.getItem('tamagotchi_legacy_db_owner');
+    if (!owner) {
+      owner = identity;
+      await AsyncStorage.setItem('tamagotchi_legacy_db_owner', owner);
+    }
+    const filename = owner === identity ? 'tamagotchi.db' : `tamagotchi_${encodeURIComponent(identity)}.db`;
+    this.db = await SQLite.openDatabaseAsync(filename);
     await this.db.execAsync(`PRAGMA journal_mode = WAL;`);
     await this.db.execAsync(`
       CREATE TABLE IF NOT EXISTS check_ins (
@@ -148,6 +166,13 @@ class NativeStorage implements Storage {
     try {
       await this.db.execAsync(`ALTER TABLE user_prefs ADD COLUMN petName TEXT`);
     } catch {}
+    let firstOnboardingMigration = false;
+    try { await this.db.execAsync('ALTER TABLE user_prefs ADD COLUMN onboardingVersion INTEGER'); firstOnboardingMigration = true; } catch {}
+    for (const column of ['planStartedAt', 'onboardingDraft', 'accountPromptDismissed']) {
+      try { await this.db.execAsync(`ALTER TABLE user_prefs ADD COLUMN ${column} TEXT`); } catch {}
+    }
+    // Legacy installations skipped onboarding. Preserve their existing profile.
+    if (firstOnboardingMigration) await this.db.runAsync(`UPDATE user_prefs SET onboardingDone = 1 WHERE onboardingDone = 0 AND (habitName IS NOT NULL OR EXISTS (SELECT 1 FROM check_ins))`);
     for (const t of ALL_TRACKS) {
       await this.db.runAsync(
         `INSERT OR IGNORE INTO track_state (trackType, level, streak) VALUES (?, 50, 0)`, t
@@ -265,6 +290,9 @@ class NativeStorage implements Storage {
   async getUserPrefs() {
     const db = await this.getDb();
     const row = await db.getFirstAsync<{
+      planStartedAt: string | null;
+      onboardingDraft: string | null;
+      accountPromptDismissed: string | null;
       petType: string;
       onboardingDone: number;
       customSprite: string | null;
@@ -275,12 +303,15 @@ class NativeStorage implements Storage {
       habitCadence: string | null;
     }>(`SELECT * FROM user_prefs WHERE id = 1`);
     const prefs = normalizeUserPrefs({
+      planStartedAt: row!.planStartedAt,
+      onboardingDraft: row!.onboardingDraft ? JSON.parse(row!.onboardingDraft) : null,
+      accountPromptDismissed: row!.accountPromptDismissed === 'true',
       petType: row!.petType as UserPrefs['petType'],
       onboardingDone: row!.onboardingDone === 1,
       customSprite: row!.customSprite ?? null,
-      habitName: row!.habitName,
-      petName: row!.petName,
-      petColor: row!.petColor,
+      habitName: row!.habitName ?? '',
+      petName: row!.petName ?? undefined,
+      petColor: row!.petColor ?? undefined,
       petHat: row!.petHat as PetHat,
       habitCadence: row!.habitCadence as HabitCadence,
     });
@@ -298,22 +329,29 @@ class NativeStorage implements Storage {
 
   async updateUserPrefs(prefs: Partial<UserPrefs>) {
     const db = await this.getDb();
-    if (prefs.petType !== undefined)
-      await db.runAsync(`UPDATE user_prefs SET petType = ? WHERE id = 1`, prefs.petType);
-    if (prefs.onboardingDone !== undefined)
-      await db.runAsync(`UPDATE user_prefs SET onboardingDone = ? WHERE id = 1`, prefs.onboardingDone ? 1 : 0);
-    if (prefs.customSprite !== undefined)
-      await db.runAsync(`UPDATE user_prefs SET customSprite = ? WHERE id = 1`, prefs.customSprite);
-    if (prefs.habitName !== undefined)
-      await db.runAsync(`UPDATE user_prefs SET habitName = ? WHERE id = 1`, prefs.habitName);
-    if (prefs.petName !== undefined)
-      await db.runAsync(`UPDATE user_prefs SET petName = ? WHERE id = 1`, prefs.petName);
-    if (prefs.petColor !== undefined)
-      await db.runAsync(`UPDATE user_prefs SET petColor = ? WHERE id = 1`, prefs.petColor);
-    if (prefs.petHat !== undefined)
-      await db.runAsync(`UPDATE user_prefs SET petHat = ? WHERE id = 1`, prefs.petHat);
-    if (prefs.habitCadence !== undefined)
-      await db.runAsync(`UPDATE user_prefs SET habitCadence = ? WHERE id = 1`, prefs.habitCadence);
+    const columns = ['petType', 'onboardingDone', 'customSprite', 'habitName', 'petName',
+      'petColor', 'petHat', 'habitCadence', 'planStartedAt', 'onboardingDraft', 'accountPromptDismissed'] as const;
+    const updates = columns.filter(column => prefs[column] !== undefined);
+    if (!updates.length) return;
+    const values = updates.map(column => {
+      const value = prefs[column];
+      if (column === 'onboardingDone') return value ? 1 : 0;
+      if (column === 'onboardingDraft') return value ? JSON.stringify(value) : null;
+      if (column === 'accountPromptDismissed') return String(value);
+      return value as string | null;
+    });
+    // One statement commits the name, timing and completion flag atomically.
+    await db.runAsync(`UPDATE user_prefs SET ${updates.map(column => `${column} = ?`).join(', ')} WHERE id = 1`, ...values);
+  }
+
+  async importSnapshot(snapshot: { prefs: UserPrefs; tracks: TrackState[]; checkIns: CheckIn[] }) {
+    const db = await this.getDb();
+    await db.withTransactionAsync(async () => {
+      await this.resetAll();
+      await this.updateUserPrefs(normalizeUserPrefs(snapshot.prefs));
+      for (const track of snapshot.tracks) await this.updateTrackState(normalizeTrackState(track));
+      for (const row of snapshot.checkIns) await this.insertCheckIn(row);
+    });
   }
 
   async resetAll() {
@@ -331,13 +369,22 @@ class NativeStorage implements Storage {
 }
 
 let storage: Storage | null = null;
+let activeUserId: string | null = null;
 
-export function setActiveStorageUser(_userId: string | null) {
-  // Native SQLite uses a single on-device profile for now.
+export function setActiveStorageUser(userId: string | null) {
+  activeUserId = userId;
+  storage = null;
 }
 
 export function getStorage(): Storage {
   if (storage) return storage;
-  storage = new NativeStorage();
+  storage = getStorageForUser(activeUserId);
   return storage;
+}
+
+const profiles = new Map<string, Storage>();
+export function getStorageForUser(userId: string | null): Storage {
+  const key = userId ?? 'guest';
+  if (!profiles.has(key)) profiles.set(key, new NativeStorage(userId));
+  return profiles.get(key)!;
 }

@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { router, Redirect } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
@@ -129,7 +130,7 @@ export default function AuthScreen() {
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <View style={styles.container}>
+        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.container}>
           {mode === 'forgot' ? (
             <>
               <TouchableOpacity
@@ -168,10 +169,11 @@ export default function AuthScreen() {
             <Text style={styles.hint}>
               {mode === 'forgot'
                 ? 'password reset needs supabase. add expo_public_supabase_* keys.'
-                : 'local mode: data stays on this device until you add Supabase keys.'}
+                : 'cloud accounts are unavailable in this preview. you can continue as a guest.'}
             </Text>
           ) : null}
 
+          <TouchableOpacity accessibilityRole="button" style={styles.linkBtn} onPress={() => router.replace('/')}><Text style={styles.linkBtnText}>later — continue on this device</Text></TouchableOpacity>
           <Text style={styles.label}>email</Text>
           <TextInput
             style={styles.input}
@@ -250,7 +252,7 @@ export default function AuthScreen() {
               <Text style={styles.secondaryBtnText}>resend confirmation email</Text>
             </TouchableOpacity>
           ) : null}
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -260,7 +262,7 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.stateTodoBg },
   flex: { flex: 1 },
   container: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.xl,
     paddingBottom: Spacing.xl,

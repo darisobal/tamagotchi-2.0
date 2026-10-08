@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { useAppState } from '../../src/context';
+import { CADENCE_RULES } from '../../src/onboarding';
 import { useAuth } from '../../src/authContext';
 import {
   DEFAULT_HABIT_NAME,
@@ -138,6 +139,8 @@ export default function SettingsScreen() {
             ))}
           </View>
 
+          <Text style={styles.helper}>{CADENCE_RULES[prefs.habitCadence]} each check-in resets the clock; it does not reset at midnight.</Text>
+
           <Text style={styles.sectionLabel}>name your pet</Text>
           <TextInput
             value={petDraft}
@@ -218,16 +221,17 @@ export default function SettingsScreen() {
           </View>
 
           <Text style={styles.sectionLabel}>account</Text>
+          {!user && <Text style={styles.helper}>guest progress stays on this device. create an account to save it across devices.</Text>}
           {user?.email ? <Text style={styles.helper}>{user.email}</Text> : null}
           <TouchableOpacity
             style={styles.signOutBtn}
             onPress={async () => {
-              await signOut();
-              router.replace('/auth');
+              if (user) { await signOut(); router.replace('/'); }
+              else router.push('/auth');
             }}
             activeOpacity={0.85}
           >
-            <Text style={styles.signOutText}>log out</Text>
+            <Text style={styles.signOutText}>{user ? 'log out' : 'save progress across devices'}</Text>
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>

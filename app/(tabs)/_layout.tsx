@@ -5,6 +5,7 @@ import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, FontSize, Slab, Border } from '../../src/theme';
 import { useMoodBackground } from '../../src/useMoodBackground';
+import { useAppState } from '../../src/context';
 import { useAuth } from '../../src/authContext';
 import {
   TAB_BAR_DIVIDER,
@@ -140,9 +141,11 @@ const styles = StyleSheet.create({
 });
 
 export default function TabLayout() {
-  const { user, loading } = useAuth();
+  const { loading: authLoading, passwordRecoveryPending } = useAuth();
+  const { loading, prefs } = useAppState();
 
-  if (loading) {
+  if (!authLoading && passwordRecoveryPending) return <Redirect href="/reset-password" />;
+  if (loading || authLoading) {
     return (
       <View style={styles.loading}>
         <ActivityIndicator size="large" color={Colors.primary} />
@@ -150,9 +153,7 @@ export default function TabLayout() {
     );
   }
 
-  if (!user) {
-    return <Redirect href="/auth" />;
-  }
+  if (!prefs.onboardingDone) return <Redirect href="/onboarding" />;
 
   return (
     <Tabs

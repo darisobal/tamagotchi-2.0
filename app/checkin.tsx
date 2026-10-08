@@ -10,7 +10,7 @@ import {
   Platform,
   Alert,
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, Redirect } from 'expo-router';
 import { useAppState } from '../src/context';
 import { MAIN_TRACK, DEFAULT_HABIT_NAME } from '../src/types';
 import { Colors, Spacing, FontSize, Slab, Radius, Border, Type } from '../src/theme';
@@ -19,7 +19,7 @@ import { hasPendingPaidRestart } from '../src/purchases';
 import RestartPaywall from '../src/RestartPaywall';
 
 export default function CheckInScreen() {
-  const { doCheckIn, prefs, mood } = useAppState();
+  const { doCheckIn, prefs, mood, loading } = useAppState();
   const [note, setNote] = useState('');
   const [saving, setSaving] = useState(false);
   const [paywallVisible, setPaywallVisible] = useState(false);
@@ -28,6 +28,7 @@ export default function CheckInScreen() {
   const habitName = (prefs.habitName || DEFAULT_HABIT_NAME).trim();
 
   useEffect(() => {
+    if (loading || !prefs.onboardingDone) return;
     if (mood !== 'dead') {
       setUnlocked(true);
       return;
@@ -52,7 +53,7 @@ export default function CheckInScreen() {
     return () => {
       cancelled = true;
     };
-  }, [mood, doCheckIn]);
+  }, [mood, doCheckIn, loading, prefs.onboardingDone]);
 
   const handleSave = async () => {
     if (mood === 'dead' && !unlocked) {
@@ -96,6 +97,9 @@ export default function CheckInScreen() {
       }
     }
   };
+
+  if (loading) return null;
+  if (!prefs.onboardingDone) return <Redirect href="/onboarding" />;
 
   return (
     <SafeAreaView style={styles.safe}>

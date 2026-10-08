@@ -26,6 +26,7 @@ export interface Storage {
   getUserPrefs(): Promise<UserPrefs>;
   updateUserPrefs(prefs: Partial<UserPrefs>): Promise<void>;
   resetAll(): Promise<void>;
+  importSnapshot(snapshot: { prefs: UserPrefs; tracks: TrackState[]; checkIns: CheckIn[] }): Promise<void>;
 }
 
 function defaultTrackState(trackType: TrackType): TrackState {
@@ -42,9 +43,9 @@ function defaultTrackState(trackType: TrackType): TrackState {
 
 const DEFAULT_PREFS: UserPrefs = {
   petType: 'dino',
-  onboardingDone: true,
+  onboardingDone: false,
   customSprite: null,
-  habitName: DEFAULT_HABIT_NAME,
+  habitName: '',
   petName: DEFAULT_PET_NAME,
   petColor: DEFAULT_PET_COLOR,
   petHat: 'none',
@@ -64,6 +65,8 @@ function storageKey() {
 }
 
 class WebStorage implements Storage {
+  constructor(private readonly key: string) {}
+
   private checkIns: CheckIn[] = [];
   private tracks: Map<TrackType, TrackState> = new Map();
   private prefs: UserPrefs = { ...DEFAULT_PREFS };
@@ -72,7 +75,7 @@ class WebStorage implements Storage {
   private load() {
     if (this.loaded) return;
     try {
-      const raw = localStorage.getItem(storageKey());
+      const raw = localStorage.getItem(this.key);
       if (raw) {
         const data = JSON.parse(raw);
         this.checkIns = (data.checkIns || []).map((c: CheckIn) => ({
@@ -91,7 +94,10 @@ class WebStorage implements Storage {
           }
         }
         if (data.prefs) {
-          const normalized = normalizeUserPrefs(data.prefs);
+          const normalized = normalizeUserPrefs({ ...data.prefs,
+            // Before this journey, all stored web profiles could already use home.
+            onboardingDone: data.schemaVersion === 2 ? data.prefs.onboardingDone : true,
+          });
           const migrated =
             data.prefs.habitName !== normalized.habitName ||
             data.prefs.petName !== normalized.petName;
@@ -108,11 +114,12 @@ class WebStorage implements Storage {
 
   private save() {
     const data = {
+      schemaVersion: 2,
       checkIns: this.checkIns,
       tracks: Array.from(this.tracks.values()),
       prefs: this.prefs,
     };
-    localStorage.setItem(storageKey(), JSON.stringify(data));
+    localStorage.setItem(this.key, JSON.stringify(data));
   }
 
   async getAllCheckIns() {
@@ -209,7 +216,7 @@ class WebStorage implements Storage {
     checkIns: CheckIn[];
   }) {
     this.load();
-    this.prefs = normalizeUserPrefs({ ...snapshot.prefs, onboardingDone: true });
+    this.prefs = normalizeUserPrefs(snapshot.prefs);
     this.checkIns = [...snapshot.checkIns];
     this.tracks = new Map();
     for (const t of ALL_TRACKS) {
@@ -231,6 +238,13 @@ class WebStorage implements Storage {
 
 export function getStorage(): Storage {
   if (storage) return storage;
-  storage = new WebStorage();
+  storage = getStorageForUser(activeUserId);
   return storage;
+}
+
+const profiles = new Map<string, Storage>();
+export function getStorageForUser(userId: string | null): Storage {
+  const key = userId ? `tamagotchi_data_${userId}` : 'tamagotchi_data';
+  if (!profiles.has(key)) profiles.set(key, new WebStorage(key));
+  return profiles.get(key)!;
 }

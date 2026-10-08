@@ -58,9 +58,11 @@ export function computeHabitStatus(
   lastCheckInAtIso: string | null,
   nowMs: number,
   periodMs: number = HABIT_PERIOD_MS[trackType],
+  planStartedAt: string | null = null,
 ): ComputedHabit {
 
-  if (!lastCheckInAtIso) {
+  const anchor = lastCheckInAtIso ?? planStartedAt;
+  if (!anchor) {
     return {
       trackType,
       progress: 1,
@@ -71,7 +73,7 @@ export function computeHabitStatus(
     };
   }
 
-  const startMs = new Date(lastCheckInAtIso).getTime();
+  const startMs = new Date(anchor).getTime();
   const elapsedMs = Math.max(nowMs - startMs, 0);
   const missedDeadlines = Math.floor(elapsedMs / periodMs);
   const lives = computeLives(missedDeadlines, true);
@@ -91,6 +93,8 @@ export function computeHabitStatus(
     status,
     lives,
     lastCheckInAt: lastCheckInAtIso,
+    planStartedAt,
+    nextDeadlineAt: lives === 0 ? null : new Date(startMs + (missedDeadlines + 1) * periodMs).toISOString(),
   };
 }
 
@@ -98,9 +102,10 @@ export function computeAllHabits(
   tracks: TrackState[],
   nowMs: number,
   periodMs: number = HABIT_PERIOD_MS.main,
+  planStartedAt: string | null = null,
 ): ComputedHabit[] {
   return tracks.map((t) =>
-    computeHabitStatus(t.trackType, t.lastCheckInAt, nowMs, periodMs),
+    computeHabitStatus(t.trackType, t.lastCheckInAt, nowMs, periodMs, planStartedAt),
   );
 }
 
@@ -117,7 +122,7 @@ export function computePetMood(
   const habit = habits[0];
   const name = habitName || DEFAULT_HABIT_NAME;
 
-  if (habit.lastCheckInAt === null) {
+  if (habit.lastCheckInAt === null && habit.lives === PET_LIVES_MAX) {
     return { mood: 'sleeping', lives: PET_LIVES_MAX, reason: "you've got zero progress." };
   }
 

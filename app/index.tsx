@@ -2,13 +2,14 @@ import { Redirect } from 'expo-router';
 import { useAppState } from '../src/context';
 import { useAuth } from '../src/authContext';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { initialRoute } from '../src/onboarding';
 import { Colors } from '../src/theme';
 
 export default function Index() {
   const { user, loading: authLoading, passwordRecoveryPending } = useAuth();
-  const { loading: appLoading } = useAppState();
+  const { loading: appLoading, prefs } = useAppState();
 
-  if (authLoading || (user && appLoading && !passwordRecoveryPending)) {
+  if (authLoading || (appLoading && !passwordRecoveryPending)) {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color={Colors.primary} />
@@ -16,15 +17,7 @@ export default function Index() {
     );
   }
 
-  if (!user) {
-    return <Redirect href="/auth" />;
-  }
-
-  if (passwordRecoveryPending) {
-    return <Redirect href="/reset-password" />;
-  }
-
-  return <Redirect href="/(tabs)" />;
+  return <Redirect href={initialRoute(prefs, passwordRecoveryPending)} />;
 }
 
 const styles = StyleSheet.create({

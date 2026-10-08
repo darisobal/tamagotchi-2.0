@@ -77,6 +77,7 @@ export default function HeroTaskCard({
         </Text>
       )}
       <TouchableOpacity
+        accessibilityRole="button"
         style={[styles.button, { backgroundColor: buttonColor, borderColor: buttonColor }]}
         onPress={onCheckIn}
         activeOpacity={0.85}

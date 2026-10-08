@@ -137,14 +137,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       readLocalUser().then((user) => {
         if (user) setSession(makeLocalSession(user));
         setLoading(false);
-      });
+      }).catch(() => setLoading(false));
       return;
     }
 
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
       setLoading(false);
-    });
+    }).catch(() => setLoading(false));
 
     const { data: listener } = supabase.auth.onAuthStateChange((event, nextSession) => {
       setSession(nextSession);

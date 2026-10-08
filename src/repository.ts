@@ -1,4 +1,4 @@
-import { getStorage, setActiveStorageUser } from './database';
+import { getStorage, getStorageForUser, setActiveStorageUser } from './database';
 import { CheckIn, TrackState, TrackType, UserPrefs } from './types';
 import { UserSnapshot } from './sync';
 
@@ -79,4 +79,28 @@ export async function importSnapshot(snapshot: UserSnapshot): Promise<void> {
   for (const checkIn of snapshot.checkIns) {
     await insertCheckIn(checkIn);
   }
+}
+
+/** Bind operations to one identity so an in-flight sign-out cannot redirect writes. */
+export function repositoryForUser(userId: string | null) {
+  const storage = getStorageForUser(userId);
+  return {
+    getUserPrefs: () => storage.getUserPrefs(),
+    getAllTrackStates: () => storage.getAllTrackStates(),
+    getAllCheckIns: () => storage.getAllCheckIns(),
+    getCheckInsForTrack: (track: TrackType) => storage.getCheckInsForTrack(track),
+    getTrackState: (track: TrackType) => storage.getTrackState(track),
+    updateUserPrefs: (prefs: Partial<UserPrefs>) => storage.updateUserPrefs(prefs),
+    updateTrackState: (state: TrackState) => storage.updateTrackState(state),
+    insertCheckIn: (row: CheckIn) => storage.insertCheckIn(row),
+    markCouponCollected: (id: string) => storage.markCouponCollected(id),
+    deleteCheckIn: (id: string) => storage.deleteCheckIn(id),
+    resetAllData: () => storage.resetAll(),
+    exportSnapshot: async (): Promise<UserSnapshot> => ({
+      prefs: await storage.getUserPrefs(),
+      tracks: await storage.getAllTrackStates(),
+      checkIns: await storage.getAllCheckIns(),
+    }),
+    importSnapshot: (snapshot: UserSnapshot) => storage.importSnapshot(snapshot),
+  };
 }

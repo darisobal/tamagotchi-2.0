@@ -20,6 +20,8 @@ import Animated, {
   interpolate,
 } from 'react-native-reanimated';
 import { router } from 'expo-router';
+import { useAuth } from '../../src/authContext';
+import { formatDeadline } from '../../src/onboarding';
 import { useAppState } from '../../src/context';
 import { DEFAULT_HABIT_NAME, MAIN_TRACK } from '../../src/types';
 import { Spacing, FontSize, Slab, Radius, Border, Type, Colors } from '../../src/theme';
@@ -70,8 +72,10 @@ const HERO_HEART_HEIGHT = Math.round(
 const HERO_EGG_LIFT = HERO_HEART_HEIGHT + HERO_PET_STAGE_PAD_TOP - Spacing.sm;
 
 export default function HomeScreen() {
-  const { prefs, computedHabits, tracks, mood, lives, refresh, doCheckIn, checkIns, collectCoupon, couponRevealCheckInId } =
+  const { prefs, computedHabits, tracks, mood, lives, refresh, doCheckIn, checkIns, collectCoupon, couponRevealCheckInId, updatePrefs, syncNotice } =
     useAppState();
+  const { user, isConfigured } = useAuth();
+  const [checkInError, setCheckInError] = React.useState<string | null>(null);
   const [refreshing, setRefreshing] = React.useState(false);
   const [restartPaywallVisible, setRestartPaywallVisible] = React.useState(false);
   const [confirmVisible, setConfirmVisible] = React.useState(false);
@@ -110,7 +114,7 @@ export default function HomeScreen() {
 
   const onConfirmCheckIn = useCallback(() => {
     setConfirmVisible(false);
-    void doCheckIn(MAIN_TRACK, 'medium', null);
+    void doCheckIn(MAIN_TRACK, 'medium', null).catch(error => setCheckInError(error.message));
   }, [doCheckIn]);
 
   const onCancelConfirm = useCallback(() => {
@@ -167,6 +171,15 @@ export default function HomeScreen() {
           />
         </View>
 
+        <View style={{ gap: Spacing.sm, marginBottom: Spacing.lg }}>
+          <Text style={{ fontFamily: Slab.bold, fontSize: FontSize.lg, color: theme.ink }}>{petName} · {habitName}</Text>
+          <Text style={{ fontFamily: Slab.regular, fontSize: FontSize.md, color: theme.ink }}>
+            {habit?.nextDeadlineAt ? `${habit.lives < 3 ? 'overdue — next heart lost' : habit.lastCheckInAt ? 'next check-in due' : 'first check-in due'} ${formatDeadline(habit.nextDeadlineAt)}`
+              : mood === 'dead' ? 'three missed intervals. restart to begin again.' : 'your first check-in starts the clock.'}
+          </Text>
+          {checkInError && <Text accessibilityRole="alert">{checkInError}</Text>}
+          {syncNotice && <Text accessibilityLiveRegion="polite">{syncNotice}</Text>}
+        </View>
         {habit ? (
           <HeroTaskCard
             habitName={habitName}
@@ -176,7 +189,7 @@ export default function HomeScreen() {
             backgroundColor={theme.cardBg}
             mottoColor={theme.mottoInk}
             buttonColor={theme.cardInk}
-            checkInLabel={theme.checkInLabel}
+            checkInLabel={mood === 'dead' ? theme.checkInLabel : 'i did it'}
             showCrossOut={theme.showCrossOut}
             streakDays={showTrackedCard ? streakDays : null}
             onCheckIn={onHeroCheckIn}
@@ -194,6 +207,12 @@ export default function HomeScreen() {
             </Text>
           </View>
         )}
+        {!user && isConfigured && checkIns.length > 0 && !prefs.accountPromptDismissed && !pendingCoupon && <View style={[styles.emptyCard, { borderColor: theme.ink, gap: Spacing.md }]}>
+          <Text style={Type.screenDescription}>a little progress worth keeping.</Text>
+          <Text style={{ fontFamily: Slab.regular, fontSize: FontSize.md }}>create an account to save your progress across devices. you can keep playing here without one.</Text>
+          <Pressable accessibilityRole="button" style={{ padding: Spacing.md, backgroundColor: Colors.ink, borderRadius: Radius.md }} onPress={() => router.push('/auth')}><Text style={{ color: Colors.white, fontFamily: Slab.bold }}>save my progress</Text></Pressable>
+          <Pressable accessibilityRole="button" style={{ padding: Spacing.md }} onPress={() => void updatePrefs({ accountPromptDismissed: true })}><Text style={{ fontFamily: Slab.bold }}>later</Text></Pressable>
+        </View>}
       </ScrollView>
 
       <RestartPaywall
@@ -394,7 +413,7 @@ function PetStage({
                 <Text style={styles.eggLifeLabel}>to lose a life:</Text>
                 <LifeTimer timeRemainingMs={timeRemainingMs} color={petColor} />
                 <Text style={styles.eggLifeFooter}>
-                  {`skip three days, and ${petName} is gone`}
+                  {`miss three intervals, and ${petName} is gone`}
                 </Text>
               </>
             )}

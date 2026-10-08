@@ -54,6 +54,10 @@ export interface TrackState {
 export type PetHat = 'none' | 'top' | 'beanie' | 'crown';
 
 export interface UserPrefs {
+  /** Independent timer anchor; never a logged achievement. */
+  planStartedAt?: string | null;
+  onboardingDraft?: { step: number; habitName: string; habitCadence: HabitCadence; petName: string } | null;
+  accountPromptDismissed?: boolean;
   petType: PetType;
   onboardingDone: boolean;
   customSprite?: string | null;
@@ -118,6 +122,9 @@ export function resolvePetName(stored: string | null | undefined): string {
 
 export function normalizeUserPrefs(partial: Partial<UserPrefs>): UserPrefs {
   return {
+    planStartedAt: partial.planStartedAt ?? null,
+    onboardingDraft: partial.onboardingDraft ?? null,
+    accountPromptDismissed: partial.accountPromptDismissed ?? false,
     petType: partial.petType ?? 'dino',
     onboardingDone: partial.onboardingDone ?? true,
     customSprite: partial.customSprite ?? null,
@@ -155,6 +162,8 @@ export interface ComputedHabit {
   status: HabitStatus;
   lives: number;           // 0..PET_LIVES_MAX
   lastCheckInAt: string | null;
+  planStartedAt?: string | null;
+  nextDeadlineAt?: string | null;
 }
 
 /** Hearts left — each missed period costs one; die after missing PET_LIVES_MAX in a row. */
