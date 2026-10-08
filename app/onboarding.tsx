@@ -87,16 +87,18 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
           {step > 0 && <Pressable accessibilityRole="button" disabled={busy} style={styles.link} onPress={() => { setError(''); setStep(step - 1); }}><Text style={styles.linkText}>back</Text></Pressable>}
         </View>
         <Text accessibilityRole="header" style={Type.screenTitle}>{['name your habit', 'how often?', 'meet noodle.'][step]}</Text>
-        <Text style={Type.screenDescription}>{['pick one small thing. your pet will show your progress.', 'a little consistency. a very opinionated pet.', 'three hearts. one tiny commitment.'][step]}</Text>
+        <Text style={Type.screenDescription}>{['pick one small thing. your pet will show your progress.', 'each check-in restarts the interval.', 'three hearts. one tiny commitment.'][step]}</Text>
         {step === 0 && <>
           <TextInput ref={input} autoFocus showSoftInputOnFocus accessibilityLabel="your habit" accessibilityHint="choose a concrete, achievable action" style={[styles.input, styles.habitInput]} value={habit} onChangeText={setHabit} maxLength={HABIT_NAME_MAX} placeholder="e.g. read 10 pages" placeholderTextColor={Colors.textMuted} returnKeyType="next" onSubmitEditing={() => void next()} />
           <View style={styles.habitSuggestions}>{['meditate', 'run', 'read 10 pages'].map(value => <Pressable key={value} accessibilityRole="button" accessibilityHint="fills your habit field so you can edit it" style={styles.tagTarget} onPress={() => { setHabit(value); setError(''); input.current?.focus(); }}><View style={styles.tag}><Text style={styles.tagText}>{value}</Text></View></Pressable>)}</View>
         </>}
         {step === 1 && <>
-          <View style={styles.suggestions}>{CADENCE_OPTIONS.map(option => <Pressable key={option.id} accessibilityRole="radio" accessibilityState={{ checked: cadence === option.id }} style={[styles.option, cadence === option.id && styles.selected]} onPress={() => setCadence(option.id)}><Text style={[styles.optionText, cadence === option.id && styles.selectedText]}>{option.label}</Text></Pressable>)}</View>
-          <Text style={styles.label}>{CADENCE_RULES[cadence]}</Text>
-          <Text style={styles.body}>the clock starts when you tap “let’s start”. each real check-in resets it. it does not reset at midnight.</Text>
-          <Text style={styles.hint}>if you start now, your first check-in is due {formatDeadline(firstDeadline(cadence, now))}.</Text>
+          <View accessibilityRole="radiogroup" accessibilityLabel="check-in interval" style={styles.suggestions}>
+            {CADENCE_OPTIONS.map(option => <Pressable key={option.id} accessibilityRole="radio" aria-checked={cadence === option.id} accessibilityState={{ checked: cadence === option.id }} style={({ pressed }) => [styles.option, cadence === option.id && styles.selected, pressed && styles.optionPressed]} onPress={() => setCadence(option.id)}>
+              <View aria-hidden style={styles.radio}>{cadence === option.id && <View style={styles.radioDot} />}</View>
+              <Text style={styles.optionText}>{{ daily: 'every 24 hours', every2days: 'every 48 hours', weekly: 'every 7 days' }[option.id]}</Text>
+            </Pressable>)}
+          </View>
         </>}
         {step === 2 && <>
           <View accessible accessibilityLabel="noodle, your pet, with three hearts" style={styles.pet}><LineArtPet mood="okay" strokeColor={prefs.petColor} displayHeight={200} hat={prefs.petHat} /><PetLives lives={3} color={prefs.petColor} size={32} /></View>
@@ -131,10 +133,13 @@ const styles = StyleSheet.create({
   tagTarget: { minHeight: 44, justifyContent: 'center', maxWidth: '100%' },
   tag: { paddingHorizontal: 12, paddingVertical: 6, borderWidth: Border.thin, borderColor: 'rgba(0, 0, 0, 0.18)', borderRadius: Radius.full, backgroundColor: 'rgba(0, 0, 0, 0.035)' },
   tagText: { fontFamily: Slab.regular, fontSize: FontSize.xs, color: Colors.textSecondary },
-  suggestions: { gap: Spacing.sm, marginVertical: Spacing.sm },
-  option: { padding: Spacing.md, minHeight: 48, borderWidth: Border.base, borderColor: Colors.ink, borderRadius: Radius.md, backgroundColor: Colors.card },
+  suggestions: { gap: Spacing.xs, marginTop: 20 },
+  option: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md, padding: Spacing.md, minHeight: 56, borderRadius: Radius.md },
   optionText: { fontFamily: Slab.bold, fontSize: FontSize.md, color: Colors.ink },
-  selected: { backgroundColor: Colors.ink }, selectedText: { color: Colors.white },
+  selected: { backgroundColor: 'rgba(0, 0, 0, 0.05)' },
+  optionPressed: { opacity: 0.7 },
+  radio: { width: 22, height: 22, borderWidth: Border.base, borderColor: Colors.ink, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center' },
+  radioDot: { width: 10, height: 10, borderRadius: Radius.full, backgroundColor: Colors.ink },
   pet: { alignItems: 'center', gap: Spacing.md, padding: Spacing.md },
   rules: { padding: Spacing.md, gap: Spacing.md, backgroundColor: Colors.card, borderWidth: Border.thick, borderRadius: Radius.lg, borderColor: Colors.ink },
   error: { fontFamily: Slab.bold, fontSize: FontSize.md, color: '#B00020' },
