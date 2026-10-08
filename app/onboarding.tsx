@@ -95,8 +95,7 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
         {step === 1 && <>
           <View accessibilityRole="radiogroup" accessibilityLabel="check-in interval" style={styles.suggestions}>
             {CADENCE_OPTIONS.map(option => <Pressable key={option.id} accessibilityRole="radio" aria-checked={cadence === option.id} accessibilityState={{ checked: cadence === option.id }} style={({ pressed }) => [styles.option, cadence === option.id && styles.selected, pressed && styles.optionPressed]} onPress={() => setCadence(option.id)}>
-              <View aria-hidden style={styles.radio}>{cadence === option.id && <View style={styles.radioDot} />}</View>
-              <Text style={styles.optionText}>{{ daily: 'every 24 hours', every2days: 'every 48 hours', weekly: 'every 7 days' }[option.id]}</Text>
+              <Text style={[styles.optionText, cadence === option.id && styles.selectedText]}>{{ daily: 'every 24 hours', every2days: 'every 48 hours', weekly: 'every 7 days' }[option.id]}</Text>
             </Pressable>)}
           </View>
         </>}
@@ -133,13 +132,12 @@ const styles = StyleSheet.create({
   tagTarget: { minHeight: 44, justifyContent: 'center', maxWidth: '100%' },
   tag: { paddingHorizontal: 12, paddingVertical: 6, borderWidth: Border.thin, borderColor: 'rgba(0, 0, 0, 0.18)', borderRadius: Radius.full, backgroundColor: 'rgba(0, 0, 0, 0.035)' },
   tagText: { fontFamily: Slab.regular, fontSize: FontSize.xs, color: Colors.textSecondary },
-  suggestions: { gap: Spacing.xs, marginTop: 20 },
-  option: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md, padding: Spacing.md, minHeight: 56, borderRadius: Radius.md },
+  suggestions: { gap: Spacing.sm, marginTop: 20 },
+  option: { padding: Spacing.md, minHeight: 48, borderWidth: Border.base, borderColor: Colors.ink, borderRadius: Radius.md, backgroundColor: Colors.card },
   optionText: { fontFamily: Slab.bold, fontSize: FontSize.md, color: Colors.ink },
-  selected: { backgroundColor: 'rgba(0, 0, 0, 0.05)' },
+  selected: { backgroundColor: Colors.ink },
+  selectedText: { color: Colors.white },
   optionPressed: { opacity: 0.7 },
-  radio: { width: 22, height: 22, borderWidth: Border.base, borderColor: Colors.ink, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center' },
-  radioDot: { width: 10, height: 10, borderRadius: Radius.full, backgroundColor: Colors.ink },
   pet: { alignItems: 'center', gap: Spacing.md, padding: Spacing.md },
   rules: { padding: Spacing.md, gap: Spacing.md, backgroundColor: Colors.card, borderWidth: Border.thick, borderRadius: Radius.lg, borderColor: Colors.ink },
   error: { fontFamily: Slab.bold, fontSize: FontSize.md, color: '#B00020' },
