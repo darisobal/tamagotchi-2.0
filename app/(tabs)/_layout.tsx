@@ -141,10 +141,11 @@ const styles = StyleSheet.create({
 });
 
 export default function TabLayout() {
-  const { loading: authLoading, passwordRecoveryPending } = useAuth();
+  const { user, loading: authLoading, passwordRecoveryPending } = useAuth();
   const { loading, prefs } = useAppState();
 
   if (!authLoading && passwordRecoveryPending) return <Redirect href="/reset-password" />;
+  if (!authLoading && !user) return <Redirect href="/auth" />;
   if (loading || authLoading) {
     return (
       <View style={styles.loading}>

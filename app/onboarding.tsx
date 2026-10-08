@@ -13,8 +13,10 @@ import { getRestartStoreAvailability, RESTART_PRICE_LABEL } from '../src/purchas
 
 export default function OnboardingScreen() {
   const { loading, prefs, updatePrefs, startHabitPlan } = useAppState();
-  const { passwordRecoveryPending } = useAuth();
+  const { user, loading: authLoading, passwordRecoveryPending } = useAuth();
+  if (authLoading) return <View style={styles.loading}><ActivityIndicator /></View>;
   if (passwordRecoveryPending) return <Redirect href="/reset-password" />;
+  if (!user) return <Redirect href="/auth" />;
   if (loading) return <View style={styles.loading}><ActivityIndicator /></View>;
   if (prefs.onboardingDone) return <Redirect href="/(tabs)" />;
   return <Journey key="journey" prefs={prefs} updatePrefs={updatePrefs} startHabitPlan={startHabitPlan} />;
@@ -113,7 +115,6 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
         </>}
         {error ? <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.error}>{error}</Text> : null}
         <Pressable accessibilityRole="button" accessibilityState={{ disabled: busy }} disabled={busy} style={styles.primary} onPress={() => void next()}><Text style={styles.primaryText}>{busy ? 'saving...' : step === 2 ? 'let’s start' : 'next'}</Text></Pressable>
-        {step === 0 && <Pressable accessibilityRole="button" style={styles.link} onPress={() => router.push('/auth')}><Text style={styles.linkText}>already have an account? sign in</Text></Pressable>}
       </ScrollView>
     </KeyboardAvoidingView>
   </SafeAreaView>;

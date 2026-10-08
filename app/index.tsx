@@ -9,7 +9,7 @@ export default function Index() {
   const { user, loading: authLoading, passwordRecoveryPending } = useAuth();
   const { loading: appLoading, prefs } = useAppState();
 
-  if (authLoading || (appLoading && !passwordRecoveryPending)) {
+  if (authLoading || (user && appLoading && !passwordRecoveryPending)) {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color={Colors.primary} />
@@ -17,7 +17,7 @@ export default function Index() {
     );
   }
 
-  return <Redirect href={initialRoute(prefs, passwordRecoveryPending)} />;
+  return <Redirect href={initialRoute(prefs, passwordRecoveryPending, Boolean(user))} />;
 }
 
 const styles = StyleSheet.create({

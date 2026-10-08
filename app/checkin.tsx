@@ -11,6 +11,7 @@ import {
   Alert,
 } from 'react-native';
 import { router, Redirect } from 'expo-router';
+import { useAuth } from '../src/authContext';
 import { useAppState } from '../src/context';
 import { MAIN_TRACK, DEFAULT_HABIT_NAME } from '../src/types';
 import { Colors, Spacing, FontSize, Slab, Radius, Border, Type } from '../src/theme';
@@ -19,6 +20,7 @@ import { hasPendingPaidRestart } from '../src/purchases';
 import RestartPaywall from '../src/RestartPaywall';
 
 export default function CheckInScreen() {
+  const { user, loading: authLoading, passwordRecoveryPending } = useAuth();
   const { doCheckIn, prefs, mood, loading } = useAppState();
   const [note, setNote] = useState('');
   const [saving, setSaving] = useState(false);
@@ -28,7 +30,7 @@ export default function CheckInScreen() {
   const habitName = (prefs.habitName || DEFAULT_HABIT_NAME).trim();
 
   useEffect(() => {
-    if (loading || !prefs.onboardingDone) return;
+    if (authLoading || !user || passwordRecoveryPending || loading || !prefs.onboardingDone) return;
     if (mood !== 'dead') {
       setUnlocked(true);
       return;
@@ -53,7 +55,7 @@ export default function CheckInScreen() {
     return () => {
       cancelled = true;
     };
-  }, [mood, doCheckIn, loading, prefs.onboardingDone]);
+  }, [mood, doCheckIn, loading, prefs.onboardingDone, authLoading, user, passwordRecoveryPending]);
 
   const handleSave = async () => {
     if (mood === 'dead' && !unlocked) {
@@ -98,6 +100,9 @@ export default function CheckInScreen() {
     }
   };
 
+  if (authLoading) return null;
+  if (passwordRecoveryPending) return <Redirect href="/reset-password" />;
+  if (!user) return <Redirect href="/auth" />;
   if (loading) return null;
   if (!prefs.onboardingDone) return <Redirect href="/onboarding" />;
 

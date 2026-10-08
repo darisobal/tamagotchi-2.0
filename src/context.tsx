@@ -16,7 +16,7 @@ import {
   habitCadenceToPeriodMs,
 } from './types';
 import { repositoryForUser } from './repository';
-import { guestTransition, startPlan, hasProgress } from './onboarding';
+import { startPlan, hasProgress } from './onboarding';
 import { HabitCadence } from './types';
 import { UserSnapshot } from './sync';
 import ProfileGate from './ProfileGate';
@@ -89,7 +89,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [petMoodInfo, setPetMoodInfo] = useState<PetMoodInfo>({ mood: 'okay', reason: '', lives: 3 });
   const [computedHabits, setComputedHabits] = useState<ComputedHabit[]>([]);
   const [couponRevealCheckInId, setCouponRevealCheckInId] = useState<string | null>(null);
-  const guestSignature = useRef<string | null>(null);
   const [offlineChoice, setOfflineChoice] = useState<UserSnapshot | null>(null);
   const tracksRef = useRef<TrackState[]>([]);
   const moodRef = useRef<Mood>('okay');
@@ -181,26 +180,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             setChoice(remote);
             return;
           }
-          const guest = await repositoryForUser(null).exportSnapshot();
-          if (cancelled) return;
-          const signature = JSON.stringify(guest);
-          guestSignature.current = signature;
-          const handled = await AsyncStorage.getItem(`tamagotchi_guest_handled_${identity}`);
-          if (cancelled) return;
-          const transition = handled === signature ? 'account' : guestTransition(guest, account, remote);
-          if (transition === 'choose') {
-            setChoice(remote ?? account);
-            return;
-          }
-          if (transition === 'guest') {
-            if (cloud && !(await createUserSnapshot(identity!, guest, remote))) {
-              if (!cancelled) setRetry(value => value + 1);
-              return;
-            }
-            if (cancelled) return;
-            await repo.importSnapshot(guest);
-            await AsyncStorage.setItem(`tamagotchi_guest_handled_${identity}`, signature);
-          } else if (remote && !(account.prefs.onboardingDraft && !hasProgress(remote))) {
+          if (remote && !(account.prefs.onboardingDraft && !hasProgress(remote))) {
             // Keep the pre-pull local copy recoverable if it includes offline edits.
             await AsyncStorage.setItem(`tamagotchi_account_backup_${identity}`, JSON.stringify(account));
             if (cancelled) return;
@@ -220,7 +200,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setLoadedIdentity(identity);
         setLoading(false);
       } catch {
-        if (!cancelled) setLoadError('could not load your account. your local progress is safe. reconnect and try again, or continue as a guest.');
+        if (!cancelled) setLoadError('could not load your account. your local progress is safe. reconnect and try again.');
       }
     })();
     return () => { cancelled = true; syncReady.current = false; };
@@ -232,14 +212,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       await AsyncStorage.setItem(`tamagotchi_account_backup_${identity}`, JSON.stringify(await repo.exportSnapshot()));
       await repo.importSnapshot(choice);
       await AsyncStorage.removeItem(`tamagotchi_sync_pending_${identity}`);
-      if (guestSignature.current) await AsyncStorage.setItem(`tamagotchi_guest_handled_${identity}`, guestSignature.current);
       await refresh();
       setChoice(null);
       setOfflineChoice(null);
       syncReady.current = true;
       setLoadedIdentity(identity);
       setLoading(false);
-      setSyncNotice('using your account progress. your guest plan is still on this device — log out to return to it.');
+      setSyncNotice('using your account progress. a backup of your device progress is kept on this device.');
     } catch { setLoadError('could not switch profiles. your saved progress has been kept. try again.'); }
   };
 

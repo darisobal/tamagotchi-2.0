@@ -28,8 +28,8 @@ export function hasProgress(snapshot: UserSnapshot | null): boolean {
   return Boolean(snapshot && (snapshot.prefs.onboardingDone || snapshot.prefs.planStartedAt || snapshot.checkIns.length));
 }
 
-export function initialRoute(prefs: UserPrefs, passwordRecoveryPending: boolean): '/reset-password' | '/onboarding' | '/(tabs)' {
-  return passwordRecoveryPending ? '/reset-password' : prefs.onboardingDone ? '/(tabs)' : '/onboarding';
+export function initialRoute(prefs: UserPrefs, passwordRecoveryPending: boolean, signedIn: boolean): '/auth' | '/reset-password' | '/onboarding' | '/(tabs)' {
+  return passwordRecoveryPending ? '/reset-password' : !signedIn ? '/auth' : prefs.onboardingDone ? '/(tabs)' : '/onboarding';
 }
 
 /** Import a guest only into a verified empty account. Conflicting plans stay separate. */

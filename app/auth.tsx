@@ -169,11 +169,10 @@ export default function AuthScreen() {
             <Text style={styles.hint}>
               {mode === 'forgot'
                 ? 'password reset needs supabase. add expo_public_supabase_* keys.'
-                : 'cloud accounts are unavailable in this preview. you can continue as a guest.'}
+                : 'local mode: data stays on this device until you add supabase keys.'}
             </Text>
           ) : null}
 
-          <TouchableOpacity accessibilityRole="button" style={styles.linkBtn} onPress={() => router.replace('/')}><Text style={styles.linkBtnText}>later — continue on this device</Text></TouchableOpacity>
           <Text style={styles.label}>email</Text>
           <TextInput
             style={styles.input}

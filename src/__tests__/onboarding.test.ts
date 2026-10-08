@@ -17,10 +17,10 @@ test('committing a plan creates no achievement and routes to home', () => {
   expect(snapshot.prefs.habitName).toBe('walk outside');
   expect(snapshot.checkIns).toEqual([]);
   expect(snapshot.tracks[0]).toMatchObject({ lastCheckInAt: null, streak: 0, celebrationCount: 0, lastCompletedDay: null });
-  expect(initialRoute(snapshot.prefs, false)).toBe('/(tabs)');
-  expect(initialRoute(empty().prefs, false)).toBe('/onboarding');
-  expect(initialRoute(snapshot.prefs, true)).toBe('/reset-password');
-  expect(initialRoute(normalizeUserPrefs({}), false)).toBe('/(tabs)'); // legacy snapshot
+  expect(initialRoute(snapshot.prefs, false, true)).toBe('/(tabs)');
+  expect(initialRoute(empty().prefs, false, true)).toBe('/onboarding');
+  expect(initialRoute(snapshot.prefs, true, true)).toBe('/reset-password');
+  expect(initialRoute(normalizeUserPrefs({}), false, true)).toBe('/(tabs)'); // legacy snapshot
 });
 
 test.each(Object.keys(HABIT_CADENCE_MS) as HabitCadence[])('%s uses elapsed intervals from plan start, including before first completion', cadence => {
@@ -49,4 +49,10 @@ test('guest transfer never replaces an existing account plan', () => {
   const oldHistory = empty();
   oldHistory.checkIns.push({ id: 'old', trackType: 'main', intensity: 'medium', note: null, timestamp: now.toISOString() });
   expect(guestTransition(planned(), oldHistory, null)).toBe('choose');
+});
+
+test('signed-out visitors always start at auth, even with a saved guest plan', () => {
+  expect(initialRoute(empty().prefs, false, false)).toBe('/auth');
+  expect(initialRoute(planned().prefs, false, false)).toBe('/auth');
+  expect(initialRoute(empty().prefs, true, true)).toBe('/reset-password');
 });

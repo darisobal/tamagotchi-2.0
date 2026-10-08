@@ -18,7 +18,7 @@ export default function ProfileGate({ error, hasChoice, onAccount, onGuest, onRe
     </>}
     {offlineConflict && <Pressable accessibilityRole="button" disabled={busy} style={styles.button} onPress={() => void run(onLocal)}><Text style={styles.primary}>use device progress and replace cloud</Text></Pressable>}
     {error && <Pressable accessibilityRole="button" style={styles.button} onPress={onRetry}><Text style={styles.primary}>try again</Text></Pressable>}
-    <Pressable accessibilityRole="button" disabled={busy} style={styles.button} onPress={() => void run(onGuest)}><Text style={styles.primary}>continue with guest plan</Text></Pressable>
+    <Pressable accessibilityRole="button" disabled={busy} style={styles.button} onPress={() => void run(onGuest)}><Text style={styles.primary}>back to sign in</Text></Pressable>
   </ScrollView></SafeAreaView>;
 }
 const styles = StyleSheet.create({
