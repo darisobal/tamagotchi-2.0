@@ -89,7 +89,6 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
         <Text accessibilityRole="header" style={Type.screenTitle}>{['name your habit', 'how often?', 'meet noodle.'][step]}</Text>
         <Text style={Type.screenDescription}>{['pick one small thing. your pet will show your progress.', 'a little consistency. a very opinionated pet.', 'three hearts. one tiny commitment.'][step]}</Text>
         {step === 0 && <>
-          <Text style={styles.label}>your habit</Text>
           <TextInput ref={input} autoFocus showSoftInputOnFocus accessibilityLabel="your habit" accessibilityHint="choose a concrete, achievable action" style={styles.input} value={habit} onChangeText={setHabit} maxLength={HABIT_NAME_MAX} placeholder="e.g. read 10 pages" placeholderTextColor={Colors.textMuted} returnKeyType="next" onSubmitEditing={() => void next()} />
           <View style={styles.habitSuggestions}>{['read 10 pages', 'walk for 10 minutes', 'practice for 5 minutes'].map(value => <Pressable key={value} accessibilityRole="button" accessibilityHint="fills your habit field so you can edit it" style={styles.tagTarget} onPress={() => { setHabit(value); setError(''); input.current?.focus(); }}><View style={styles.tag}><Text style={styles.tagText}>{value}</Text></View></Pressable>)}</View>
         </>}
