@@ -164,8 +164,7 @@ export function getStatusLine(habits: ComputedHabit[], habitName?: string): stri
 export function formatCountdown(timeRemainingMs: number): string {
   if (timeRemainingMs <= 0) return 'overdue';
 
-  const totalSeconds = Math.floor(timeRemainingMs / 1000);
-  const totalMinutes = Math.floor(totalSeconds / 60);
+  const totalMinutes = Math.ceil(timeRemainingMs / 60_000);
   const totalHours = Math.floor(totalMinutes / 60);
 
   const hours = totalHours;
@@ -177,7 +176,7 @@ export function formatCountdown(timeRemainingMs: number): string {
 export function formatLifeTimer(timeRemainingMs: number): string {
   if (timeRemainingMs <= 0) return '00:00';
 
-  const totalMinutes = Math.floor(timeRemainingMs / 60_000);
+  const totalMinutes = Math.ceil(timeRemainingMs / 60_000);
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;

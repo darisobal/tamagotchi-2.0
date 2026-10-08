@@ -1,3 +1,4 @@
+import { AppState as NativeAppState, Platform } from 'react-native';
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import {
   TrackState,
@@ -223,10 +224,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    const id = setInterval(() => {
-      recompute(tracksRef.current);
-    }, TICK_INTERVAL_MS);
-    return () => clearInterval(id);
+    const tick = () => recompute(tracksRef.current);
+    const id = setInterval(tick, TICK_INTERVAL_MS);
+    const subscription = NativeAppState.addEventListener('change', state => {
+      if (state === 'active') tick();
+    });
+    const onVisible = () => { if (document.visibilityState === 'visible') tick(); };
+    if (Platform.OS === 'web' && typeof document !== 'undefined') document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      clearInterval(id);
+      subscription.remove();
+      if (Platform.OS === 'web' && typeof document !== 'undefined') document.removeEventListener('visibilitychange', onVisible);
+    };
   }, [recompute]);
 
   const markPending = useCallback(async () => {

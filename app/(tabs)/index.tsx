@@ -166,6 +166,7 @@ export default function HomeScreen() {
             petHat={prefs.petHat ?? 'none'}
             petName={petName}
             flipped={eggFlipped}
+            timerActive={Boolean(habit?.nextDeadlineAt)}
             timeRemainingMs={habit?.timeRemainingMs ?? 0}
             onPress={toggleEggFlip}
           />
@@ -279,10 +280,10 @@ function LifeTimer({
   const [hours, minutes] = formatted.split(':');
 
   return (
-    <View style={styles.eggLifeTimerRow} accessibilityLabel={formatted}>
-      <Text style={[styles.eggLifeTimer, { color }]}>{hours}</Text>
+    <View style={styles.eggLifeTimerRow} accessibilityLabel={`${Number(hours)} hours and ${Number(minutes)} minutes until the next heart is lost`}>
+      <Text style={[styles.eggLifeTimer, hours.length > 2 && styles.eggLifeTimerLong, { color }]}>{hours}</Text>
       <BlinkingColon color={color} />
-      <Text style={[styles.eggLifeTimer, { color }]}>{minutes}</Text>
+      <Text style={[styles.eggLifeTimer, hours.length > 2 && styles.eggLifeTimerLong, { color }]}>{minutes}</Text>
     </View>
   );
 }
@@ -298,6 +299,7 @@ function PetStage({
   petName,
   flipped,
   timeRemainingMs,
+  timerActive,
   onPress,
 }: {
   petType: ReturnType<typeof useAppState>['prefs']['petType'];
@@ -308,6 +310,7 @@ function PetStage({
   petName: string;
   flipped: boolean;
   timeRemainingMs: number;
+  timerActive: boolean;
   onPress: () => void;
 }) {
   const useSelfiePixels = petType === 'selfie' && Boolean(customSprite);
@@ -398,7 +401,7 @@ function PetStage({
               <Text style={styles.eggDeadMessage}>
                 {'you are your pet\'s\nworst nightmare.'}
               </Text>
-            ) : isSleeping ? (
+            ) : isSleeping && !timerActive ? (
               <>
                 <Text style={styles.eggLifeLabel}>still dreaming...</Text>
                 <Text style={[styles.eggSleepHint, { color: petColor }]}>
@@ -529,6 +532,7 @@ const styles = StyleSheet.create({
     letterSpacing: -2,
     textAlign: 'center',
   },
+  eggLifeTimerLong: { fontSize: 44 },
   timerColon: {
     width: 12,
     height: 56,
