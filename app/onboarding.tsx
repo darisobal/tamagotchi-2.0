@@ -5,7 +5,6 @@ import { Redirect, router } from 'expo-router';
 import { useAppState } from '../src/context';
 import { useAuth } from '../src/authContext';
 import { CADENCE_OPTIONS, HabitCadence, HABIT_NAME_MAX } from '../src/types';
-import { CADENCE_RULES, firstDeadline, formatDeadline } from '../src/onboarding';
 import { Colors, Spacing, Radius, Border, Slab, FontSize, Type } from '../src/theme';
 import LineArtPet from '../src/LineArtPet';
 import PetLives from '../src/PetLives';
@@ -32,7 +31,6 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
   const [mock, setMock] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  const [now, setNow] = useState(Date.now());
   const input = useRef<TextInput>(null);
   const scroll = useRef<ScrollView>(null);
   const saving = useRef(Promise.resolve());
@@ -49,8 +47,7 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
   useEffect(() => {
     let active = true;
     void getRestartStoreAvailability().then(value => { if (active) { setPrice(value.displayPrice); setMock(value.useMockCheckout); } });
-    const timer = setInterval(() => setNow(Date.now()), 30_000);
-    return () => { active = false; clearInterval(timer); };
+    return () => { active = false; };
   }, []);
   useEffect(() => {
     scroll.current?.scrollTo({ y: 0, animated: false });
@@ -86,8 +83,8 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
           <Text style={styles.hint}>{step + 1} of 3</Text>
           {step > 0 && <Pressable accessibilityRole="button" disabled={busy} style={styles.link} onPress={() => { setError(''); setStep(step - 1); }}><Text style={styles.linkText}>back</Text></Pressable>}
         </View>
-        <Text accessibilityRole="header" style={Type.screenTitle}>{['name your habit', 'how often?', 'meet noodle.'][step]}</Text>
-        <Text style={Type.screenDescription}>{['pick one small thing. your pet will show your progress.', 'each check-in restarts the interval.', 'three hearts. one tiny commitment.'][step]}</Text>
+        <Text accessibilityRole="header" style={Type.screenTitle}>{['name your habit', 'how often?', 'name your pet'][step]}</Text>
+        {step !== 2 && <Text style={Type.screenDescription}>{['pick one small thing. your pet will show your progress.', 'each check-in restarts the interval.'][step]}</Text>}
         {step === 0 && <>
           <TextInput ref={input} autoFocus showSoftInputOnFocus accessibilityLabel="your habit" accessibilityHint="choose a concrete, achievable action" style={[styles.input, styles.habitInput]} value={habit} onChangeText={setHabit} maxLength={HABIT_NAME_MAX} placeholder="e.g. read 10 pages" placeholderTextColor={Colors.textMuted} returnKeyType="next" onSubmitEditing={() => void next()} />
           <View style={styles.habitSuggestions}>{['meditate', 'run', 'read 10 pages'].map(value => <Pressable key={value} accessibilityRole="button" accessibilityHint="fills your habit field so you can edit it" style={styles.tagTarget} onPress={() => { setHabit(value); setError(''); input.current?.focus(); }}><View style={styles.tag}><Text style={styles.tagText}>{value}</Text></View></Pressable>)}</View>
@@ -100,17 +97,9 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
           </View>
         </>}
         {step === 2 && <>
-          <View accessible accessibilityLabel="noodle, your pet, with three hearts" style={styles.pet}><LineArtPet mood="okay" strokeColor={prefs.petColor} displayHeight={200} hat={prefs.petHat} /><PetLives lives={3} color={prefs.petColor} size={32} /></View>
-          <Text style={styles.label}>pet name</Text>
+          <View accessible accessibilityLabel={`${pet.trim() || 'your pet'}, with three hearts`} style={styles.pet}><LineArtPet mood="okay" strokeColor={prefs.petColor} displayHeight={130} hat={prefs.petHat} /><PetLives lives={3} color={prefs.petColor} size={24} /></View>
           <TextInput ref={input} accessibilityLabel="pet name" style={styles.input} value={pet} onChangeText={setPet} maxLength={40} returnKeyType="done" onSubmitEditing={() => void next()} />
-          <View style={styles.rules}>
-            <Text style={styles.body}>check in when you do your habit. each check-in restores all three hearts and resets the clock.</Text>
-            <Text style={styles.body}>each missed interval costs one heart. three missed intervals in a row means your pet dies.</Text>
-            <Text style={styles.label}>a restart costs {price.toLowerCase()}.</Text>
-            {mock && <Text style={styles.hint}>this preview uses a test checkout. the paid restart on mobile uses the store price.</Text>}
-            <Text style={styles.hint}>{CADENCE_RULES[cadence]} first check-in due {formatDeadline(firstDeadline(cadence, now))} if you start now.</Text>
-          </View>
-          <Text style={styles.hint}>starting your plan isn’t a check-in. tap “i did it” after your first real achievement.</Text>
+          <Text style={Type.screenDescription}>check-ins refill three hearts. each missed interval costs one. lose all three and your pet dies. restarting costs {price.toLowerCase()}{mock ? ' (test checkout here)' : ''}. “let’s start” starts the clock.</Text>
         </>}
         {error ? <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.error}>{error}</Text> : null}
         <Pressable accessibilityRole="button" accessibilityState={{ disabled: busy }} disabled={busy} style={styles.primary} onPress={() => void next()}><Text style={styles.primaryText}>{busy ? 'saving...' : step === 2 ? 'let’s start' : 'next'}</Text></Pressable>
@@ -124,8 +113,6 @@ const styles = StyleSheet.create({
   content: { padding: Spacing.lg, paddingBottom: Spacing.xxl, gap: Spacing.md, width: '100%', maxWidth: 680, alignSelf: 'center' },
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   hint: { fontFamily: Slab.regular, fontSize: FontSize.sm, color: Colors.textSecondary, lineHeight: 22 },
-  body: { fontFamily: Slab.regular, fontSize: FontSize.md, color: Colors.ink, lineHeight: 26 },
-  label: { fontFamily: Slab.bold, fontSize: FontSize.lg, color: Colors.ink },
   input: { backgroundColor: Colors.card, borderColor: Colors.ink, borderWidth: Border.thick, borderRadius: Radius.md, padding: Spacing.md, minHeight: 56, fontFamily: Slab.regular, fontSize: FontSize.md, color: Colors.ink },
   habitInput: { marginTop: 20 },
   habitSuggestions: { flexDirection: 'row', flexWrap: 'wrap', columnGap: Spacing.sm, marginTop: -Spacing.sm },
@@ -138,8 +125,7 @@ const styles = StyleSheet.create({
   selected: { backgroundColor: Colors.ink },
   selectedText: { color: Colors.white },
   optionPressed: { opacity: 0.7 },
-  pet: { alignItems: 'center', gap: Spacing.md, padding: Spacing.md },
-  rules: { padding: Spacing.md, gap: Spacing.md, backgroundColor: Colors.card, borderWidth: Border.thick, borderRadius: Radius.lg, borderColor: Colors.ink },
+  pet: { alignItems: 'center', gap: Spacing.sm, paddingVertical: Spacing.sm },
   error: { fontFamily: Slab.bold, fontSize: FontSize.md, color: '#B00020' },
   primary: { marginTop: Spacing.sm, backgroundColor: Colors.ink, borderRadius: Radius.md, minHeight: 56, padding: Spacing.md, alignItems: 'center' },
   primaryText: { fontFamily: Slab.black, fontSize: FontSize.xl, color: Colors.white, textAlign: 'center' },
