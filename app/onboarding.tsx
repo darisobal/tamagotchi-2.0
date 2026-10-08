@@ -83,7 +83,7 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
           <Text style={styles.hint}>{step + 1} of 3</Text>
           {step > 0 && <Pressable accessibilityRole="button" disabled={busy} style={styles.link} onPress={() => { setError(''); setStep(step - 1); }}><Text style={styles.linkText}>back</Text></Pressable>}
         </View>
-        <Text accessibilityRole="header" style={Type.screenTitle}>{['name your habit', 'how often?', 'name your pet'][step]}</Text>
+        <Text accessibilityRole="header" style={Type.screenTitle}>{['name your habit', 'how often?', pet.trim() ? `meet ${pet.trim().toLowerCase()}.` : 'name your pet'][step]}</Text>
         {step !== 2 && <Text style={Type.screenDescription}>{['pick one small thing. your pet will show your progress.', 'each check-in restarts the interval.'][step]}</Text>}
         {step === 0 && <>
           <TextInput ref={input} autoFocus showSoftInputOnFocus accessibilityLabel="your habit" accessibilityHint="choose a concrete, achievable action" style={[styles.input, styles.habitInput]} value={habit} onChangeText={setHabit} maxLength={HABIT_NAME_MAX} placeholder="e.g. read 10 pages" placeholderTextColor={Colors.textMuted} returnKeyType="next" onSubmitEditing={() => void next()} />
