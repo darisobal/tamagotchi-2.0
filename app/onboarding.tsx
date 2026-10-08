@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   body: { fontFamily: Slab.regular, fontSize: FontSize.md, color: Colors.ink, lineHeight: 26 },
   label: { fontFamily: Slab.bold, fontSize: FontSize.lg, color: Colors.ink },
   input: { backgroundColor: Colors.card, borderColor: Colors.ink, borderWidth: Border.thick, borderRadius: Radius.md, padding: Spacing.md, minHeight: 56, fontFamily: Slab.regular, fontSize: FontSize.md, color: Colors.ink },
-  habitSuggestions: { flexDirection: 'row', flexWrap: 'wrap', columnGap: Spacing.sm, marginTop: -Spacing.sm },
+  habitSuggestions: { flexDirection: 'row', flexWrap: 'wrap', columnGap: Spacing.sm, marginTop: 20 - Spacing.sm },
   tagTarget: { minHeight: 44, justifyContent: 'center', maxWidth: '100%' },
   tag: { paddingHorizontal: 12, paddingVertical: 6, borderWidth: Border.thin, borderColor: 'rgba(0, 0, 0, 0.18)', borderRadius: Radius.full, backgroundColor: 'rgba(0, 0, 0, 0.035)' },
   tagText: { fontFamily: Slab.regular, fontSize: FontSize.xs, color: Colors.textSecondary },
