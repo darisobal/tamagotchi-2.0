@@ -90,9 +90,9 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
         <Text style={Type.screenDescription}>{['pick one small thing. your pet will keep you company.', 'a little consistency. a very opinionated pet.', 'three hearts. one tiny commitment.'][step]}</Text>
         {step === 0 && <>
           <Text style={styles.label}>your habit</Text>
-          <TextInput ref={input} accessibilityLabel="your habit" accessibilityHint="choose a concrete, achievable action" style={styles.input} value={habit} onChangeText={setHabit} maxLength={HABIT_NAME_MAX} placeholder="e.g. read 10 pages" placeholderTextColor={Colors.textMuted} returnKeyType="next" onSubmitEditing={() => void next()} />
+          <TextInput ref={input} autoFocus showSoftInputOnFocus accessibilityLabel="your habit" accessibilityHint="choose a concrete, achievable action" style={styles.input} value={habit} onChangeText={setHabit} maxLength={HABIT_NAME_MAX} placeholder="e.g. read 10 pages" placeholderTextColor={Colors.textMuted} returnKeyType="next" onSubmitEditing={() => void next()} />
+          <View style={styles.habitSuggestions}>{['read 10 pages', 'walk for 10 minutes', 'practice for 5 minutes'].map(value => <Pressable key={value} accessibilityRole="button" accessibilityHint="fills your habit field so you can edit it" style={styles.tagTarget} onPress={() => { setHabit(value); setError(''); input.current?.focus(); }}><View style={styles.tag}><Text style={styles.tagText}>{value}</Text></View></Pressable>)}</View>
           <Text style={styles.hint}>choose something concrete and achievable, like a few pages or a short walk.</Text>
-          <View style={styles.suggestions}>{['read 10 pages', 'walk for 10 minutes', 'practice for 5 minutes'].map(value => <Pressable key={value} accessibilityRole="button" style={styles.option} onPress={() => { setHabit(value); setError(''); input.current?.focus(); }}><Text style={styles.optionText}>{value}</Text></Pressable>)}</View>
         </>}
         {step === 1 && <>
           <View style={styles.suggestions}>{CADENCE_OPTIONS.map(option => <Pressable key={option.id} accessibilityRole="radio" accessibilityState={{ checked: cadence === option.id }} style={[styles.option, cadence === option.id && styles.selected]} onPress={() => setCadence(option.id)}><Text style={[styles.optionText, cadence === option.id && styles.selectedText]}>{option.label}</Text></Pressable>)}</View>
@@ -128,6 +128,10 @@ const styles = StyleSheet.create({
   body: { fontFamily: Slab.regular, fontSize: FontSize.md, color: Colors.ink, lineHeight: 26 },
   label: { fontFamily: Slab.bold, fontSize: FontSize.lg, color: Colors.ink },
   input: { backgroundColor: Colors.card, borderColor: Colors.ink, borderWidth: Border.thick, borderRadius: Radius.md, padding: Spacing.md, minHeight: 56, fontFamily: Slab.regular, fontSize: FontSize.md, color: Colors.ink },
+  habitSuggestions: { flexDirection: 'row', flexWrap: 'wrap', columnGap: Spacing.sm, marginTop: -Spacing.sm },
+  tagTarget: { minHeight: 44, justifyContent: 'center', maxWidth: '100%' },
+  tag: { paddingHorizontal: 12, paddingVertical: 6, borderWidth: Border.thin, borderColor: 'rgba(0, 0, 0, 0.18)', borderRadius: Radius.full, backgroundColor: 'rgba(0, 0, 0, 0.035)' },
+  tagText: { fontFamily: Slab.regular, fontSize: FontSize.xs, color: Colors.textSecondary },
   suggestions: { gap: Spacing.sm, marginVertical: Spacing.sm },
   option: { padding: Spacing.md, minHeight: 48, borderWidth: Border.base, borderColor: Colors.ink, borderRadius: Radius.md, backgroundColor: Colors.card },
   optionText: { fontFamily: Slab.bold, fontSize: FontSize.md, color: Colors.ink },
