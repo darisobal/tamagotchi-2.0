@@ -92,7 +92,6 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
           <Text style={styles.label}>your habit</Text>
           <TextInput ref={input} autoFocus showSoftInputOnFocus accessibilityLabel="your habit" accessibilityHint="choose a concrete, achievable action" style={styles.input} value={habit} onChangeText={setHabit} maxLength={HABIT_NAME_MAX} placeholder="e.g. read 10 pages" placeholderTextColor={Colors.textMuted} returnKeyType="next" onSubmitEditing={() => void next()} />
           <View style={styles.habitSuggestions}>{['read 10 pages', 'walk for 10 minutes', 'practice for 5 minutes'].map(value => <Pressable key={value} accessibilityRole="button" accessibilityHint="fills your habit field so you can edit it" style={styles.tagTarget} onPress={() => { setHabit(value); setError(''); input.current?.focus(); }}><View style={styles.tag}><Text style={styles.tagText}>{value}</Text></View></Pressable>)}</View>
-          <Text style={styles.hint}>choose something concrete and achievable, like a few pages or a short walk.</Text>
         </>}
         {step === 1 && <>
           <View style={styles.suggestions}>{CADENCE_OPTIONS.map(option => <Pressable key={option.id} accessibilityRole="radio" accessibilityState={{ checked: cadence === option.id }} style={[styles.option, cadence === option.id && styles.selected]} onPress={() => setCadence(option.id)}><Text style={[styles.optionText, cadence === option.id && styles.selectedText]}>{option.label}</Text></Pressable>)}</View>

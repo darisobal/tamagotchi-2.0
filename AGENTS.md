@@ -15,6 +15,13 @@ Every change must work on **both mobile and web**. That does not mean duplicatin
 - Prefer `Platform.OS` checks or `.web.ts` / `.native.ts` file extensions over copy-pasting whole screens or components.
 - When adding a feature, verify it behaves correctly on web and on mobile — not just the platform you are currently testing.
 
+### Product copy
+
+- Lead with a brief heading that makes the requested user action clear.
+- Add one short description only when the heading needs essential context. Never add a third layer of explanatory copy.
+- Use precise, natural wording; remove repetition and unnecessary words.
+- Review copy twice before delivery: first for clarity and accuracy, then for brevity and redundancy.
+
 ---
 
 ## Project overview
