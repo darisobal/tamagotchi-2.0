@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   RefreshControl,
   Pressable,
+  useWindowDimensions,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -93,6 +94,19 @@ export default function HomeScreen() {
     lastCheckInWasPaidRestart: Boolean(lastMainCheckIn?.isPaidRestart),
   });
   const tabBarExtraPad = useFloatingTabBarExtraPadding();
+  const window = useWindowDimensions();
+  const [viewportHeight, setViewportHeight] = React.useState(window.height);
+  const [greetingHeight, setGreetingHeight] = React.useState(100);
+  const [cardHeight, setCardHeight] = React.useState(300);
+  // Reserve the real card height and navigation before sizing the illustration.
+  // Keep scrolling available for long names and enlarged accessibility text.
+  const availablePetHeight = viewportHeight - Spacing.lg - greetingHeight -
+    Spacing.xs - HERO_HEART_HEIGHT - cardHeight - tabBarExtraPad - Spacing.sm;
+  const petScale = Math.max(0.55, Math.min(
+    1,
+    window.width / 393,
+    availablePetHeight / (HERO_PET_STAGE_HEIGHT - HERO_EGG_LIFT),
+  ));
 
   // Single-habit app: card uses the setup name; track status is separate.
   const habit = computedHabits[0] ?? null;
@@ -137,13 +151,14 @@ export default function HomeScreen() {
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]}>
       <ScrollView
         style={styles.scroll}
+        onLayout={(event) => setViewportHeight(event.nativeEvent.layout.height)}
         contentContainerStyle={[styles.content, { paddingBottom: Spacing.xxl + tabBarExtraPad }]}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.ink} />
         }
       >
-        <Text style={[styles.greeting, { color: theme.ink }]}>
+        <Text onLayout={(event) => setGreetingHeight(event.nativeEvent.layout.height)} style={[styles.greeting, { color: theme.ink }]}>
           {theme.greeting(petName)}
         </Text>
 
@@ -158,6 +173,7 @@ export default function HomeScreen() {
             />
           </View>
           <PetStage
+            scale={petScale}
             petType={prefs.petType}
             mood={mood}
             customSprite={prefs.customSprite}
@@ -176,6 +192,7 @@ export default function HomeScreen() {
           {syncNotice && <Text accessibilityLiveRegion="polite">{syncNotice}</Text>}
         </View>}
         {habit ? (
+          <View onLayout={(event) => setCardHeight(event.nativeEvent.layout.height)}>
           <HeroTaskCard
             habitName={habitName}
             motto={theme.motto(habitName)}
@@ -190,6 +207,7 @@ export default function HomeScreen() {
             onCheckIn={onHeroCheckIn}
             onHabitNamePress={onEditHabitName}
           />
+          </View>
         ) : (
           <View
             style={[
@@ -285,6 +303,7 @@ function LifeTimer({
 const PIXEL_PET_SIZE = 7;
 
 function PetStage({
+  scale,
   petType,
   mood,
   customSprite,
@@ -296,6 +315,7 @@ function PetStage({
   timerActive,
   onPress,
 }: {
+  scale: number;
   petType: ReturnType<typeof useAppState>['prefs']['petType'];
   mood: ReturnType<typeof useAppState>['mood'];
   customSprite: string | null | undefined;
@@ -348,12 +368,15 @@ function PetStage({
   ];
 
   return (
-    <View style={styles.petStage}>
+    <View style={[styles.petStage, { height: HERO_PET_STAGE_HEIGHT * scale, marginTop: -HERO_EGG_LIFT * scale }]}>
       <Pressable
         onPress={onPress}
         accessibilityRole="button"
         accessibilityLabel={flipped ? 'hide lives info' : 'show lives info'}
-        style={styles.petStageCompose}
+        style={[styles.petStageCompose, {
+          height: HERO_PET_STAGE_HEIGHT,
+          transform: [{ scale }],
+        }]}
       >
         <Animated.View style={[styles.eggFace, frontFaceStyle]}>
           <PetEggShell width={PET_HOME_EGG_WIDTH} style={eggShellStyle} />
@@ -474,13 +497,12 @@ const styles = StyleSheet.create({
   },
   petStageCompose: {
     width: '100%',
-    flex: 1,
+    position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
     // Match egg band so the in-flow pet stays centered on the egg (asymmetric pads).
     paddingTop: HERO_PET_STAGE_PAD_TOP,
     paddingBottom: HERO_PET_STAGE_PAD_BOTTOM,
-    position: 'relative',
     overflow: 'visible',
   },
   eggFace: {
