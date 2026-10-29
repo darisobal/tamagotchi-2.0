@@ -21,7 +21,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import { router } from 'expo-router';
 import { useAuth } from '../../src/authContext';
-import { formatDeadline } from '../../src/onboarding';
 import { useAppState } from '../../src/context';
 import { DEFAULT_HABIT_NAME, MAIN_TRACK } from '../../src/types';
 import { Spacing, FontSize, Slab, Radius, Border, Type, Colors } from '../../src/theme';
@@ -172,15 +171,10 @@ export default function HomeScreen() {
           />
         </View>
 
-        <View style={{ gap: Spacing.sm, marginBottom: Spacing.lg }}>
-          <Text style={{ fontFamily: Slab.bold, fontSize: FontSize.lg, color: theme.ink }}>{petName} · {habitName}</Text>
-          <Text style={{ fontFamily: Slab.regular, fontSize: FontSize.md, color: theme.ink }}>
-            {habit?.nextDeadlineAt ? `${habit.lives < 3 ? 'overdue — next heart lost' : habit.lastCheckInAt ? 'next check-in due' : 'first check-in due'} ${formatDeadline(habit.nextDeadlineAt)}`
-              : mood === 'dead' ? 'three missed intervals. restart to begin again.' : 'your first check-in starts the clock.'}
-          </Text>
+        {(checkInError || syncNotice) && <View style={{ gap: Spacing.sm, marginBottom: Spacing.lg }}>
           {checkInError && <Text accessibilityRole="alert">{checkInError}</Text>}
           {syncNotice && <Text accessibilityLiveRegion="polite">{syncNotice}</Text>}
-        </View>
+        </View>}
         {habit ? (
           <HeroTaskCard
             habitName={habitName}
