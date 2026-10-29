@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, useWindowDimensions, Platform } from 'react-native';
+import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
 import Svg, { Line, Path } from 'react-native-svg';
 import { Colors, Slab } from './theme';
 import {
@@ -39,6 +39,14 @@ function ListCoupon({
   const couponHeight = couponWidth * (COUPON_ARTBOARD.mainHeight / COUPON_ARTBOARD.width);
   const perforationY = couponHeight * LIST_PERFORATION_Y_RATIO;
   const notchRadius = couponWidth * (COUPON_ARTBOARD.notchRadius / COUPON_ARTBOARD.width);
+  // Transforms do not reserve layout space. Include the tilted bounds and
+  // protruding confetti so adjacent cards and date headings stay clear.
+  const angle = Math.abs(rotation) * Math.PI / 180;
+  const rotatedHeight =
+    (couponWidth + notchRadius * 2) * Math.abs(Math.sin(angle)) +
+    couponHeight * Math.abs(Math.cos(angle));
+  const confettiRadius = Math.max(...COUPON_CONFETTI_DOTS.map((dot) => dot.size / 2));
+  const tiltMargin = Math.ceil(Math.max(0, (rotatedHeight - couponHeight) / 2) + confettiRadius);
   const fontSize = couponWidth * (42 / COUPON_ARTBOARD.width);
   const lineHeight = couponWidth * (48 / COUPON_ARTBOARD.width);
   const lineInset = couponWidth * (COUPON_ARTBOARD.perforationInset / COUPON_ARTBOARD.width);
@@ -51,6 +59,7 @@ function ListCoupon({
         {
           width: couponWidth + notchRadius * 2,
           height: couponHeight,
+          marginVertical: tiltMargin,
           transform: [{ rotate: `${rotation}deg` }],
         },
       ]}
