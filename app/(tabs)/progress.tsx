@@ -405,7 +405,6 @@ const styles = StyleSheet.create({
   },
   tabBar: {
     width: '100%',
-    maxWidth: 400,
     flexDirection: 'row',
     gap: Spacing.sm,
     marginBottom: Spacing.lg,
