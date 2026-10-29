@@ -102,7 +102,7 @@ export default function HomeScreen() {
   // Keep scrolling available for long names and enlarged accessibility text.
   const availablePetHeight = viewportHeight - Spacing.lg - greetingHeight -
     Spacing.xs - HERO_HEART_HEIGHT - cardHeight - tabBarExtraPad - Spacing.sm;
-  const petScale = Math.max(0.55, Math.min(
+  const petScale = Math.max(0.4, Math.min(
     1,
     window.width / 393,
     availablePetHeight / (HERO_PET_STAGE_HEIGHT - HERO_EGG_LIFT),
