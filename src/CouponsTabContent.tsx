@@ -77,22 +77,22 @@ const styles = StyleSheet.create({
   scroll: {
     width: '100%',
     maxWidth: 400,
-    paddingTop: Spacing.sm,
+    paddingTop: Spacing.sm / 2,
   },
   dayGroup: {
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.xl / 2,
   },
   dayLabel: {
     fontFamily: Slab.bold,
     fontSize: FontSize.lg + 2,
-    lineHeight: FontSize.lg + 28,
+    lineHeight: FontSize.lg + 8,
     color: Colors.ink,
-    marginTop: Spacing.lg,
-    marginBottom: Spacing.lg,
+    marginTop: Spacing.lg / 2,
+    marginBottom: Spacing.lg / 2,
   },
   couponSlot: {
     alignItems: 'center',
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.lg / 2,
     overflow: 'visible',
   },
   empty: {
