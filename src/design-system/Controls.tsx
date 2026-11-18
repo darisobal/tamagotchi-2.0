@@ -45,6 +45,8 @@ export const TextField = forwardRef<TextInput, TextFieldProps>(function TextFiel
       aria-labelledby={`${id}-label`} aria-describedby={message || errorMessage ? `${id}-message` : undefined}
       aria-invalid={Boolean(errorMessage)} aria-disabled={state === 'disabled' || props.editable === false} accessibilityState={{ ...props.accessibilityState, disabled: state === 'disabled' || props.editable === false }} editable={state === 'disabled' ? false : props.editable}
       multiline={multiline} scrollEnabled={!multiline} autoCapitalize={props.autoCapitalize ?? 'none'} placeholderTextColor={Palette['gray-text']}
+      submitBehavior={props.submitBehavior ?? (props.onSubmitEditing ? 'blurAndSubmit' : undefined)}
+      blurOnSubmit={props.blurOnSubmit ?? (props.onSubmitEditing ? true : undefined)}
       onFocus={e => { setFocused(true); onFocus?.(e); }} onBlur={e => { setFocused(false); onBlur?.(e); }}
       onContentSizeChange={e => { setHeight(Math.max(Size.control, e.nativeEvent.contentSize.height)); onContentSizeChange?.(e); }}
       style={[styles.input, multiline && { minHeight: height }, (focused || state === 'focus') && styles.focus, (props.editable === false || state === 'disabled') && styles.disabled, style]} />

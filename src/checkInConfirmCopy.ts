@@ -12,8 +12,8 @@ export const CONFIRMATION_MESSAGES = [
 ] as const;
 
 export const POSITIVE_BUTTON_LABELS = [
-  'yep, I did',
-  'I swear',
+  'yep, i did',
+  'i swear',
   'hell yeah',
   '100% did it',
   'cross my heart',
@@ -21,7 +21,7 @@ export const POSITIVE_BUTTON_LABELS = [
 
 export const NEGATIVE_BUTTON_LABELS = [
   'okay, you got me',
-  'fine, I lied',
+  'fine, i lied',
   '…not really',
   'abort mission',
   'okay, busted',

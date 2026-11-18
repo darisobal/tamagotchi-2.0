@@ -98,7 +98,7 @@
     "setupComplete": true
   },
   "pending": [
-    "Native runtime visual and interaction review on an unlocked Mac or device.",
+    "Resolve reported iOS scrolling and verify touch reachability; complete Android runtime and screen-reader review.",
     "Code Connect publication requires an Organization or Enterprise Figma plan."
   ],
   "git": {

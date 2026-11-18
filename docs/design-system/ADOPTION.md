@@ -1,6 +1,6 @@
 # Application adoption — library v0.1.1
 
-Implemented on `codex/tamagotchi-redesign`, based on setup commit `9aa1e65`. The application is ready for draft review; adoption is not marked complete because native runtime review and Code Connect publication remain open. This does not change the published Figma library version or merge setup PR #6.
+Implemented on `codex/tamagotchi-redesign`, based on setup commit `9aa1e65`. The application is in draft review in [PR #7](https://github.com/darisobal/tamagotchi-2.0/pull/7); adoption is not marked complete because native scrolling, remaining device/accessibility review and Code Connect publication remain open. This does not change the published Figma library version or merge setup PR #6.
 
 ## Implementation
 
@@ -17,7 +17,7 @@ The 22 SVG files in `assets/design-system` came from the published library's des
 
 [application-components.json](application-components.json) records the verified Figma-to-source correspondence for all 12 component families. These are source references, not published Code Connect mappings. The connected Business workspace reports a Professional plan; the Code Connect workflow requires an Organization or Enterprise plan. Publication was not attempted and no account plan was changed.
 
-The payment action adds a contextual loading label (`processing…` / `waiting for store…`) to the shared button. Its default loading copy remains the library's `saving…`. Password inputs remain single-line; general text fields grow with their content.
+The payment action adds a contextual loading label (`processing…` / `waiting for store…`) to the shared button. Its default loading copy remains the library's `saving…`. Password inputs remain single-line; general text fields grow with their content. Fields with a submit action now submit and blur on the keyboard action key on iOS and web; ordinary multiline notes retain line breaks. Confirmation labels follow the lowercase copy rule.
 
 ## Validation — 18 November 2026
 
@@ -29,7 +29,8 @@ The payment action adds a contextual loading label (`processing…` / `waiting f
 | TypeScript | Seven existing errors remain in `EmptyFace.tsx`, `LineArtPet.tsx`, `PetFigure.tsx` and `widgets/PetStatusWidget.tsx`. Baseline `9aa1e65` has nine errors with the same installed dependencies; none were introduced by the migrated code. |
 | Web runtime | Local-only onboarding, saved setup choices/reload, successful check-in/confirmation, coupon collection/access, calendar navigation/details, and continue-to-prompt checked. No cloud data or real payments used. |
 | Responsive / states | 320, 430 and 1024 px inspected. Long name/habit/action text, selected colours, keyboard focus, hover/pressed, disabled/loading and field errors checked. Missed/double-success poses checked through temporary local fixtures. |
-| Native runtime | iPhone simulator prepared with Expo Go; inspection blocked by the locked Mac. iOS and Android keyboard, safe-area, screen-reader and interaction checks remain open. |
+| iOS runtime | iPhone 16 Plus, iOS 18.6, Expo Go 54.0.7: local onboarding, software-keyboard next, growing long fields, setup saving, fonts/SVGs, safe areas, check-in confirmation, reward collection, success/continue and calendar record/details checked. Controls below the viewport were invoked through accessibility actions; this does not establish touch reachability. |
+| Native scrolling / remaining review | Unresolved: the user reported that the home page would not scroll. Layout diagnostics measured content taller than the viewport, and focusing a field scrolled setup, but automated drags did not trigger a scroll gesture. A manual click-and-hold upward drag was requested to distinguish touch scrolling from simulator mouse-wheel behavior. Do not mark native interaction review passed until resolved. Android runtime and VoiceOver/TalkBack review remain open; no Android SDK is available locally. |
 | External flows | Live Supabase email/recovery/sync and store purchase transactions were not exercised. Their existing code and unit coverage are retained. |
 
 Review passed internally for necessity/clarity, then consistency/visual focus. It found and corrected a split narrow “coupons” label, long-name clipping, selected month visibility and loading text contrast.
@@ -43,5 +44,7 @@ Review passed internally for necessity/clarity, then consistency/visual focus. I
 - [Long pet name, 320 px](validation/setup-long-name-320.jpg)
 - [Double-success fixture, 430 px](validation/double-success-430.jpg)
 - [Control fixture, 320 px](validation/controls-320.jpg)
+- [iPhone confirmation with visible actions](validation/ios-confirmation.png)
+- [iPhone success with a long goal, initial viewport](validation/ios-success-long-goal.png)
 
-Before adoption is complete: inspect the native runtime, publish Code Connect when the workspace supports it, and review the draft application PR. Nothing was merged or deployed.
+Before adoption is complete: resolve native scrolling and verify touch reachability, finish Android and screen-reader review, publish Code Connect when the workspace supports it, and review the draft application PR. Nothing was merged or deployed.
