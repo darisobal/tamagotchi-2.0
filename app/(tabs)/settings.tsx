@@ -1,439 +1,70 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  TextInput,
-  SafeAreaView,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
-import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Text, TextInput, View } from 'react-native';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useAppState } from '../../src/context';
-import { CADENCE_RULES } from '../../src/onboarding';
 import { useAuth } from '../../src/authContext';
-import {
-  DEFAULT_HABIT_NAME,
-  DEFAULT_PET_NAME,
-  HABIT_NAME_MAX,
-  PET_COLOR_OPTIONS,
-  PET_HAT_OPTIONS,
-  PetHat,
-  CADENCE_OPTIONS,
-  HabitCadence,
-  DEFAULT_HABIT_CADENCE,
-} from '../../src/types';
-import { Colors, Spacing, FontSize, Slab, Radius, Border, Type } from '../../src/theme';
+import { CADENCE_RULES } from '../../src/onboarding';
+import { CADENCE_OPTIONS, HABIT_NAME_MAX, PET_COLOR_OPTIONS, HabitCadence } from '../../src/types';
 import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
-import { useMoodBackground } from '../../src/useMoodBackground';
-import LineArtPet from '../../src/LineArtPet';
-import { HatOnlyPreview } from '../../src/PetHat';
-import {
-  PET_SETUP_DEAD_LEFT_INSET,
-  PET_SETUP_DISPLAY_HEIGHT,
-} from '../../src/PetEggShell';
-
-const PET_NAME_MAX = 30;
+import { Page } from '../../src/design-system/Page';
+import { Button, MonthChip, ScreenHeader, SelectionTile, TextField } from '../../src/design-system/Controls';
+import { ColorOption } from '../../src/design-system/ColorOption';
+import { PetStage } from '../../src/design-system/PetStage';
+import { DesignType } from '../../src/design-system/tokens';
 
 export default function SettingsScreen() {
-  const { prefs, updatePrefs, mood } = useAppState();
+  const { prefs, updatePrefs } = useAppState();
   const { user, signOut } = useAuth();
   const { focusHabit } = useLocalSearchParams<{ focusHabit?: string }>();
-  const screenBg = useMoodBackground();
-  const tabBarExtraPad = useFloatingTabBarExtraPadding();
-  const habitInputRef = useRef<TextInput>(null);
-  const [habitDraft, setHabitDraft] = useState(prefs.habitName ?? DEFAULT_HABIT_NAME);
-  const [petDraft, setPetDraft] = useState(prefs.petName ?? DEFAULT_PET_NAME);
-  const [selectHabitOnFocus, setSelectHabitOnFocus] = useState(false);
-
-  // Keep the draft in sync if prefs.habitName changes from elsewhere (e.g. reset).
-  useEffect(() => {
-    setHabitDraft(prefs.habitName ?? DEFAULT_HABIT_NAME);
-  }, [prefs.habitName]);
-
-  useEffect(() => {
-    setPetDraft(prefs.petName ?? DEFAULT_PET_NAME);
-  }, [prefs.petName]);
-
-  useFocusEffect(
-    useCallback(() => {
-      if (focusHabit !== '1') return;
-      setSelectHabitOnFocus(true);
-      const timer = setTimeout(() => {
-        habitInputRef.current?.focus();
-        router.setParams({ focusHabit: undefined });
-      }, 150);
-      return () => clearTimeout(timer);
-    }, [focusHabit]),
-  );
-
-  const persistHabitName = useCallback(async () => {
-    const trimmed = habitDraft.trim().slice(0, HABIT_NAME_MAX);
-    if (trimmed.length === 0) {
-      // Don't persist empty; revert to current saved value.
-      setHabitDraft(prefs.habitName ?? DEFAULT_HABIT_NAME);
-      return;
-    }
-    if (trimmed !== habitDraft) setHabitDraft(trimmed);
-    if (trimmed === prefs.habitName) return;
-    await updatePrefs({ habitName: trimmed });
-  }, [habitDraft, prefs.habitName, updatePrefs]);
-
-  const persistPetName = useCallback(async () => {
-    const trimmed = petDraft.trim();
-    if (trimmed.length === 0) {
-      setPetDraft(prefs.petName ?? DEFAULT_PET_NAME);
-      return;
-    }
-    if (trimmed === prefs.petName) return;
-    await updatePrefs({ petName: trimmed });
-  }, [petDraft, prefs.petName, updatePrefs]);
-
-  return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: screenBg }]}>
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        <ScrollView
-          contentContainerStyle={[styles.content, { paddingBottom: Spacing.xxl + tabBarExtraPad }]}
-          keyboardShouldPersistTaps="handled"
-        >
-          <Text style={styles.screenTitle}>setup</Text>
-          <Text style={styles.description}>
-            build habits. keep your pet alive.
-          </Text>
-
-          <Text style={[styles.sectionLabel, styles.firstSectionLabel]}>name your habit</Text>
-          <TextInput
-            ref={habitInputRef}
-            value={habitDraft}
-            onChangeText={(text) => setHabitDraft(text.slice(0, HABIT_NAME_MAX))}
-            onBlur={persistHabitName}
-            onEndEditing={persistHabitName}
-            onFocus={() => setSelectHabitOnFocus(false)}
-            placeholder="e.g. walk 20 minutes"
-            placeholderTextColor={Colors.textMuted}
-            style={[styles.habitInput, styles.habitNameInput]}
-            maxLength={HABIT_NAME_MAX}
-            multiline
-            scrollEnabled={false}
-            autoCorrect={false}
-            autoCapitalize="none"
-            returnKeyType="done"
-            blurOnSubmit
-            selectTextOnFocus={selectHabitOnFocus}
-          />
-
-          <Text style={styles.sectionLabel}>cadence</Text>
-          <View style={styles.rowThree}>
-            {CADENCE_OPTIONS.map((opt) => (
-              <SettingsOption
-                key={opt.id}
-                selected={(prefs.habitCadence ?? DEFAULT_HABIT_CADENCE) === opt.id}
-                onPress={() => updatePrefs({ habitCadence: opt.id as HabitCadence })}
-                label={opt.label}
-              />
-            ))}
-          </View>
-
-          <Text style={styles.helper}>{CADENCE_RULES[prefs.habitCadence]} each check-in resets the clock; it does not reset at midnight.</Text>
-
-          <Text style={styles.sectionLabel}>name your pet</Text>
-          <TextInput
-            value={petDraft}
-            onChangeText={setPetDraft}
-            onBlur={persistPetName}
-            onEndEditing={persistPetName}
-            placeholder="e.g. beans"
-            placeholderTextColor={Colors.textMuted}
-            style={styles.habitInput}
-            maxLength={PET_NAME_MAX}
-            autoCorrect={false}
-            autoCapitalize="none"
-            returnKeyType="done"
-          />
-
-          <View
-            style={[
-              styles.avatarSection,
-              mood === 'dead' && styles.avatarSectionDead,
-            ]}
-          >
-            <LineArtPet
-              mood={mood}
-              strokeColor={prefs.petColor || Colors.pet}
-              displayHeight={PET_SETUP_DISPLAY_HEIGHT}
-              hat={prefs.petHat ?? 'none'}
-            />
-          </View>
-
-          <Text style={styles.sectionLabel}>pet colour</Text>
-          <View style={styles.swatchRow}>
-            {PET_COLOR_OPTIONS.map((opt) => {
-              const selected = opt.color === prefs.petColor;
-              return (
-                <TouchableOpacity
-                  key={opt.id}
-                  style={[
-                    styles.swatch,
-                    { backgroundColor: opt.color },
-                    selected && styles.swatchSelected,
-                  ]}
-                  onPress={() => updatePrefs({ petColor: opt.color })}
-                  activeOpacity={0.8}
-                  accessibilityLabel={`${opt.label} pet colour`}
-                >
-                  {selected ? <Text style={styles.swatchCheck}>x</Text> : null}
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-          <Text style={styles.sectionLabel}>pet hat</Text>
-          <View style={styles.hatRow}>
-            {PET_HAT_OPTIONS.map((opt) => {
-              const selected = opt.id === (prefs.petHat ?? 'none');
-              return (
-                <TouchableOpacity
-                  key={opt.id}
-                  style={[styles.hatTile, selected && styles.hatTileSelected]}
-                  onPress={() => updatePrefs({ petHat: opt.id as PetHat })}
-                  activeOpacity={0.8}
-                >
-                  <View style={styles.hatPreview} pointerEvents="none">
-                    {opt.id === 'none' ? (
-                      <Text style={styles.noHatGlyph}>—</Text>
-                    ) : (
-                      <HatOnlyPreview
-                        hat={opt.id}
-                        size={64}
-                        strokeColor={prefs.petColor || Colors.pet}
-                      />
-                    )}
-                  </View>
-                  <Text style={styles.hatLabel}>{opt.label}</Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-          <Text style={styles.sectionLabel}>account</Text>
-          {!user && <Text style={styles.helper}>guest progress stays on this device. create an account to save it across devices.</Text>}
-          {user?.email ? <Text style={styles.helper}>{user.email}</Text> : null}
-          <TouchableOpacity
-            style={styles.signOutBtn}
-            onPress={async () => {
-              if (user) { await signOut(); router.replace('/'); }
-              else router.push('/auth');
-            }}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.signOutText}>{user ? 'log out' : 'save progress across devices'}</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
-  );
+  const habitInput = useRef<TextInput>(null);
+  const bottomPadding = useFloatingTabBarExtraPadding();
+  const [habit, setHabit] = useState(prefs.habitName);
+  const [name, setName] = useState(prefs.petName);
+  const [color, setColor] = useState(prefs.petColor);
+  const [cadence, setCadence] = useState<HabitCadence>(prefs.habitCadence);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const saving = useRef(false);
+  useEffect(() => { setHabit(prefs.habitName); setName(prefs.petName); setColor(prefs.petColor); setCadence(prefs.habitCadence); }, [prefs.habitName, prefs.petName, prefs.petColor, prefs.habitCadence]);
+  useFocusEffect(useCallback(() => {
+    if (focusHabit !== '1') return;
+    const timer = setTimeout(() => { habitInput.current?.focus(); router.setParams({ focusHabit: undefined }); }, 150);
+    return () => clearTimeout(timer);
+  }, [focusHabit]));
+  const save = async () => {
+    if (saving.current) return;
+    if (!name.trim() || !habit.trim()) { setError(!name.trim() ? 'enter a name' : 'enter a habit'); return; }
+    saving.current = true; setBusy(true); setError('');
+    try { await updatePrefs({ petName: name.trim(), habitName: habit.trim(), petColor: color, habitCadence: cadence }); router.navigate('/(tabs)'); }
+    catch { setError('could not save. try again.'); }
+    finally { saving.current = false; setBusy(false); }
+  };
+  const colors = PET_COLOR_OPTIONS.some(option => option.color.toLowerCase() === color.toLowerCase()) ? PET_COLOR_OPTIONS : [{ id: 'saved', color, label: 'saved' }, ...PET_COLOR_OPTIONS];
+  return <Page bottomPadding={bottomPadding + 24}>
+    <ScreenHeader title="set up" />
+    <PetStage state="setup" name={name} showName color={color} />
+    <View style={{ gap: 16 }}>
+      <Text style={DesignType.label}>colour</Text>
+      <View accessibilityRole="radiogroup" accessibilityLabel="pet colour" style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>{colors.map(option => <ColorOption key={option.id} {...option} selected={color === option.color} disabled={busy} onPress={() => setColor(option.color)} />)}</View>
+    </View>
+    <View style={{ gap: 16, alignItems: 'flex-start' }}><Text style={DesignType.label}>hair</Text><SelectionTile label="none" selected /></View>
+    <View style={{ gap: 16, alignItems: 'flex-start' }}><Text style={DesignType.label}>clothes</Text><SelectionTile label="none" selected /></View>
+    <TextField label="name" value={name} onChangeText={setName} maxLength={30} editable={!busy} error={error === 'enter a name' ? error : undefined} />
+    <TextField ref={habitInput} label="habit" value={habit} onChangeText={setHabit} maxLength={HABIT_NAME_MAX} editable={!busy} error={error === 'enter a habit' ? error : undefined} />
+    <View style={{ gap: 8 }}>
+      <Text style={DesignType.label}>check-in</Text>
+      <View accessibilityRole="radiogroup" accessibilityLabel="check-in interval" style={{ gap: 8 }}>{CADENCE_OPTIONS.map(option => <MonthChip key={option.id} label={option.label} selected={cadence === option.id} accessibilityRole="radio" accessibilityState={{ checked: cadence === option.id }} disabled={busy} onPress={() => setCadence(option.id)} />)}</View>
+      <Text style={DesignType.calendar}>{CADENCE_RULES[cadence]}</Text>
+    </View>
+    {error && !error.startsWith('enter ') ? <Text accessibilityRole="alert" style={DesignType.supporting}>{error}</Text> : null}
+    <Button label="save" state={busy ? 'loading' : 'default'} onPress={() => void save()} />
+    <View style={{ gap: 16 }}>
+      <Text style={DesignType.label}>account</Text>
+      {user?.email ? <Text style={DesignType.calendar}>{user.email}</Text> : <Text style={DesignType.calendar}>guest progress stays on this device.</Text>}
+      <Button label={user ? 'log out' : 'save progress across devices'} appearance="secondary" onPress={async () => {
+        try { if (user) { await signOut(); router.replace('/'); } else router.push('/auth'); }
+        catch { setError('could not log out. try again.'); }
+      }} />
+    </View>
+  </Page>;
 }
-
-function SettingsOption({
-  selected,
-  onPress,
-  label,
-}: {
-  selected: boolean;
-  onPress: () => void;
-  label: string;
-}) {
-  return (
-    <TouchableOpacity
-      style={[styles.option, selected && styles.optionSelected]}
-      onPress={onPress}
-      activeOpacity={0.7}
-    >
-      <Text style={[styles.optionLabel, selected && styles.optionLabelSelected]}>
-        {label}
-      </Text>
-      {selected && <Text style={styles.checkmark}>*</Text>}
-    </TouchableOpacity>
-  );
-}
-
-const styles = StyleSheet.create({
-  safe: { flex: 1 },
-  flex: { flex: 1 },
-  content: {
-    padding: Spacing.lg,
-  },
-  screenTitle: {
-    ...Type.screenTitle,
-    color: Colors.ink,
-  },
-  description: {
-    ...Type.screenDescription,
-    marginBottom: Spacing.lg,
-  },
-  sectionLabel: {
-    fontSize: FontSize.lg,
-    fontFamily: Slab.black,
-    color: Colors.ink,
-    marginBottom: Spacing.sm,
-    marginTop: Spacing.md,
-  },
-  firstSectionLabel: {
-    marginTop: 0,
-  },
-  helper: {
-    fontSize: FontSize.sm,
-    fontFamily: Slab.regular,
-    color: Colors.textSecondary,
-    marginBottom: Spacing.sm,
-  },
-  habitInput: {
-    backgroundColor: Colors.card,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.md,
-    fontSize: FontSize.lg,
-    fontFamily: Slab.extraBold,
-    color: Colors.ink,
-    borderWidth: Border.thick,
-    borderColor: Colors.ink,
-    borderRadius: Radius.md,
-    marginBottom: Spacing.md,
-  },
-  habitNameInput: {
-    minHeight: 56,
-    textAlignVertical: 'top',
-    // Grow with content so the full habit name stays visible while editing.
-    ...(Platform.OS === 'web'
-      ? ({
-          fieldSizing: 'content',
-          wordBreak: 'break-word',
-          overflowWrap: 'anywhere',
-        } as object)
-      : null),
-  },
-  avatarSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: Spacing.md,
-    marginBottom: Spacing.lg,
-    overflow: 'visible',
-  },
-  avatarSectionDead: {
-    // Shift dead pose right so the hat stays on-screen; feet may clip right.
-    transform: [{ translateX: PET_SETUP_DEAD_LEFT_INSET }],
-  },
-  rowThree: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.sm,
-    marginBottom: Spacing.md,
-  },
-  option: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    padding: Spacing.md,
-    backgroundColor: Colors.card,
-    borderWidth: Border.base,
-    borderColor: Colors.ink,
-    borderRadius: Radius.md,
-  },
-  optionSelected: {
-    backgroundColor: Colors.ink,
-  },
-  optionLabel: {
-    fontSize: FontSize.md,
-    fontFamily: Slab.bold,
-    color: Colors.ink,
-    flex: 1,
-  },
-  optionLabelSelected: { color: '#FFFFFF' },
-  checkmark: {
-    fontSize: 18,
-    fontFamily: Slab.black,
-    color: '#FFFFFF',
-  },
-  swatchRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.sm,
-    marginBottom: Spacing.md,
-  },
-  swatch: {
-    width: 44,
-    height: 44,
-    borderRadius: Radius.full,
-    borderWidth: Border.base,
-    borderColor: Colors.ink,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  swatchSelected: { borderWidth: Border.thick },
-  swatchCheck: {
-    fontFamily: Slab.black,
-    color: '#FFFFFF',
-    fontSize: FontSize.md,
-  },
-  hatRow: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-    marginBottom: Spacing.md,
-    flexWrap: 'wrap',
-  },
-  hatTile: {
-    flexBasis: '23%',
-    flexGrow: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    paddingTop: Spacing.sm,
-    paddingBottom: Spacing.sm,
-    backgroundColor: Colors.card,
-    borderWidth: Border.base,
-    borderColor: Colors.ink,
-    borderRadius: Radius.md,
-    minHeight: 100,
-  },
-  hatTileSelected: {
-    borderWidth: Border.thick,
-    backgroundColor: '#FFF1B8',
-  },
-  hatPreview: {
-    height: 60,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  hatLabel: {
-    fontFamily: Slab.extraBold,
-    fontSize: FontSize.xs,
-    color: Colors.ink,
-    marginTop: Spacing.xs,
-    textAlign: 'center',
-  },
-  noHatGlyph: {
-    fontFamily: Slab.black,
-    fontSize: 32,
-    color: Colors.textMuted,
-    lineHeight: 36,
-  },
-  signOutBtn: {
-    marginTop: Spacing.sm,
-    paddingVertical: Spacing.md,
-    alignItems: 'center',
-    backgroundColor: Colors.card,
-    borderWidth: Border.thick,
-    borderColor: Colors.ink,
-    borderRadius: Radius.md,
-  },
-  signOutText: {
-    fontFamily: Slab.black,
-    fontSize: FontSize.md,
-    color: Colors.ink,
-  },
-});

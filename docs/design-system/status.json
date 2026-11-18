@@ -1,7 +1,7 @@
 {
   "version": "0.1.1",
   "updated": "2026-11-18",
-  "stage": "handed-off-for-implementation",
+  "stage": "application-review-pending",
   "source": {
     "fileKey": "eU62JH6PqW61UeGlLaGk7T",
     "pageId": "4727:144",
@@ -90,7 +90,7 @@
     "published": true,
     "crossFileImportVerified": true,
     "developerHandoffSent": true,
-    "implementationStarted": false,
+    "implementationStarted": true,
     "foundationsVerified": true,
     "componentContractsVerified": true,
     "originalSourcePreserved": true,
@@ -98,7 +98,8 @@
     "setupComplete": true
   },
   "pending": [
-    "Application implementation and mobile/web validation in the dedicated implementation chat."
+    "Native runtime visual and interaction review on an unlocked Mac or device.",
+    "Code Connect publication requires an Organization or Enterprise Figma plan."
   ],
   "git": {
     "repo": {
@@ -281,7 +282,7 @@
       "October 2026: Thursday 1, Saturday 31",
       "November 2026: Sunday 1, Monday 30"
     ],
-    "runtimeTests": "Not run; application code was not changed.",
+    "runtimeTests": "Application validation is recorded separately in adoption.json.",
     "mainComponentBindings": {
       "scope": "Main component definitions and component display boards, excluding nested instance expansions",
       "solidPaints": 261,
@@ -299,7 +300,7 @@
   "limitations": [
     "No hair/clothing assets were supplied; selection-tile exposes an artwork swap and the explicit none option.",
     "No opened navigation menu or destinations were specified. Existing setup/home/progress routes remain authoritative.",
-    "No Code Connect mappings yet: redesigned application components do not exist. Map only after implementation."
+    "Matching app components are recorded in application-components.json; Code Connect publication is blocked by the connected Professional plan."
   ],
   "consumer": {
     "fileKey": "eU62JH6PqW61UeGlLaGk7T",
@@ -338,5 +339,6 @@
     "dispatched": "2026-11-18",
     "libraryVersion": "0.1.1",
     "scope": "Shared mobile/web application implementation; setup complete."
-  }
+  },
+  "applicationAdoption": "adoption.json"
 }

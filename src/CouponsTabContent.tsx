@@ -2,7 +2,8 @@ import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { CheckIn } from './types';
 import { toDateString } from './logic';
-import { Colors, FontSize, Slab, Spacing } from './theme';
+import { Colors, Spacing } from './theme';
+import { DesignType } from './design-system/tokens';
 import PowerCoupon from './PowerCoupon';
 import {
   couponRotationForIndex,
@@ -57,7 +58,7 @@ export default function CouponsTabContent({ checkIns }: CouponsTabContentProps) 
     <View style={styles.scroll}>
       {groups.map((group) => (
         <View key={group.dayIso} style={styles.dayGroup}>
-          <Text style={styles.dayLabel}>{group.dayLabel}</Text>
+          <Text style={styles.dayLabel}>{group.dayLabel.toLowerCase()}</Text>
           {group.items.map((item) => {
             const rotation = couponRotationForIndex(rotationIndex);
             rotationIndex += 1;
@@ -83,9 +84,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl / 2,
   },
   dayLabel: {
-    fontFamily: Slab.bold,
-    fontSize: FontSize.lg + 2,
-    lineHeight: FontSize.lg + 8,
+    ...DesignType.label,
     color: Colors.ink,
     marginTop: Spacing.lg / 2,
     marginBottom: Spacing.lg / 2,
@@ -103,14 +102,12 @@ const styles = StyleSheet.create({
     minHeight: 280,
   },
   emptyTitle: {
-    fontFamily: Slab.black,
-    fontSize: FontSize.xl,
+    ...DesignType.label,
     color: Colors.ink,
     marginBottom: Spacing.xs,
   },
   emptySubtitle: {
-    fontFamily: Slab.regular,
-    fontSize: FontSize.md,
+    ...DesignType.supporting,
     color: Colors.textSecondary,
     textAlign: 'center',
   },

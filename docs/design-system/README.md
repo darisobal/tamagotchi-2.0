@@ -69,3 +69,5 @@ Do not wire new tokens into the running application before the library is review
 - Versioned registry and change log updated.
 
 No gate may be marked complete from a successful tool call alone. Send the prepared handoff to the identified Tamagotchi developer chat only after these setup gates pass. Track dispatch and application adoption separately from setup readiness; publication does not mean the running application has migrated.
+
+Application implementation and validation are recorded separately in [ADOPTION.md](ADOPTION.md), [adoption.json](adoption.json) and [application-components.json](application-components.json).

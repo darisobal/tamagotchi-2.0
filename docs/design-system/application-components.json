@@ -1,0 +1,79 @@
+{
+  "libraryVersion": "0.1.1",
+  "status": "verified source correspondence; Code Connect unpublished",
+  "codeConnectBlocker": "The connected Business workspace reports Professional (pro). Code Connect requires Organization or Enterprise.",
+  "components": [
+    {
+      "figmaName": "button",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=2-2",
+      "source": "src/design-system/Controls.tsx",
+      "export": "Button"
+    },
+    {
+      "figmaName": "text-field",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=2-27",
+      "source": "src/design-system/Controls.tsx",
+      "export": "TextField"
+    },
+    {
+      "figmaName": "color-option",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=2-53",
+      "source": "src/design-system/ColorOption.tsx",
+      "export": "ColorOption"
+    },
+    {
+      "figmaName": "month-chip",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=2-62",
+      "source": "src/design-system/Controls.tsx",
+      "export": "MonthChip"
+    },
+    {
+      "figmaName": "pet-artwork",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=5-2",
+      "source": "src/design-system/Artwork.tsx",
+      "export": "PetArtwork"
+    },
+    {
+      "figmaName": "feedback",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=8-2",
+      "source": "src/design-system/Controls.tsx",
+      "export": "Feedback"
+    },
+    {
+      "figmaName": "screen-header",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=8-9",
+      "source": "src/design-system/Controls.tsx",
+      "export": "ScreenHeader"
+    },
+    {
+      "figmaName": "check-in-actions",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=8-14",
+      "source": "src/design-system/Controls.tsx",
+      "export": "CheckInActions"
+    },
+    {
+      "figmaName": "calendar-day",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=8-25",
+      "source": "src/design-system/CalendarMonth.tsx",
+      "export": "CalendarDay"
+    },
+    {
+      "figmaName": "calendar-month",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=8-305",
+      "source": "src/design-system/CalendarMonth.tsx",
+      "export": "CalendarMonth"
+    },
+    {
+      "figmaName": "selection-tile",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=7-34",
+      "source": "src/design-system/Controls.tsx",
+      "export": "SelectionTile"
+    },
+    {
+      "figmaName": "pet-stage",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=6-69",
+      "source": "src/design-system/PetStage.tsx",
+      "export": "PetStage"
+    }
+  ]
+}

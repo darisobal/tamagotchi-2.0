@@ -91,7 +91,7 @@ function OverlayContent({
             },
           ]}
         >
-          Tear the power coupon off!{'\n'}You earned it!
+          tear the power coupon off!{'\n'}you earned it!
         </Text>
 
         <View style={{ height: layout.minGapAfterCta }} />
@@ -105,7 +105,7 @@ function OverlayContent({
             },
           ]}
         >
-          Already earned: {earnedCount}
+          already earned: {earnedCount}
         </Text>
       </View>
     </>
@@ -322,7 +322,7 @@ export default function CouponRewardOverlay({
           onPress={onTearPress}
           disabled={animating}
           accessibilityRole="button"
-          accessibilityLabel="Tear the power coupon off"
+          accessibilityLabel="tear the power coupon off"
         >
           {layout.needsScroll ? (
             <ScrollView

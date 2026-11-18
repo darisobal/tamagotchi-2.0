@@ -14,6 +14,8 @@ import {
   HeptaSlab_800ExtraBold,
   HeptaSlab_900Black,
 } from '@expo-google-fonts/hepta-slab';
+import { Aleo_400Regular } from '@expo-google-fonts/aleo/400Regular';
+import { Aleo_700Bold } from '@expo-google-fonts/aleo/700Bold';
 import { AppProvider } from '../src/context';
 import { AuthProvider } from '../src/authContext';
 import { Colors } from '../src/theme';
@@ -21,6 +23,8 @@ import { Colors } from '../src/theme';
 SplashScreen.preventAutoHideAsync();
 
 const heptaSlabFontMap = {
+  Aleo_400Regular,
+  Aleo_700Bold,
   HeptaSlab_100Thin,
   HeptaSlab_200ExtraLight,
   HeptaSlab_300Light,

@@ -75,15 +75,14 @@ export interface UserPrefs {
 
 /** Pet colour swatches shown in onboarding + settings. */
 export const PET_COLOR_OPTIONS: { id: string; color: string; label: string }[] = [
-  { id: 'royal',  color: '#1F1AE6', label: 'royal' },
-  { id: 'coral',  color: '#FF6F61', label: 'coral' },
-  { id: 'forest', color: '#2E7D32', label: 'forest' },
-  { id: 'grape',  color: '#A66CFF', label: 'grape' },
-  { id: 'pink',   color: '#FF1493', label: 'pink' },
-  { id: 'ink',    color: '#000000', label: 'ink' },
+  { id: 'coral', color: '#FF7254', label: 'coral' },
+  { id: 'yellow', color: '#FED12E', label: 'yellow' },
+  { id: 'blue', color: '#3578EB', label: 'blue' },
+  { id: 'green', color: '#4BA952', label: 'green' },
+  { id: 'purple', color: '#9358D8', label: 'purple' },
 ];
 
-export const DEFAULT_PET_COLOR = '#1F1AE6';
+export const DEFAULT_PET_COLOR = '#FF7254';
 
 export const PET_HAT_OPTIONS: { id: PetHat; label: string; symbol: string }[] = [
   { id: 'none',   label: 'no hat',  symbol: 'x' },

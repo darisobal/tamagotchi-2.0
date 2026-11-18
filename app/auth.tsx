@@ -1,20 +1,19 @@
+import { Page } from '../src/design-system/Page';
+import { Button, ScreenHeader, TextField } from '../src/design-system/Controls';
 import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  TextInput,
   SafeAreaView,
-  KeyboardAvoidingView,
-  Platform,
   ActivityIndicator,
-  ScrollView,
-} from 'react-native';
+  } from 'react-native';
 import { router, Redirect } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
 import { useAuth } from '../src/authContext';
-import { Colors, Spacing, FontSize, Slab, Radius, Border, Type } from '../src/theme';
+import { Colors, Spacing, Radius, Border, Type } from '../src/theme';
+import { DesignType } from '../src/design-system/tokens';
 
 type AuthMode = 'sign_in' | 'forgot';
 
@@ -125,12 +124,7 @@ export default function AuthScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.container}>
+    <Page bottomPadding={48}>
           {mode === 'forgot' ? (
             <>
               <TouchableOpacity
@@ -153,14 +147,14 @@ export default function AuthScreen() {
                   />
                 </Svg>
               </TouchableOpacity>
-              <Text style={styles.title}>forgot password</Text>
+              <ScreenHeader title="forgot password" />
               <Text style={styles.subtitle}>
                 enter your email and we will send a reset link
               </Text>
             </>
           ) : (
             <>
-              <Text style={styles.title}>welcome</Text>
+              <ScreenHeader title="welcome" />
               <Text style={styles.subtitle}>your habit has a heartbeat</Text>
             </>
           )}
@@ -168,14 +162,12 @@ export default function AuthScreen() {
           {isLocalOnly ? (
             <Text style={styles.hint}>
               {mode === 'forgot'
-                ? 'password reset needs supabase. add expo_public_supabase_* keys.'
-                : 'local mode: data stays on this device until you add supabase keys.'}
+                ? 'password reset is unavailable in local mode.'
+                : 'local mode: data stays on this device.'}
             </Text>
           ) : null}
 
-          <Text style={styles.label}>email</Text>
-          <TextInput
-            style={styles.input}
+          <TextField label="email" multiline={false} editable={!busy}
             value={email}
             onChangeText={setEmail}
             placeholder="you@example.com"
@@ -188,9 +180,7 @@ export default function AuthScreen() {
 
           {mode === 'sign_in' ? (
             <>
-              <Text style={styles.label}>password</Text>
-              <TextInput
-                style={styles.input}
+              <TextField label="password" multiline={false} editable={!busy}
                 value={password}
                 onChangeText={setPassword}
                 placeholder="at least 6 characters"
@@ -213,7 +203,7 @@ export default function AuthScreen() {
             </>
           ) : null}
 
-          {error ? <Text style={styles.error}>{error}</Text> : null}
+          {error ? <Text accessibilityRole="alert" style={styles.error}>{error}</Text> : null}
           {confirmationSent ? (
             <Text style={styles.success}>
               check your email to confirm your account, then open the link to continue.
@@ -226,40 +216,17 @@ export default function AuthScreen() {
             </Text>
           ) : null}
 
-          <TouchableOpacity
-            style={styles.primaryBtn}
-            onPress={mode === 'forgot' ? handleForgotPassword : handleContinue}
-            disabled={busy}
-            activeOpacity={0.85}
-          >
-            {busy ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text style={styles.primaryBtnText}>
-                {mode === 'forgot' ? 'send reset link' : 'go'}
-              </Text>
-            )}
-          </TouchableOpacity>
+          <Button label={mode === 'forgot' ? 'send reset link' : 'go'} state={busy ? 'loading' : 'default'} loadingLabel={mode === 'forgot' ? 'sending…' : 'connecting…'} onPress={mode === 'forgot' ? handleForgotPassword : handleContinue} />
 
           {mode === 'sign_in' && confirmationSent && isConfigured ? (
-            <TouchableOpacity
-              style={styles.secondaryBtn}
-              onPress={handleResendConfirmation}
-              disabled={busy}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.secondaryBtnText}>resend confirmation email</Text>
-            </TouchableOpacity>
+            <Button label="resend confirmation email" appearance="secondary" disabled={busy} onPress={handleResendConfirmation} />
           ) : null}
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+    </Page>
   );
 }
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.stateTodoBg },
-  flex: { flex: 1 },
   container: {
     flexGrow: 1,
     paddingHorizontal: Spacing.lg,
@@ -271,8 +238,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backBtn: {
-    width: 36,
-    height: 36,
+    width: 44,
+    height: 44,
     marginBottom: Spacing.md,
     borderWidth: Border.base,
     borderColor: Colors.ink,
@@ -281,88 +248,35 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: Colors.card,
   },
-  title: {
-    ...Type.screenTitle,
-    color: Colors.ink,
-  },
   subtitle: {
     ...Type.screenDescription,
-    marginBottom: Spacing.lg,
   },
   hint: {
-    fontSize: FontSize.sm,
-    fontFamily: Slab.regular,
+    ...DesignType.calendar,
     color: Colors.textSecondary,
     marginBottom: Spacing.md,
-  },
-  label: {
-    fontSize: FontSize.lg,
-    fontFamily: Slab.black,
-    color: Colors.ink,
-    marginBottom: Spacing.sm,
-    marginTop: Spacing.sm,
-  },
-  input: {
-    backgroundColor: Colors.card,
-    padding: Spacing.md,
-    fontSize: FontSize.md,
-    fontFamily: Slab.regular,
-    color: Colors.ink,
-    borderWidth: Border.thick,
-    borderColor: Colors.ink,
-    borderRadius: Radius.md,
   },
   linkBtn: {
     alignSelf: 'flex-start',
     marginTop: Spacing.sm,
     paddingVertical: Spacing.xs,
+    minHeight: 44,
+    justifyContent: 'center',
   },
   linkBtnText: {
-    fontSize: FontSize.sm,
-    fontFamily: Slab.bold,
+    ...DesignType.calendar,
     color: Colors.ink,
     textDecorationLine: 'underline',
   },
   error: {
     marginTop: Spacing.md,
-    fontSize: FontSize.sm,
-    fontFamily: Slab.bold,
+    ...DesignType.calendar,
     color: '#B00020',
   },
   success: {
     marginTop: Spacing.md,
-    fontSize: FontSize.sm,
-    fontFamily: Slab.bold,
+    ...DesignType.calendar,
     color: Colors.ink,
   },
-  primaryBtn: {
-    marginTop: Spacing.xl,
-    paddingVertical: Spacing.md + 4,
-    alignItems: 'center',
-    backgroundColor: Colors.ink,
-    borderWidth: Border.thick,
-    borderColor: Colors.ink,
-    borderRadius: Radius.md,
-    minHeight: 56,
-    justifyContent: 'center',
-  },
-  primaryBtnText: {
-    color: '#FFFFFF',
-    fontSize: FontSize.xl,
-    fontFamily: Slab.black,
-  },
-  secondaryBtn: {
-    marginTop: Spacing.md,
-    paddingVertical: Spacing.md,
-    alignItems: 'center',
-    backgroundColor: Colors.card,
-    borderWidth: Border.base,
-    borderColor: Colors.ink,
-    borderRadius: Radius.md,
-  },
-  secondaryBtnText: {
-    color: Colors.ink,
-    fontSize: FontSize.md,
-    fontFamily: Slab.bold,
-  },
+
 });

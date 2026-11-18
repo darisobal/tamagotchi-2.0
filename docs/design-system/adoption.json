@@ -1,0 +1,21 @@
+{
+  "libraryVersion": "0.1.1",
+  "date": "2026-11-18",
+  "branch": "codex/tamagotchi-redesign",
+  "setupCommit": "9aa1e65",
+  "status": "implemented-awaiting-review",
+  "complete": false,
+  "sharedMobileWebComponents": true,
+  "tests": { "suitesPassed": 12, "testsPassed": 91 },
+  "productionExports": { "web": "passed", "ios": "passed", "android": "passed" },
+  "typecheck": { "passed": false, "baselineErrors": 9, "remainingBaselineErrors": 7, "newErrors": 0 },
+  "webVisualWidths": [320, 430, 1024],
+  "nativeRuntimeReview": "pending; simulator inspection blocked by locked Mac",
+  "codeConnect": "unpublished; connected Professional plan requires Organization or Enterprise upgrade",
+  "liveCloudAndStoreTransactions": "not exercised",
+  "details": "ADOPTION.md",
+  "componentCorrespondence": "application-components.json",
+  "artworkProvenance": "artwork-provenance.json",
+  "merged": false,
+  "deployed": false
+}

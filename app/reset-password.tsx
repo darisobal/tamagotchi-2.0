@@ -1,18 +1,17 @@
+import { Page } from '../src/design-system/Page';
+import { Button, ScreenHeader, TextField } from '../src/design-system/Controls';
 import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
-  TextInput,
   SafeAreaView,
-  KeyboardAvoidingView,
-  Platform,
   ActivityIndicator,
 } from 'react-native';
 import { router, Redirect } from 'expo-router';
 import { useAuth } from '../src/authContext';
-import { Colors, Spacing, FontSize, Slab, Radius, Border, Type } from '../src/theme';
+import { Colors, Spacing, Type } from '../src/theme';
+import { DesignType } from '../src/design-system/tokens';
 
 export default function ResetPasswordScreen() {
   const {
@@ -71,18 +70,11 @@ export default function ResetPasswordScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        <View style={styles.container}>
-          <Text style={styles.title}>new password</Text>
+    <Page bottomPadding={48}>
+          <ScreenHeader title="new password" />
           <Text style={styles.subtitle}>choose a new password for your account</Text>
 
-          <Text style={styles.label}>password</Text>
-          <TextInput
-            style={styles.input}
+          <TextField label="password" multiline={false} editable={!busy}
             value={password}
             onChangeText={setPassword}
             placeholder="at least 6 characters"
@@ -92,9 +84,7 @@ export default function ResetPasswordScreen() {
             textContentType="newPassword"
           />
 
-          <Text style={styles.label}>confirm password</Text>
-          <TextInput
-            style={styles.input}
+          <TextField label="confirm password" multiline={false} editable={!busy}
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             placeholder="type it again"
@@ -104,29 +94,15 @@ export default function ResetPasswordScreen() {
             textContentType="newPassword"
           />
 
-          {error ? <Text style={styles.error}>{error}</Text> : null}
+          {error ? <Text accessibilityRole="alert" style={styles.error}>{error}</Text> : null}
 
-          <TouchableOpacity
-            style={styles.primaryBtn}
-            onPress={handleSave}
-            disabled={busy}
-            activeOpacity={0.85}
-          >
-            {busy ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text style={styles.primaryBtnText}>save password</Text>
-            )}
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+          <Button label="save password" state={busy ? 'loading' : 'default'} onPress={handleSave} />
+    </Page>
   );
 }
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.stateTodoBg },
-  flex: { flex: 1 },
   container: {
     flex: 1,
     paddingHorizontal: Spacing.lg,
@@ -137,51 +113,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  title: {
-    ...Type.screenTitle,
-    color: Colors.ink,
-  },
   subtitle: {
     ...Type.screenDescription,
-    marginBottom: Spacing.lg,
-  },
-  label: {
-    fontSize: FontSize.lg,
-    fontFamily: Slab.black,
-    color: Colors.ink,
-    marginBottom: Spacing.sm,
-    marginTop: Spacing.sm,
-  },
-  input: {
-    backgroundColor: Colors.card,
-    padding: Spacing.md,
-    fontSize: FontSize.md,
-    fontFamily: Slab.regular,
-    color: Colors.ink,
-    borderWidth: Border.thick,
-    borderColor: Colors.ink,
-    borderRadius: Radius.md,
   },
   error: {
     marginTop: Spacing.md,
-    fontSize: FontSize.sm,
-    fontFamily: Slab.bold,
+    ...DesignType.calendar,
     color: '#B00020',
-  },
-  primaryBtn: {
-    marginTop: Spacing.xl,
-    paddingVertical: Spacing.md + 4,
-    alignItems: 'center',
-    backgroundColor: Colors.ink,
-    borderWidth: Border.thick,
-    borderColor: Colors.ink,
-    borderRadius: Radius.md,
-    minHeight: 56,
-    justifyContent: 'center',
-  },
-  primaryBtnText: {
-    color: '#FFFFFF',
-    fontSize: FontSize.xl,
-    fontFamily: Slab.black,
   },
 });

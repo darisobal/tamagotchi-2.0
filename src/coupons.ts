@@ -1,10 +1,10 @@
 import { CheckIn, PET_LIVES_MAX } from './types';
 
-/** Figma coupon copy — capitals preserved per design. */
-export const POWER_COUPON_HEADLINE = "YOU're\nthe STRONGEST ever!";
-export const POWER_COUPON_SUBLINE = 'Best human! Beeeeeest Gangsta!!!!!!';
+/** Reward copy follows the application’s lowercase convention. */
+export const POWER_COUPON_HEADLINE = "you're\nthe strongest ever!";
+export const POWER_COUPON_SUBLINE = 'best human! beeeeeest gangsta!!!!!!';
 export const POWER_COUPON_BLUR_PREVIEW =
-  "YOU're\nthe STRONGEST ever! Best human! Beeeeeest Gangsta";
+  "you're\nthe strongest ever! best human! beeeeeest gangsta";
 
 /** Confetti dot palette from Figma coupon frames. */
 export const COUPON_CONFETTI_COLORS = [
