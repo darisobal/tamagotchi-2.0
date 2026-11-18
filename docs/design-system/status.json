@@ -1,7 +1,7 @@
 {
-  "version": "0.1.0-draft",
+  "version": "0.1.1",
   "updated": "2026-11-18",
-  "stage": "awaiting-library-publication",
+  "stage": "setup-complete-awaiting-developer-handoff",
   "source": {
     "fileKey": "eU62JH6PqW61UeGlLaGk7T",
     "pageId": "4727:144",
@@ -74,7 +74,11 @@
         "width": 1024,
         "height": 915
       }
-    ]
+    ],
+    "projectId": "34241739",
+    "projectUrl": "https://www.figma.com/files/team/997171912960236676/project/34241739",
+    "libraryKey": "lk-5c96e9eaac5c9dce238d521f67ef86efb846991dfd72d34eda5e5eb1750162447e071dbd41e1291c466ed6393381ba042810c60842d59ccc71184f513297da08",
+    "publishedVersion": "0.1.1"
   },
   "readiness": {
     "sourceInspected": true,
@@ -83,18 +87,18 @@
     "libraryCreated": true,
     "componentsCreated": true,
     "visualReviewPassed": true,
-    "published": false,
-    "crossFileImportVerified": false,
+    "published": true,
+    "crossFileImportVerified": true,
     "developerHandoffSent": false,
     "implementationStarted": false,
     "foundationsVerified": true,
     "componentContractsVerified": true,
-    "originalSourcePreserved": true
+    "originalSourcePreserved": true,
+    "updatePropagationVerified": true,
+    "setupComplete": true
   },
   "pending": [
-    "Unlock Mac to move the library from Business Drafts into Team project and publish it.",
-    "Verify a published component and token can be imported into the application design file.",
-    "Identify the existing Tamagotchi developer chat before sending the implementation handoff."
+    "Identify the existing Tamagotchi developer chat and send the prepared implementation handoff."
   ],
   "git": {
     "repo": {
@@ -135,7 +139,8 @@
         "title": "Redesign auth flow with passwordless magic link",
         "url": "https://github.com/darisobal/tamagotchi-2.0/pull/1"
       }
-    ]
+    ],
+    "setupBranch": "codex/tamagotchi-design-system"
   },
   "sourceNotes": [
     "Original page has 7 frames and no components.",
@@ -143,7 +148,7 @@
     "Calendar dates require real month alignment in implementation.",
     "Source does not define menu contents or routing."
   ],
-  "readyForImplementation": false,
+  "readyForImplementation": true,
   "counts": {
     "variables": 69,
     "textStyles": 8,
@@ -277,8 +282,8 @@
     "runtimeTests": "Not run; application code was not changed.",
     "mainComponentBindings": {
       "scope": "Main component definitions and component display boards, excluding nested instance expansions",
-      "solidPaints": 260,
-      "boundPaints": 260,
+      "solidPaints": 261,
+      "boundPaints": 261,
       "texts": 56,
       "styledTexts": 56,
       "failures": []
@@ -286,11 +291,44 @@
     "errorMessage": {
       "visible": true,
       "optionalVisibilityPropertyDetached": true
-    }
+    },
+    "crossFileEvidence": "consumer-verification.json"
   },
   "limitations": [
     "No hair/clothing assets were supplied; selection-tile exposes an artwork swap and the explicit none option.",
     "No opened navigation menu or destinations were specified. Existing setup/home/progress routes remain authoritative.",
     "No Code Connect mappings yet: redesigned application components do not exist. Map only after implementation."
-  ]
+  ],
+  "consumer": {
+    "fileKey": "eU62JH6PqW61UeGlLaGk7T",
+    "pageId": "4744:461",
+    "url": "https://www.figma.com/design/eU62JH6PqW61UeGlLaGk7T?node-id=4744-461",
+    "exampleRootId": "4745:465",
+    "frames": [
+      {
+        "id": "4745:467",
+        "name": "daily · 430",
+        "width": 430,
+        "height": 937
+      },
+      {
+        "id": "4745:515",
+        "name": "daily · 320",
+        "width": 320,
+        "height": 948
+      },
+      {
+        "id": "4745:545",
+        "name": "calendar · 430",
+        "width": 430,
+        "height": 733
+      },
+      {
+        "id": "4745:2189",
+        "name": "web · 1024",
+        "width": 1024,
+        "height": 937
+      }
+    ]
+  }
 }

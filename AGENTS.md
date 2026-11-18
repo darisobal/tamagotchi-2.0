@@ -58,7 +58,7 @@ scripts/       # setup helpers
 
 ## Conventions
 
-- **Design system:** before visual changes, read `docs/design-system/README.md` and `docs/design-system/status.json`. The new Figma redesign is being prepared separately; do not start its application migration until the recorded setup gates pass.
+- **Design system:** before visual changes, read `docs/design-system/README.md` and `docs/design-system/status.json`. The Figma library is maintained separately; target the published version recorded there and verify its setup gates before application migration.
 
 - TypeScript throughout; shared types in `src/types.ts`
 - App state in `src/context.tsx`; auth in `src/authContext.tsx`

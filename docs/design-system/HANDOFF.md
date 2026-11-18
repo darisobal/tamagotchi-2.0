@@ -1,8 +1,10 @@
 # Tamagotchi redesign handoff
 
-**Pending dispatch. Do not start implementation while `status.json` has `readyForImplementation: false`.**
+**Version 0.1.1 is ready for implementation. Dispatch is pending identification of the existing Tamagotchi developer chat. Application implementation has not started.**
 
 Use the new [Tamagotchi design system](https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp), its [review screens](https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=1-69), and the verified IDs and component properties in `components.json`. Read `README.md`, `tokens.json`, `status.json` and `CHANGELOG.md` first. The original redesign is linked in the registry for provenance.
+
+The library is published in Business → Team project and enabled in Business Visual. [Connected examples](https://www.figma.com/design/eU62JH6PqW61UeGlLaGk7T?node-id=4744-461) verify remote component, variable and style imports at 320/430 px phone and 1024 px web widths. A v0.1.0 → v0.1.1 correction was accepted through Figma's library updates and reached the existing instances with their properties preserved. See `consumer-verification.json`. The registry is maintained on `codex/tamagotchi-design-system` in the existing app repository.
 
 The new visual language uses Hepta Slab headings, Aleo reading text, the green gradient, coral pet artwork, 20 px control corners and 3 px outlines. Replace the legacy visual theme only after the setup gates pass. Preserve authentication, SQLite/Supabase state, check-in cadence, rewards, purchases and existing setup/home/progress routes. Keep mobile and web on shared components.
 
@@ -12,4 +14,4 @@ Hair/clothing artwork and opened navigation behavior were not supplied. Use the 
 
 Once matching app components exist, add verified Code Connect mappings. Report mobile and web validation, the adopted library version and any remaining gaps before marking adoption complete.
 
-Before dispatch, the design-system agent must publish the library, verify import/update behavior in a consumer file, and identify the intended existing Tamagotchi developer chat. No message has been sent yet.
+Setup gates have passed. Identify the intended existing Tamagotchi developer chat before dispatch. No handoff message has been sent yet; do not substitute an unrelated portfolio chat.

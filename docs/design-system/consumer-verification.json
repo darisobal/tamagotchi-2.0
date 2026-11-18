@@ -1,0 +1,185 @@
+{
+  "version": "0.1.1",
+  "verified": "2026-11-18",
+  "library": {
+    "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+    "libraryKey": "lk-5c96e9eaac5c9dce238d521f67ef86efb846991dfd72d34eda5e5eb1750162447e071dbd41e1291c466ed6393381ba042810c60842d59ccc71184f513297da08",
+    "publishedVersion": "0.1.1"
+  },
+  "consumer": {
+    "fileKey": "eU62JH6PqW61UeGlLaGk7T",
+    "pageId": "4744:461",
+    "url": "https://www.figma.com/design/eU62JH6PqW61UeGlLaGk7T?node-id=4744-461",
+    "exampleRootId": "4745:465",
+    "frames": [
+      {
+        "id": "4745:467",
+        "name": "daily · 430",
+        "width": 430,
+        "height": 937
+      },
+      {
+        "id": "4745:515",
+        "name": "daily · 320",
+        "width": 320,
+        "height": 948
+      },
+      {
+        "id": "4745:545",
+        "name": "calendar · 430",
+        "width": 430,
+        "height": 733
+      },
+      {
+        "id": "4745:2189",
+        "name": "web · 1024",
+        "width": 1024,
+        "height": 937
+      }
+    ]
+  },
+  "import": {
+    "remoteInstanceCount": 122,
+    "localInstances": [],
+    "fonts": [
+      "Aleo",
+      "Hepta Slab"
+    ],
+    "unboundTextIds": [],
+    "rasterNodes": [],
+    "spacingVariable": {
+      "key": "f7630c6bf0f21d90b58110e4dc66135dea4c05c5",
+      "remote": true,
+      "value": 24
+    },
+    "paintStyle": {
+      "key": "d8e37fe8aab40a84c7ebf9e07ba45fb72ee8b510",
+      "remote": true
+    },
+    "textStyle": {
+      "key": "63792e6b4061bfd2852ac99e537c95e97497286b",
+      "remote": true
+    }
+  },
+  "update": {
+    "fromVersion": "0.1.0",
+    "toVersion": "0.1.1",
+    "change": "Restored original ground vector 4727:180 in idle pet-stage.",
+    "before": "The three existing idle instances had no ground node and no version description.",
+    "acceptedInFigmaUI": true,
+    "passed": true,
+    "instances": [
+      {
+        "id": "4745:470",
+        "mainId": "4743:19",
+        "mainKey": "405355149319f696791f6fd525c955afbfe8181f",
+        "remote": true,
+        "description": "Idle scene with the original pet, you indicator and ground path (source 4727:180). The ground scales horizontally with the panel. v0.1.1.",
+        "grounds": [
+          {
+            "id": "I4745:470;19:347",
+            "type": "VECTOR",
+            "width": 350,
+            "height": 1,
+            "x": 16,
+            "y": 334,
+            "strokeVariableKey": "ef1c2f07b0e66781bf8663068c946027f9cb161f",
+            "strokeVariableRemote": true
+          }
+        ],
+        "props": {
+          "show-name#6:6": {
+            "type": "BOOLEAN",
+            "value": false
+          },
+          "name#6:0": {
+            "type": "TEXT",
+            "value": "tama"
+          },
+          "state": {
+            "value": "idle",
+            "type": "VARIANT",
+            "boundVariables": {}
+          }
+        }
+      },
+      {
+        "id": "4745:518",
+        "mainId": "4743:19",
+        "mainKey": "405355149319f696791f6fd525c955afbfe8181f",
+        "remote": true,
+        "description": "Idle scene with the original pet, you indicator and ground path (source 4727:180). The ground scales horizontally with the panel. v0.1.1.",
+        "grounds": [
+          {
+            "id": "I4745:518;19:347",
+            "type": "VECTOR",
+            "width": 249.21466064453125,
+            "height": 1,
+            "x": 11.392670631408691,
+            "y": 334,
+            "strokeVariableKey": "ef1c2f07b0e66781bf8663068c946027f9cb161f",
+            "strokeVariableRemote": true
+          }
+        ],
+        "props": {
+          "show-name#6:6": {
+            "type": "BOOLEAN",
+            "value": false
+          },
+          "name#6:0": {
+            "type": "TEXT",
+            "value": "tama"
+          },
+          "state": {
+            "value": "idle",
+            "type": "VARIANT",
+            "boundVariables": {}
+          }
+        }
+      },
+      {
+        "id": "4745:2193",
+        "mainId": "4743:19",
+        "mainKey": "405355149319f696791f6fd525c955afbfe8181f",
+        "remote": true,
+        "description": "Idle scene with the original pet, you indicator and ground path (source 4727:180). The ground scales horizontally with the panel. v0.1.1.",
+        "grounds": [
+          {
+            "id": "I4745:2193;19:347",
+            "type": "VECTOR",
+            "width": 350,
+            "height": 1,
+            "x": 16,
+            "y": 334,
+            "strokeVariableKey": "ef1c2f07b0e66781bf8663068c946027f9cb161f",
+            "strokeVariableRemote": true
+          }
+        ],
+        "props": {
+          "show-name#6:6": {
+            "type": "BOOLEAN",
+            "value": false
+          },
+          "name#6:0": {
+            "type": "TEXT",
+            "value": "tama"
+          },
+          "state": {
+            "value": "idle",
+            "type": "VARIANT",
+            "boundVariables": {}
+          }
+        }
+      }
+    ]
+  },
+  "originalReferenceFramesUnchanged": [
+    "4727:145",
+    "4727:181",
+    "4727:228",
+    "4727:265",
+    "4727:307",
+    "4727:842",
+    "4727:1899"
+  ]
+}

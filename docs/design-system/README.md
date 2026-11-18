@@ -1,18 +1,20 @@
 # Tamagotchi design system
 
-Status: the Figma library is built and reviewed. Publication and cross-file verification are pending because the Mac locked during Figma's required move from Drafts to the Business team project. `readyForImplementation` remains false. Application implementation has not started.
+Status: version **0.1.1** is published in Business → Team project. Cross-file imports and a published update were verified in Business Visual. Setup is complete and `readyForImplementation` is true. The developer handoff awaits the intended chat's name; application implementation has not started.
 
 ## Sources
 
 - New visual source: [Business Visual — Redesign Tamagothci](https://www.figma.com/design/eU62JH6PqW61UeGlLaGk7T/Business-Visual?node-id=4727-144).
 - Canonical library: [Tamagotchi design system](https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=9-63), owned by the Business team.
+- [Connected examples in Business Visual](https://www.figma.com/design/eU62JH6PqW61UeGlLaGk7T?node-id=4744-461): phone, web and calendar compositions using the published library.
 - [Foundations](tokens.json): 69 variables, eight text styles, the page gradient, verified Figma IDs and marked usability extensions.
 - [Component registry](components.json): 12 component families and five supporting assets, with actual IDs, keys, properties and source nodes.
 - [Setup status](status.json): readiness gates and Git snapshot.
+- [Connection verification](consumer-verification.json): imported keys, remote bindings and before/after update evidence.
 - [Change log](CHANGELOG.md): version history and validation evidence.
 - [Implementation handoff](HANDOFF.md): gated instructions for the application agent.
 
-The seven original frames remain intact as design references. Their native pet vectors were copied into the library, converted into reusable components, and bound to shared colors. The library passed structural and visual review; its publication is still pending. Do not treat its keys as importable until `crossFileImportVerified` is true.
+The seven original frames remain intact as design references. Their native pet vectors were copied into the library, converted into reusable components, and bound to shared colors. The application file has a separate `[library] tamagotchi` page with 122 remote instances. Its spacing variable, text style and gradient style are imported from the library. The v0.1.1 ground-path correction reached all three existing idle scenes without changing their instance properties.
 
 ## Agent workflow
 
@@ -23,7 +25,7 @@ The seven original frames remain intact as design references. Their native pet v
 5. If a reusable gap exists, update the library first. Keep one-off screen composition in the application design file.
 6. Review necessity and clarity, then consistency and visual focus. Check narrow mobile and wide web layouts, focus, disabled/loading/error states, long text, and accessible status labels.
 7. Record the change, affected component IDs, before/after evidence and migration needs. Update the registry and token snapshot from verified Figma values.
-8. Publish or update the library, then prove that a component can be imported into an application design file. An unpublished file is not a verified cross-file library.
+8. Publish or update the library, then verify an import and an existing instance update in the application design file. In Figma, open Assets → Libraries → Updates and select the relevant library changes. Check “Show updates for all pages” when the connected examples are on another page. Confirm the changed node and preserved overrides after accepting the update.
 9. Hand off an exact version and reviewed component links to the implementation agent. Verify mobile and web before calling implementation complete.
 
 A tool connection is not automatic two-way synchronization. Agents explicitly inspect, modify, validate and record each change. Code Connect is added only when matching application components exist and their mappings have been verified.
@@ -56,15 +58,14 @@ The redesign is visual. Preserve existing authentication, local storage, synchro
 
 Do not wire new tokens into the running application before the library is reviewed and ready. Keep public repository content free of personal details, credentials and temporary Figma asset URLs.
 
-## Completion gates
+## Setup completion gates
 
 - Canonical Figma file and page links recorded.
 - Foundations created with semantic aliases, targeted scopes and code syntax.
 - Source-faithful artwork and reusable components created with properties and states.
 - Instance-based review examples checked at mobile and web widths.
 - Token bindings, styles, component IDs and naming verified.
-- Library publication and cross-file import verified.
+- Library publication, cross-file import and update propagation verified.
 - Versioned registry and change log updated.
-- Tamagotchi developer chat identified and handoff sent after setup completion.
 
-No gate may be marked complete from a successful tool call alone. No app migration, Code Connect claim, or developer dispatch is authorized by an incomplete setup status.
+No gate may be marked complete from a successful tool call alone. Send the prepared handoff to the identified Tamagotchi developer chat only after these setup gates pass. Track dispatch and application adoption separately from setup readiness; publication does not mean the running application has migrated.

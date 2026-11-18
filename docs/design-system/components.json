@@ -576,7 +576,8 @@
       "4727:1900",
       "4727:183",
       "4727:267",
-      "4727:230"
+      "4727:230",
+      "4727:180"
     ],
     "figma": {
       "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
@@ -610,6 +611,12 @@
     "nestedInstanceCount": 9,
     "nestedControls": {
       "pet": "exposed pet-artwork instance; state selects pose"
+    },
+    "notes": "v0.1.1 restores the original ground vector in idle. Ground scales horizontally; instance properties remain compatible.",
+    "figGround": {
+      "nodeId": "19:347",
+      "sourceNodeId": "4727:180",
+      "colorVariableId": "VariableID:12:354"
     }
   },
   {
