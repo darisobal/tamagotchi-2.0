@@ -1,77 +1,51 @@
 # Tamagotchi design system
 
-Status: version **0.1.1** is published in Business → Team project. Cross-file imports and a published update were verified in Business Visual. Setup is complete and `readyForImplementation` is true. The handoff was sent to the dedicated “Implement Tamagotchi design system” chat; application adoption is tracked there. Setup records are shared in [draft PR #6](https://github.com/darisobal/tamagotchi-2.0/pull/6).
+**v0.2.0 is published** in Business → Team project. It reconciles the approved application changes and has 15 reviewed library screens plus 15 connected examples. The original seven source frames remain intact. Application adoption and device checks are tracked separately; see [status](status.json) and [adoption](adoption.json).
 
 ## Sources
 
-- New visual source: [Business Visual — Redesign Tamagothci](https://www.figma.com/design/eU62JH6PqW61UeGlLaGk7T/Business-Visual?node-id=4727-144).
-- Canonical library: [Tamagotchi design system](https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=9-63), owned by the Business team.
-- [Connected examples in Business Visual](https://www.figma.com/design/eU62JH6PqW61UeGlLaGk7T?node-id=4744-461): phone, web and calendar compositions using the published library.
-- [Foundations](tokens.json): 69 variables, eight text styles, the page gradient, verified Figma IDs and marked usability extensions.
-- [Component registry](components.json): 12 component families and five supporting assets, with actual IDs, keys, properties and source nodes.
-- [Setup status](status.json): readiness gates and Git snapshot.
-- [Connection verification](consumer-verification.json): imported keys, remote bindings and before/after update evidence.
-- [Change log](CHANGELOG.md): version history and validation evidence.
-- [Implementation handoff](HANDOFF.md): gated instructions for the application agent.
+- [Canonical Figma library](https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=9-63) and [review screens](https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=1-69).
+- [Original redesign](https://www.figma.com/design/eU62JH6PqW61UeGlLaGk7T?node-id=4727-144) and [connected application examples](https://www.figma.com/design/eU62JH6PqW61UeGlLaGk7T?node-id=4744-461).
+- [Tokens](tokens.json): 69 variables, eight base text styles, nine Figma-only responsive styles and the page gradient.
+- [Components](components.json): 13 families, 54 variants and five supporting assets with verified IDs, keys and properties.
+- [Reconciliation evidence](reconciliation-verification.json), [release history](CHANGELOG.md), and [developer handoff](HANDOFF.md).
 
-The seven original frames remain intact as design references. Their native pet vectors were copied into the library, converted into reusable components, and bound to shared colors. The application file has a separate `[library] tamagotchi` page with 122 remote instances. Its spacing variable, text style and gradient style are imported from the library. The v0.1.1 ground-path correction reached all three existing idle scenes without changing their instance properties.
+The connected examples contain 302 remote instances, with no detached/local components or screen rasters. An existing calendar instance received the published update while keeping its month override. [v0.1.1 connection evidence](consumer-verification.json) remains available as history.
 
 ## Agent workflow
 
-1. Read this guide and status.json. Resolve the canonical Figma file and component IDs from the registry; never guess IDs.
-2. Load the relevant Figma skills. Start a Figma MCP session and reuse its session ID throughout the task.
-3. Read the specific component, its description, variants, variable bindings and screenshot before designing. Search the selected library before creating a new asset.
-4. Compose application designs with instances, semantic variables and shared text styles. Keep instances connected. Do not copy raw visual values or detach components to change an ordinary property.
-5. If a reusable gap exists, update the library first. Keep one-off screen composition in the application design file.
-6. Review necessity and clarity, then consistency and visual focus. Check narrow mobile and wide web layouts, focus, disabled/loading/error states, long text, and accessible status labels.
-7. Record the change, affected component IDs, before/after evidence and migration needs. Update the registry and token snapshot from verified Figma values.
-8. Publish or update the library, then verify an import and an existing instance update in the application design file. In Figma, open Assets → Libraries → Updates and select the relevant library changes. Check “Show updates for all pages” when the connected examples are on another page. Confirm the changed node and preserved overrides after accepting the update.
-9. Hand off an exact version and reviewed component links to the implementation agent. Verify mobile and web before calling implementation complete.
+1. Read this guide and status.json. Resolve IDs and properties from the registry; never guess them.
+2. Load the relevant Figma skills, start a session, and inspect the component description, states, bindings and screenshot. Search this library before making a new asset.
+3. Compose screens with instances, semantic variables and shared styles. Change ordinary content through properties; keep instances connected.
+4. Maintain reusable changes in the library first. Keep one-off screen composition in the application design file.
+5. Review necessity and clarity, then consistency and visual focus. Check narrow and wide screens, wrapping content, focus, disabled/loading/error states and accessible labels.
+6. Publish, accept updates in the consumer file, and verify actual geometry and preserved overrides. If a builder key returns a stale cached definition, resolve the current remote definition through the Plugin API and use its verified ID; do not detach it.
+7. Record the release, affected IDs, evidence, migration needs and adoption status. Hand off the exact version; verify mobile and web before marking implementation complete.
 
-A tool connection is not automatic two-way synchronization. Agents explicitly inspect, modify, validate and record each change. Code Connect is added only when matching application components exist and their mappings have been verified.
+MCP is an explicit inspect/change/validate workflow, not automatic two-way synchronization. Code Connect is unavailable on the current Professional plan; the local component correspondence and MCP library workflow remain usable without an upgrade.
 
-## Ownership and changes
+## Current visual contract
 
-Darya owns product and visual decisions. The design-system agent maintains reusable assets and their documentation. The application agent implements an identified library version and reports any gaps before inventing replacements.
+Match the original Figma capitalization and emphasis: Day, Set up, Goal and DOUBLE Success! Supporting flows use sentence case. Preserve user-entered values, localized dates and external messages. The former lowercase-only rule is superseded.
 
-Use patch versions for corrections that preserve meaning and properties; minor versions for additive tokens, states or components; major versions for incompatible properties or changed visual/interaction contracts. Deprecate replaced components with a replacement link before removal. Preserve valid IDs during updates.
+At the 430px source viewport, content is 382px wide with 24px margins. Use Hepta Slab Bold 62/65 for page titles, ExtraBold 42/48 for feedback, Bold 22/28 for labels and 22/48 for buttons; use Aleo Regular 22/44 for body, Bold 22/28 for support and Regular 14/18 for calendar labels. Scale by `min(1, (viewportWidth - 48) / 382)`, keeping reading text at least 16px, calendar text at least 10px, navigation text 12px, and targets at least 44px. Preserve accessibility font scaling. Figma-only adapter sizes compensate instance transforms; they are not application tokens.
 
-Record each release with its date, changed assets, compatibility impact, validation evidence and application adoption status. Keep proposed extensions separate from source-derived decisions until review.
+Scale original 382×438 pet scenes uniformly. Setup has a white bordered card, name above the pet and no hat; long names grow the card without stretching the artwork. Idle is unframed. Preserve the original vectors, circular confetti, poses and decorations.
 
-## Visual contract
+Setup order is Name → Colour → Hair → Clothes → Habit → **Check in every**. Show **24h / 48h / Weekly** directly in one row. Colour choices stay on one horizontally scrollable row. Hair and Clothes currently have only the accessible None option; no accessory artwork was supplied. Fields are white, source height 72px, radius 20px and grow for long values.
 
-The new source uses Hepta Slab Bold headlines, Hepta Slab ExtraBold feedback titles, Aleo body text, a green page gradient, coral pet artwork, 20 px rounded controls and 3 px outlines. The existing app's blue pet and mood backgrounds are legacy values, not defaults for the new library.
+Use `SelectionOption` for choices and `SelectionTile` as its accessory wrapper. Every selection state keeps a white surface and black Aleo text. Selected gets a 2px outline, unselected an invisible outline, and keyboard focus a distinct outline. Action buttons such as Save keep their action styling. The remaining grey disabled-selection implementation mismatch is recorded in adoption.json.
 
-Match capitalization to the original Figma designs, including sentence case and intentional emphasis. Use sentence case for supporting flows without source copy. Preserve user-entered values and locale-formatted dates. The former lowercase-only rule was removed at Darya’s request on 18 November 2026. Missing hair/clothing artwork must not be represented as finished assets. Do not add speculative dark themes, decorative shadows or extra controls.
+Progress starts with the month-year title, such as Nov 2026. There is no outer white calendar card. Source cells are 57×81 on a 54×78 pitch, with 3px shared outlines, 20px corners, 8px date inset and a 58px final column. Use real Monday-first dates; missing/future dates stay empty. Artwork represents saved outcomes only. The Figma month is an editable example, not a date engine: changing the title requires updating every date/status instance.
 
-The source is 430 px wide with 24 px page margins. Review examples cover 320 px and 430 px phone layouts and a centered 430 px column on a 1024 px web viewport. At 430 px, buttons and fields use the source 72 px height. On narrower screens, typography, controls and spacing scale with the content width; controls keep a 44 px minimum target and primary reading text keeps a 16 px minimum. Small calendar/navigation text is preserved, and native accessibility font scaling remains enabled. Fields grow for long values. Setup content must scroll. Keep colour option rows on one horizontally scrollable line when they exceed the viewport. Setup follows the original source order: Name, Colour, Hair, Clothes, Habit, Check In.
+Below the calendar, show This year or the older year and only month links with saved check-ins. Month links are transparent and outlined. The former `month-chip` was renamed `month-link` with its Figma ID/key preserved; the application renders links inline in Progress and has no `MonthChip` export.
 
-The calendar examples use correct October and November 2026 date alignment. They are editable examples, not a date engine. Changing only the month label does not change the dates: update every day instance too. Implement real month lengths and weekday alignment, and distinguish future/missing history from failed check-ins. Calendar cells are read-only; use the same pet-stage instances and accessible date/status labels.
+No Logs/Coupons tabs, coupon earning/overlay, home hearts/details expansion, or Progress detail/delete controls remain in this contract. Preserve persisted data, authentication, synchronization, habit cadence, existing routes and game/restart behavior. The source supplies no new opened-menu behavior; do not invent destinations.
 
-Text and boolean properties belong to their component set. Use the property names and variant values recorded in `components.json`; do not invent property keys. `check-in-actions` exposes its nested `negative` and `positive` button instances for label edits. `pet-stage` exposes its nested `pet` instance for pose edits. `selection-tile` has an artwork swap property and an explicit `none` choice; additional accessories need real artwork.
+## Ownership and release gates
 
-## Navigation and implementation boundaries
+Darya owns product and visual decisions. The design-system agent maintains reusable Figma assets and records. The application agent implements the identified version and reports gaps before inventing replacements. Keep the visual library separate in Figma and the small registry with the existing application repository.
 
-Current routes are setup, home and progress. The source includes a menu action but does not define its destination or opened state. Reuse the button treatment for that action; do not invent a new navigation model or remove current destinations.
+Before marking setup ready, verify source provenance, foundations, component contracts, screenshots, bindings, publication, remote imports and an existing-instance update. Record application adoption separately. Minor releases can add components/states; document changed visual behavior explicitly and preserve valid IDs. Use major releases for incompatible public properties. Keep personal details, secrets and temporary asset URLs out of public records.
 
-The redesign is visual. Preserve existing authentication, local storage, synchronization, habit cadence, rewards, purchase behavior and history unless Darya requests a product change.
-
-Do not wire new tokens into the running application before the library is reviewed and ready. Keep public repository content free of personal details, credentials and temporary Figma asset URLs.
-
-## Setup completion gates
-
-- Canonical Figma file and page links recorded.
-- Foundations created with semantic aliases, targeted scopes and code syntax.
-- Source-faithful artwork and reusable components created with properties and states.
-- Instance-based review examples checked at mobile and web widths.
-- Token bindings, styles, component IDs and naming verified.
-- Library publication, cross-file import and update propagation verified.
-- Versioned registry and change log updated.
-
-No gate may be marked complete from a successful tool call alone. Send the prepared handoff to the identified Tamagotchi developer chat only after these setup gates pass. Track dispatch and application adoption separately from setup readiness; publication does not mean the running application has migrated.
-
-Application implementation and validation are recorded separately in [ADOPTION.md](ADOPTION.md), [adoption.json](adoption.json) and [application-components.json](application-components.json).
-
-### Application selection controls
-
-Use `SelectionOption` from `src/design-system/Controls.tsx` for text choices and `SelectionTile` for accessory choices. Both share a white surface, 20 px source radius, and 2 px selected outline (scaled with the layout); unselected outlines are transparent. Text choices use the shared Aleo body typography. Keyboard focus remains visible and radio state is exposed to assistive technology. Use `Button` for actions such as Save, not as a selectable option. Reuse these components for equivalent controls on new or existing screens; keep page-specific code to labels, values, and arrangement.
+Current implementation and validation: [ADOPTION.md](ADOPTION.md), [adoption.json](adoption.json), [application-components.json](application-components.json).

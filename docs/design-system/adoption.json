@@ -3,12 +3,13 @@
   "date": "2026-11-18",
   "branch": "codex/tamagotchi-redesign",
   "setupCommit": "9aa1e65",
-  "status": "implemented-awaiting-review",
+  "status": "v0.2.0-design-reconciled-application-verification-pending",
   "complete": false,
   "sharedMobileWebComponents": true,
   "tests": {
     "suitesPassed": 13,
-    "testsPassed": 94
+    "testsPassed": 96,
+    "evidence": "Implementation chat last consistency run on 2026-11-18; final-consistency-tests.txt was inspected during reconciliation. Tests were not rerun for documentation-only changes."
   },
   "productionExports": {
     "web": "passed",
@@ -27,7 +28,7 @@
     1024
   ],
   "nativeRuntimeReview": "iPhone 16 Plus / iOS 18.6 checked: setup card and controls, colour/interval selection, long text and earlier onboarding/check-in/history checks; user confirmed manual scrolling works on 2026-11-18. Android and screen-reader review pending",
-  "codeConnect": "unpublished; connected Professional plan requires Organization or Enterprise upgrade",
+  "codeConnect": "unpublished; unavailable on connected Professional plan; optional to the working MCP setup",
   "liveCloudAndStoreTransactions": "not exercised",
   "details": "ADOPTION.md",
   "componentCorrespondence": "application-components.json",
@@ -55,7 +56,7 @@
     ],
     "uniformScaling": true
   },
-  "capitalization": "Original Figma casing overrides lowercase v0.1.1 examples; supporting flows sentence case",
+  "capitalization": "Original Figma casing and supporting-flow sentence case are now reconciled in published v0.2.0.",
   "nativeScrolling": {
     "status": "confirmed by user",
     "date": "2026-11-18",
@@ -72,6 +73,24 @@
     "minimumReadingFont": 16,
     "minimumControlTarget": 44,
     "nativeFontScaling": "preserved",
-    "coupons": "existing artboard scaling retained"
-  }
+    "minimumCalendarFont": 10
+  },
+  "targetLibraryVersion": "0.2.0",
+  "designReconciledVersion": "0.2.0",
+  "productionExportEvidence": "Historical implementation exports, not rerun during Figma reconciliation.",
+  "approvedFlowChanges": [
+    "Setup: Name, Colour, Hair, Clothes, Habit, Check in every; 24h / 48h / Weekly in one row.",
+    "Calendar has a month-year title and shared outlined cells on the page gradient.",
+    "Only saved-month links grouped by year; no Logs/Coupons tabs or check-in detail/delete UI.",
+    "Coupon earning and reward overlay removed; existing persisted data retained.",
+    "Home hearts/detail expansion removed; game and restart logic retained."
+  ],
+  "remainingDesignMismatches": [
+    {
+      "component": "SelectionOption",
+      "source": "src/design-system/Controls.tsx",
+      "issue": "Disabled background uses gray-disabled; approved shared selection surface remains white in every state."
+    }
+  ],
+  "reconciliationEvidence": "reconciliation-verification.json"
 }

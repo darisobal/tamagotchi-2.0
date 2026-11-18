@@ -1,4 +1,16 @@
-# Application adoption — library v0.1.1
+# Application adoption — current review
+
+Figma library **v0.2.0** reconciles Darya’s approved implementation changes on 18 November 2026. The application’s last recorded adopted base version remains v0.1.1 until the developer verifies the new contract. [PR #7](https://github.com/darisobal/tamagotchi-2.0/pull/7) remains in draft; no merge or deployment was made.
+
+The current contract is in [README.md](README.md), the verified [component correspondence](application-components.json), and [reconciliation evidence](reconciliation-verification.json). It supersedes the historical reward, details, month-chip and normalized-copy behavior described below. Setup now uses “Check in every” with 24h / 48h / Weekly; Progress uses the month-year title, shared outlined calendar cells and saved-month links. Coupon earning/overlays and home/progress detail controls are removed; stored data and game/restart logic remain.
+
+The implementation chat’s latest consistency run passed **96 tests in 13 suites**. The prior seven baseline type errors, Android runtime review and screen-reader review remain open. Existing production-export results below are historical checks, not new reconciliation runs. Code Connect remains unavailable on Professional; local mappings and the published MCP library work without an upgrade.
+
+One current visual mismatch remains: disabled `SelectionOption` uses a grey background in application code; the approved component keeps a white surface. The application agent owns this correction and final adoption verification.
+
+The following record is retained as historical evidence. Removed-flow checks describe what was tested at that time, not the current product contract.
+
+# Historical application adoption — library v0.1.1
 
 Implemented on `codex/tamagotchi-redesign`, based on setup commit `9aa1e65`. The application is in draft review in [PR #7](https://github.com/darisobal/tamagotchi-2.0/pull/7); adoption is not marked complete because remaining device/accessibility review and Code Connect publication remain open. This does not change the published Figma library version or merge setup PR #6.
 
