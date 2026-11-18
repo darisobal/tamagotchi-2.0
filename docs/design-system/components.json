@@ -1,0 +1,632 @@
+[
+  {
+    "name": "button",
+    "axes": {
+      "appearance": [
+        "primary",
+        "secondary"
+      ],
+      "state": [
+        "default",
+        "hover",
+        "pressed",
+        "focus",
+        "disabled",
+        "loading"
+      ]
+    },
+    "props": [
+      "label"
+    ],
+    "source": [
+      "4727:150",
+      "4727:153",
+      "4727:223"
+    ],
+    "notes": "72px minimum height; wraps and grows for long text. Loading uses fixed saving… copy. Keep one primary action per decision.",
+    "figma": {
+      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+      "nodeId": "2:2",
+      "key": "b3c6d1d29e5ba915a7b0cba67e9060e2a88768ef",
+      "type": "COMPONENT_SET",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=2-2",
+      "propertyDefinitions": {
+        "label#2:0": {
+          "type": "TEXT",
+          "defaultValue": "i did it"
+        },
+        "appearance": {
+          "type": "VARIANT",
+          "defaultValue": "primary",
+          "variantOptions": [
+            "primary",
+            "secondary"
+          ]
+        },
+        "state": {
+          "type": "VARIANT",
+          "defaultValue": "default",
+          "variantOptions": [
+            "default",
+            "hover",
+            "pressed",
+            "focus",
+            "disabled",
+            "loading"
+          ]
+        }
+      }
+    },
+    "description": "Primary and secondary actions. Source: 4727:154. States are explicit; loading blocks repeat submission. Lowercase label. Minimum height 72; wrap and grow for long labels. Loading uses fixed saving… copy.",
+    "nestedInstanceCount": 0
+  },
+  {
+    "name": "text-field",
+    "axes": {
+      "state": [
+        "empty",
+        "filled",
+        "focus",
+        "error",
+        "disabled"
+      ]
+    },
+    "props": [
+      "label",
+      "value",
+      "message",
+      "show-message"
+    ],
+    "source": [
+      "4727:1932",
+      "4727:1946"
+    ],
+    "figma": {
+      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+      "nodeId": "2:27",
+      "key": "f6088dbe3441a780e7355d0cd1bbae08409ecb86",
+      "type": "COMPONENT_SET",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=2-27",
+      "propertyDefinitions": {
+        "label#2:13": {
+          "type": "TEXT",
+          "defaultValue": "name"
+        },
+        "value#2:19": {
+          "type": "TEXT",
+          "defaultValue": "your name"
+        },
+        "message#2:25": {
+          "type": "TEXT",
+          "defaultValue": "enter a name"
+        },
+        "show-message#2:31": {
+          "type": "BOOLEAN",
+          "defaultValue": false
+        },
+        "state": {
+          "type": "VARIANT",
+          "defaultValue": "empty",
+          "variantOptions": [
+            "empty",
+            "filled",
+            "focus",
+            "error",
+            "disabled"
+          ]
+        }
+      }
+    },
+    "description": "Visible label and editable value/message. Error state always shows the error message; show-message controls optional help in other states. Fields grow vertically for long content. Default input minimum height 72.",
+    "nestedInstanceCount": 0
+  },
+  {
+    "name": "color-option",
+    "axes": {
+      "state": [
+        "default",
+        "selected",
+        "focus",
+        "disabled"
+      ]
+    },
+    "props": [],
+    "source": [
+      "4727:1907",
+      "4727:1950",
+      "4727:1951",
+      "4727:1953",
+      "4727:1954"
+    ],
+    "figma": {
+      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+      "nodeId": "2:53",
+      "key": "9e396dd534c7638a34292f1c6f856a178fae7189",
+      "type": "COMPONENT_SET",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=2-53",
+      "propertyDefinitions": {
+        "state": {
+          "type": "VARIANT",
+          "defaultValue": "default",
+          "variantOptions": [
+            "default",
+            "selected",
+            "focus",
+            "disabled"
+          ]
+        }
+      }
+    },
+    "description": "One color per instance. Override the color/pet variable on the swatch. 68px touch target; selected uses a second outline, so selection does not rely on hue.",
+    "nestedInstanceCount": 0
+  },
+  {
+    "name": "month-chip",
+    "axes": {
+      "state": [
+        "default",
+        "selected",
+        "focus",
+        "disabled"
+      ]
+    },
+    "props": [
+      "label"
+    ],
+    "source": [
+      "4727:339",
+      "4727:341",
+      "4727:343"
+    ],
+    "figma": {
+      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+      "nodeId": "2:62",
+      "key": "b60dfed680cdd47eb19fc3ebf18501f8ff2f7a11",
+      "type": "COMPONENT_SET",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=2-62",
+      "propertyDefinitions": {
+        "label#2:37": {
+          "type": "TEXT",
+          "defaultValue": "november"
+        },
+        "state": {
+          "type": "VARIANT",
+          "defaultValue": "default",
+          "variantOptions": [
+            "default",
+            "selected",
+            "focus",
+            "disabled"
+          ]
+        }
+      }
+    },
+    "description": "Month selector; selected uses black surface and inverse text. Minimum 60px high. Label property is lowercase.",
+    "nestedInstanceCount": 0
+  },
+  {
+    "name": "pet-artwork",
+    "axes": {
+      "state": [
+        "idle",
+        "double-success",
+        "success",
+        "missed"
+      ]
+    },
+    "props": [],
+    "source": [
+      "4727:164",
+      "4727:184",
+      "4727:268",
+      "4727:240"
+    ],
+    "notes": "Exact source vectors, retain editable geometry. Idle includes source hat vectors.",
+    "figma": {
+      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+      "nodeId": "5:2",
+      "key": "2bc7c92dff8fb52b93467c06d8c29c6cc4823eb2",
+      "type": "COMPONENT_SET",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=5-2",
+      "propertyDefinitions": {
+        "state": {
+          "type": "VARIANT",
+          "defaultValue": "idle",
+          "variantOptions": [
+            "idle",
+            "double-success",
+            "success",
+            "missed"
+          ]
+        }
+      }
+    },
+    "description": "Original native vector pet poses: idle, success, missed and double-success. Fixed artwork geometry; use proportional scaling. Body colors bind to color/pet/default; missed is intentionally black.",
+    "nestedInstanceCount": 0
+  },
+  {
+    "name": "pet-decor/success",
+    "source": [],
+    "role": "supporting artwork or option dependency",
+    "axes": {},
+    "props": [],
+    "figma": {
+      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+      "nodeId": "5:7",
+      "key": "4193c22b320421c94fd06b1c4342e5a96853fca5",
+      "type": "COMPONENT",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=5-7",
+      "propertyDefinitions": {}
+    },
+    "description": "Original editable vector artwork from Business Visual, redesign page 4727:144. Keep original path geometry.",
+    "nestedInstanceCount": 0
+  },
+  {
+    "name": "pet-decor/missed",
+    "source": [],
+    "role": "supporting artwork or option dependency",
+    "axes": {},
+    "props": [],
+    "figma": {
+      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+      "nodeId": "5:8",
+      "key": "ca39fb68e86e141b50ac06e50e5aaccc68830e09",
+      "type": "COMPONENT",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=5-8",
+      "propertyDefinitions": {}
+    },
+    "description": "Original editable vector artwork from Business Visual, redesign page 4727:144. Keep original path geometry.",
+    "nestedInstanceCount": 0
+  },
+  {
+    "name": "pet-decor/double-success",
+    "source": [],
+    "role": "supporting artwork or option dependency",
+    "axes": {},
+    "props": [],
+    "figma": {
+      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+      "nodeId": "5:9",
+      "key": "31b83acb7fae82d2f3d064a49797181ffc431990",
+      "type": "COMPONENT",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=5-9",
+      "propertyDefinitions": {}
+    },
+    "description": "Original editable vector artwork from Business Visual, redesign page 4727:144. Keep original path geometry.",
+    "nestedInstanceCount": 0
+  },
+  {
+    "name": "you-indicator",
+    "source": [],
+    "role": "supporting artwork or option dependency",
+    "axes": {},
+    "props": [],
+    "figma": {
+      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+      "nodeId": "5:10",
+      "key": "d88eff561c59f3f859f42e12be4eea2d7a3022b5",
+      "type": "COMPONENT",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=5-10",
+      "propertyDefinitions": {}
+    },
+    "description": "Original editable vector artwork from Business Visual, redesign page 4727:144. Keep original path geometry.",
+    "nestedInstanceCount": 0
+  },
+  {
+    "name": "feedback",
+    "axes": {
+      "surface": [
+        "plain",
+        "card"
+      ]
+    },
+    "props": [
+      "title",
+      "goal",
+      "show-goal"
+    ],
+    "source": [
+      "4727:148",
+      "4727:149",
+      "4727:226",
+      "4727:260",
+      "4727:305"
+    ],
+    "figma": {
+      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+      "nodeId": "8:2",
+      "key": "2816c3dcd91e8827a44b84191d4080ede29c299f",
+      "type": "COMPONENT_SET",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=8-2",
+      "propertyDefinitions": {
+        "title#8:0": {
+          "type": "TEXT",
+          "defaultValue": "did you manage today?"
+        },
+        "goal#8:3": {
+          "type": "TEXT",
+          "defaultValue": "goal: make a business"
+        },
+        "show-goal#8:6": {
+          "type": "BOOLEAN",
+          "defaultValue": true
+        },
+        "surface": {
+          "type": "VARIANT",
+          "defaultValue": "plain",
+          "variantOptions": [
+            "plain",
+            "card"
+          ]
+        }
+      }
+    },
+    "description": "Reusable check-in question or outcome. Title and goal are text properties; show-goal controls context visibility. Plain matches the redesign; card is a reusable contained variation.",
+    "nestedInstanceCount": 0
+  },
+  {
+    "name": "screen-header",
+    "axes": {
+      "size": [
+        "regular",
+        "compact"
+      ]
+    },
+    "props": [
+      "title"
+    ],
+    "source": [
+      "4727:147",
+      "4727:1901",
+      "4727:308"
+    ],
+    "figma": {
+      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+      "nodeId": "8:9",
+      "key": "069254394b7fcd4a418e8766ecffc12852e60d5b",
+      "type": "COMPONENT_SET",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=8-9",
+      "propertyDefinitions": {
+        "title#8:9": {
+          "type": "TEXT",
+          "defaultValue": "day 67"
+        },
+        "size": {
+          "type": "VARIANT",
+          "defaultValue": "regular",
+          "variantOptions": [
+            "regular",
+            "compact"
+          ]
+        }
+      }
+    },
+    "description": "Shared page title. Regular 62/65 at the source 430px canvas; compact 42/48 for narrow screens. Wrap naturally, preserve content and allow vertical growth.",
+    "nestedInstanceCount": 0
+  },
+  {
+    "name": "check-in-actions",
+    "axes": {
+      "state": [
+        "ready",
+        "submitting"
+      ]
+    },
+    "props": [],
+    "source": [
+      "4727:150",
+      "4727:153"
+    ],
+    "figma": {
+      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+      "nodeId": "8:14",
+      "key": "39554d5cdcc3e7e6298f53953272574a62e8461e",
+      "type": "COMPONENT_SET",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=8-14",
+      "propertyDefinitions": {
+        "state": {
+          "type": "VARIANT",
+          "defaultValue": "ready",
+          "variantOptions": [
+            "ready",
+            "submitting"
+          ]
+        }
+      }
+    },
+    "description": "Daily answer pair built from button instances. Edit negative/positive nested labels. Ready: no + yes. Submitting blocks both actions and exposes saving feedback. Do not permit duplicate submissions.",
+    "nestedInstanceCount": 4,
+    "nestedControls": {
+      "negative": "exposed secondary button; label property",
+      "positive": "exposed primary button; label property"
+    }
+  },
+  {
+    "name": "calendar-day",
+    "axes": {
+      "state": [
+        "future",
+        "success",
+        "missed",
+        "double-success",
+        "outside-month"
+      ]
+    },
+    "props": [
+      "day"
+    ],
+    "source": [
+      "4727:309",
+      "4727:345"
+    ],
+    "notes": "Read-only date and status cell; source pet-stage instance scaled proportionally. Expose accessible date/status in the app. Unlogged history is not a failed check-in.",
+    "figma": {
+      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+      "nodeId": "8:25",
+      "key": "b859ad30946c6f231c72e122ddc4c5a1ddbb7451",
+      "type": "COMPONENT_SET",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=8-25",
+      "propertyDefinitions": {
+        "day#8:12": {
+          "type": "TEXT",
+          "defaultValue": "18"
+        },
+        "state": {
+          "type": "VARIANT",
+          "defaultValue": "future",
+          "variantOptions": [
+            "future",
+            "success",
+            "missed",
+            "double-success",
+            "outside-month"
+          ]
+        }
+      }
+    },
+    "description": "Read-only calendar status. Date text and pet pose communicate the outcome without relying on hue alone. Future dates show the date only; outside-month is an empty alignment cell. No click target implied.",
+    "nestedInstanceCount": 9
+  },
+  {
+    "name": "calendar-month",
+    "axes": {},
+    "props": [
+      "month"
+    ],
+    "source": [
+      "4727:307"
+    ],
+    "notes": "Compose day instances with seven columns. Correct sample date alignment; do not encode sample history as business logic.",
+    "figma": {
+      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+      "nodeId": "8:305",
+      "key": "4d069cada3587e44b0daa4595b3426493a11d908",
+      "type": "COMPONENT",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=8-305",
+      "propertyDefinitions": {
+        "month#8:18": {
+          "type": "TEXT",
+          "defaultValue": "november 2026"
+        }
+      }
+    },
+    "description": "Seven-column, Monday-first month. The example is November 2026: Sunday 1, Monday 30. The month label is editable; update every date/status instance when changing the month. This Figma component contains no date logic.",
+    "nestedInstanceCount": 96
+  },
+  {
+    "name": "selection-tile",
+    "axes": {
+      "state": [
+        "default",
+        "selected",
+        "focus",
+        "disabled"
+      ]
+    },
+    "props": [
+      "artwork"
+    ],
+    "source": [
+      "4727:1908",
+      "4727:1910"
+    ],
+    "notes": "Artwork slot only; source contains no hair or clothing art.",
+    "figma": {
+      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+      "nodeId": "7:34",
+      "key": "6643b58ed36917c0faa37927d81c0f81260e01dd",
+      "type": "COMPONENT_SET",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=7-34",
+      "propertyDefinitions": {
+        "artwork#7:0": {
+          "type": "INSTANCE_SWAP",
+          "defaultValue": "7:32"
+        },
+        "state": {
+          "type": "VARIANT",
+          "defaultValue": "default",
+          "variantOptions": [
+            "default",
+            "selected",
+            "focus",
+            "disabled"
+          ]
+        }
+      }
+    },
+    "description": "Customization option. Swap artwork through the instance property. Source tiles were empty; none is the only authored accessory choice. 68px target; 3px outline, 20px radius.",
+    "nestedInstanceCount": 4
+  },
+  {
+    "name": "pet-stage",
+    "axes": {
+      "state": [
+        "setup",
+        "idle",
+        "success",
+        "missed",
+        "double-success"
+      ]
+    },
+    "props": [
+      "name",
+      "show-name"
+    ],
+    "source": [
+      "4727:1900",
+      "4727:183",
+      "4727:267",
+      "4727:230"
+    ],
+    "figma": {
+      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+      "nodeId": "6:69",
+      "key": "9863d14cc243ca1106131cb5e84927d10167b5d3",
+      "type": "COMPONENT_SET",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=6-69",
+      "propertyDefinitions": {
+        "name#6:0": {
+          "type": "TEXT",
+          "defaultValue": "tama"
+        },
+        "show-name#6:6": {
+          "type": "BOOLEAN",
+          "defaultValue": true
+        },
+        "state": {
+          "type": "VARIANT",
+          "defaultValue": "setup",
+          "variantOptions": [
+            "setup",
+            "idle",
+            "success",
+            "missed",
+            "double-success"
+          ]
+        }
+      }
+    },
+    "description": "Responsive 382×438 illustration panel, composed from original pet-artwork and pet-decor instances. Use state, name and show-name. Setup/idle are transparent. Keep pet proportions; adapt page padding at narrow widths.",
+    "nestedInstanceCount": 9,
+    "nestedControls": {
+      "pet": "exposed pet-artwork instance; state selects pose"
+    }
+  },
+  {
+    "name": "option-content/none",
+    "source": [],
+    "role": "supporting artwork or option dependency",
+    "axes": {},
+    "props": [],
+    "figma": {
+      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+      "nodeId": "7:32",
+      "key": "8525975aab22e6e7a9ea2f6e65d4f9fc61577d5f",
+      "type": "COMPONENT",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=7-32",
+      "propertyDefinitions": {}
+    },
+    "description": "Explicit no-accessory choice. The source does not include hair/clothing artwork; replace through the selection-tile artwork property when real assets are supplied.",
+    "nestedInstanceCount": 0
+  }
+]

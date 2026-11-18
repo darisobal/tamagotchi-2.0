@@ -1,0 +1,296 @@
+{
+  "version": "0.1.0-draft",
+  "updated": "2026-11-18",
+  "stage": "awaiting-library-publication",
+  "source": {
+    "fileKey": "eU62JH6PqW61UeGlLaGk7T",
+    "pageId": "4727:144",
+    "url": "https://www.figma.com/design/eU62JH6PqW61UeGlLaGk7T/Business-Visual?node-id=4727-144"
+  },
+  "library": {
+    "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+    "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp",
+    "planKey": "team::997171912960236676",
+    "pages": {
+      "00 · start": "0:1",
+      "01 · foundations": "1:65",
+      "02 · controls": "1:66",
+      "03 · pet": "1:67",
+      "04 · patterns": "1:68",
+      "05 · review": "1:69"
+    },
+    "reviewFrames": [
+      {
+        "id": "10:2",
+        "name": "setup · 430",
+        "width": 430,
+        "height": 1515
+      },
+      {
+        "id": "10:78",
+        "name": "idle",
+        "width": 430,
+        "height": 851
+      },
+      {
+        "id": "10:110",
+        "name": "success",
+        "width": 430,
+        "height": 851
+      },
+      {
+        "id": "10:137",
+        "name": "missed",
+        "width": 430,
+        "height": 899
+      },
+      {
+        "id": "10:164",
+        "name": "double-success",
+        "width": 430,
+        "height": 899
+      },
+      {
+        "id": "10:191",
+        "name": "calendar · 430",
+        "width": 430,
+        "height": 898
+      },
+      {
+        "id": "10:1837",
+        "name": "calendar expanded · 430",
+        "width": 430,
+        "height": 1518
+      },
+      {
+        "id": "10:3351",
+        "name": "daily · 320",
+        "width": 320,
+        "height": 882
+      },
+      {
+        "id": "10:3381",
+        "name": "web · 1024",
+        "width": 1024,
+        "height": 915
+      }
+    ]
+  },
+  "readiness": {
+    "sourceInspected": true,
+    "githubInspected": true,
+    "foundationDraftPrepared": true,
+    "libraryCreated": true,
+    "componentsCreated": true,
+    "visualReviewPassed": true,
+    "published": false,
+    "crossFileImportVerified": false,
+    "developerHandoffSent": false,
+    "implementationStarted": false,
+    "foundationsVerified": true,
+    "componentContractsVerified": true,
+    "originalSourcePreserved": true
+  },
+  "pending": [
+    "Unlock Mac to move the library from Business Drafts into Team project and publish it.",
+    "Verify a published component and token can be imported into the application design file.",
+    "Identify the existing Tamagotchi developer chat before sending the implementation handoff."
+  ],
+  "git": {
+    "repo": {
+      "name": "darisobal/tamagotchi-2.0",
+      "visibility": "public",
+      "defaultBranch": "main"
+    },
+    "branches": [
+      {
+        "name": "codex/guest-onboarding",
+        "sha": "3e72fac46d959633159b2428015472e30fdeca04"
+      },
+      {
+        "name": "cursor/fix-auth-scroll-f85b",
+        "sha": "065ca0d7705e158c00d4bc5f5537000f96c67da0"
+      },
+      {
+        "name": "cursor/fix-button-visibility-layout-f157",
+        "sha": "0032026630907d838a2fd442de56185b4eec8df2"
+      },
+      {
+        "name": "cursor/progressive-success-balls-42b8",
+        "sha": "c9bf21851f24b598c01db37099aaa050363436ba"
+      },
+      {
+        "name": "main",
+        "sha": "738299ef64409dfbdbae3a0644937d8c1d04d2a7"
+      }
+    ],
+    "openPRs": [
+      {
+        "number": 3,
+        "title": "Add progressive balls success state after rockstar",
+        "url": "https://github.com/darisobal/tamagotchi-2.0/pull/3"
+      },
+      {
+        "number": 1,
+        "title": "Redesign auth flow with passwordless magic link",
+        "url": "https://github.com/darisobal/tamagotchi-2.0/pull/1"
+      }
+    ]
+  },
+  "sourceNotes": [
+    "Original page has 7 frames and no components.",
+    "Hair/clothing choice tiles contain no artwork.",
+    "Calendar dates require real month alignment in implementation.",
+    "Source does not define menu contents or routing."
+  ],
+  "readyForImplementation": false,
+  "counts": {
+    "variables": 69,
+    "textStyles": 8,
+    "paintStyles": 1,
+    "componentFamilies": 12,
+    "supportingComponents": 5,
+    "variants": 49,
+    "reviewScreens": 9
+  },
+  "validation": {
+    "tokens": {
+      "summary": {
+        "count": 69,
+        "aliasCount": 29,
+        "primitiveCount": 20
+      },
+      "failures": []
+    },
+    "componentFailures": [],
+    "textStyleFailures": 0,
+    "screens": [
+      {
+        "id": "10:2",
+        "fonts": [
+          "Hepta Slab",
+          "Aleo"
+        ],
+        "wrongFontIds": [],
+        "rasterIds": [],
+        "unboundTextIds": []
+      },
+      {
+        "id": "10:78",
+        "fonts": [
+          "Hepta Slab",
+          "Aleo"
+        ],
+        "wrongFontIds": [],
+        "rasterIds": [],
+        "unboundTextIds": []
+      },
+      {
+        "id": "10:110",
+        "fonts": [
+          "Hepta Slab",
+          "Aleo"
+        ],
+        "wrongFontIds": [],
+        "rasterIds": [],
+        "unboundTextIds": []
+      },
+      {
+        "id": "10:137",
+        "fonts": [
+          "Hepta Slab",
+          "Aleo"
+        ],
+        "wrongFontIds": [],
+        "rasterIds": [],
+        "unboundTextIds": []
+      },
+      {
+        "id": "10:164",
+        "fonts": [
+          "Hepta Slab",
+          "Aleo"
+        ],
+        "wrongFontIds": [],
+        "rasterIds": [],
+        "unboundTextIds": []
+      },
+      {
+        "id": "10:191",
+        "fonts": [
+          "Hepta Slab",
+          "Aleo"
+        ],
+        "wrongFontIds": [],
+        "rasterIds": [],
+        "unboundTextIds": []
+      },
+      {
+        "id": "10:1837",
+        "fonts": [
+          "Hepta Slab",
+          "Aleo"
+        ],
+        "wrongFontIds": [],
+        "rasterIds": [],
+        "unboundTextIds": []
+      },
+      {
+        "id": "10:3351",
+        "fonts": [
+          "Hepta Slab",
+          "Aleo"
+        ],
+        "wrongFontIds": [],
+        "rasterIds": [],
+        "unboundTextIds": []
+      },
+      {
+        "id": "10:3381",
+        "fonts": [
+          "Hepta Slab",
+          "Aleo"
+        ],
+        "wrongFontIds": [],
+        "rasterIds": [],
+        "unboundTextIds": []
+      }
+    ],
+    "controlMinimumHeights": [
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72
+    ],
+    "calendarExamples": [
+      "October 2026: Thursday 1, Saturday 31",
+      "November 2026: Sunday 1, Monday 30"
+    ],
+    "runtimeTests": "Not run; application code was not changed.",
+    "mainComponentBindings": {
+      "scope": "Main component definitions and component display boards, excluding nested instance expansions",
+      "solidPaints": 260,
+      "boundPaints": 260,
+      "texts": 56,
+      "styledTexts": 56,
+      "failures": []
+    },
+    "errorMessage": {
+      "visible": true,
+      "optionalVisibilityPropertyDetached": true
+    }
+  },
+  "limitations": [
+    "No hair/clothing assets were supplied; selection-tile exposes an artwork swap and the explicit none option.",
+    "No opened navigation menu or destinations were specified. Existing setup/home/progress routes remain authoritative.",
+    "No Code Connect mappings yet: redesigned application components do not exist. Map only after implementation."
+  ]
+}

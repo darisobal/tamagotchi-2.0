@@ -58,6 +58,8 @@ scripts/       # setup helpers
 
 ## Conventions
 
+- **Design system:** before visual changes, read `docs/design-system/README.md` and `docs/design-system/status.json`. The new Figma redesign is being prepared separately; do not start its application migration until the recorded setup gates pass.
+
 - TypeScript throughout; shared types in `src/types.ts`
 - App state in `src/context.tsx`; auth in `src/authContext.tsx`
 - Pet logic in `src/logic.ts`; theme in `src/theme.ts`
