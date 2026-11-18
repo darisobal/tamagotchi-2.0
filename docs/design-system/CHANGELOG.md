@@ -6,7 +6,7 @@ Published a compatible correction restoring the original ground vector (`4727:18
 
 Enabled the library in Business Visual and built four connected examples on a separate page: 320/430 px daily screens, a calendar and a 1024 px web screen. Verified 122 remote instances, imported spacing/text/gradient assets, the expected fonts, and no complete-screen rasters or unstyled text. Accepted the published patch in the consumer file and confirmed the ground appeared in all three existing idle instances while their overrides remained intact. The final binding audit passed for 261 solid paints and 56 styled text layers in main definitions.
 
-Setup is complete. Developer dispatch awaits identification of the intended chat. Application migration and Code Connect have not started.
+Setup is complete. The records were pushed in draft PR #6, and the handoff was dispatched to the new “Implement Tamagotchi design system” chat at Darya's request. Application migration and Code Connect are tracked separately in that chat.
 
 ## 0.1.0 — 2026-11-18
 

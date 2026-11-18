@@ -1,6 +1,6 @@
 # Tamagotchi redesign handoff
 
-**Version 0.1.1 is ready for implementation. Dispatch is pending identification of the existing Tamagotchi developer chat. Application implementation has not started.**
+**Version 0.1.1 was handed off on 2026-11-18 to the new “Implement Tamagotchi design system” chat, created at Darya's request. Setup is complete; application adoption is tracked in that chat.**
 
 Use the new [Tamagotchi design system](https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp), its [review screens](https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=1-69), and the verified IDs and component properties in `components.json`. Read `README.md`, `tokens.json`, `status.json` and `CHANGELOG.md` first. The original redesign is linked in the registry for provenance.
 
@@ -14,4 +14,4 @@ Hair/clothing artwork and opened navigation behavior were not supplied. Use the 
 
 Once matching app components exist, add verified Code Connect mappings. Report mobile and web validation, the adopted library version and any remaining gaps before marking adoption complete.
 
-Setup gates have passed. Identify the intended existing Tamagotchi developer chat before dispatch. No handoff message has been sent yet; do not substitute an unrelated portfolio chat.
+Setup gates have passed and the handoff has been dispatched. The setup documentation is shared in [draft PR #6](https://github.com/darisobal/tamagotchi-2.0/pull/6). Keep implementation changes on a separate branch and PR; record mobile/web validation and adoption separately from these setup checks.

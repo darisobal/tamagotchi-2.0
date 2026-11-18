@@ -1,6 +1,6 @@
 # Tamagotchi design system
 
-Status: version **0.1.1** is published in Business → Team project. Cross-file imports and a published update were verified in Business Visual. Setup is complete and `readyForImplementation` is true. The developer handoff awaits the intended chat's name; application implementation has not started.
+Status: version **0.1.1** is published in Business → Team project. Cross-file imports and a published update were verified in Business Visual. Setup is complete and `readyForImplementation` is true. The handoff was sent to the dedicated “Implement Tamagotchi design system” chat; application adoption is tracked there. Setup records are shared in [draft PR #6](https://github.com/darisobal/tamagotchi-2.0/pull/6).
 
 ## Sources
 
