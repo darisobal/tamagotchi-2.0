@@ -11,10 +11,10 @@ export const RESTART_PRODUCT_ID = 'com.tamagotchi.app.restart';
 /** Fallback display when the store has not returned a localized price yet. */
 export const RESTART_PRICE_LABEL = '€1';
 
-export const RESTART_PRODUCT_TITLE = 'restart pet';
+export const RESTART_PRODUCT_TITLE = 'Restart pet';
 
 export const RESTART_PRODUCT_DESCRIPTION =
-  'unlock a fresh start with three hearts after your pet dies.';
+  'Unlock a fresh start with three hearts after your pet dies.';
 
 /**
  * Stripe-style test card for the **web / Expo Go mock** checkout only.
@@ -25,5 +25,5 @@ export const MOCK_TEST_CARD = {
   number: '4242 4242 4242 4242',
   expiry: '12/30',
   cvc: '123',
-  name: 'test user',
+  name: 'Test user',
 } as const;

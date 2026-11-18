@@ -34,5 +34,26 @@
   "artworkProvenance": "artwork-provenance.json",
   "merged": false,
   "deployed": false,
-  "pullRequest": "https://github.com/darisobal/tamagotchi-2.0/pull/7"
+  "pullRequest": "https://github.com/darisobal/tamagotchi-2.0/pull/7",
+  "cardProportionsReview": {
+    "states": [
+      "setup",
+      "idle",
+      "success",
+      "missed",
+      "double-success"
+    ],
+    "webWidths": [
+      320,
+      430
+    ],
+    "wideSuccessWidth": 1024,
+    "ios": "all five states visually checked",
+    "sourceCanvas": [
+      382,
+      438
+    ],
+    "uniformScaling": true
+  },
+  "capitalization": "Original Figma casing overrides lowercase v0.1.1 examples; supporting flows sentence case"
 }

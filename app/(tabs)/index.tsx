@@ -38,13 +38,13 @@ export default function HomeScreen() {
   const pendingCoupon = findCouponForReveal(checkIns, couponRevealCheckInId);
   const stage: PetStageState = mood === 'dead' || mood === 'sad' ? 'missed'
     : mood === 'happy' && !celebrationDismissed ? (track && track.celebrationCount > 1 ? 'double-success' : 'success') : 'idle';
-  const title = outcome === 'not-yet' ? 'one step at a time.' : mood === 'dead' ? 'time to start again.'
-    : stage === 'double-success' ? 'double success!\nkeep going.' : stage === 'success' ? 'you did it!\nkeep going.'
-      : stage === 'missed' ? 'missed an interval.\ntry again.' : prefs.habitCadence === 'daily' ? 'did you manage today?' : 'did you manage your goal?';
+  const title = outcome === 'not-yet' ? 'One step at a time.' : mood === 'dead' ? 'Time to start again.'
+    : stage === 'double-success' ? 'DOUBLE Success!\nKeep going!' : stage === 'success' ? 'You’re real gangsta!\nWooooooop!'
+      : stage === 'missed' ? 'Nu ty i LOX! SHAME\non you!' : prefs.habitCadence === 'daily' ? 'Did you manage today?' : 'Did you manage your goal?';
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    try { await refresh(); } catch { setError('could not refresh. try again.'); }
+    try { await refresh(); } catch { setError('Could not refresh. Try again.'); }
     finally { setRefreshing(false); }
   }, [refresh]);
   const submit = useCallback(async () => {
@@ -52,7 +52,7 @@ export default function HomeScreen() {
     submitting.current = true;
     setBusy(true); setError(null); setConfirmCopy(null);
     try { await doCheckIn(MAIN_TRACK, 'medium', null); setCelebrationDismissed(false); setOutcome('success'); }
-    catch (e) { setError(e instanceof Error ? e.message.toLowerCase() : 'could not save your check-in. try again.'); }
+    catch (e) { setError(e instanceof Error ? e.message : 'Could not save your check-in. Try again.'); }
     finally { submitting.current = false; setBusy(false); }
   }, [doCheckIn]);
   const beginCheckIn = () => {
@@ -64,27 +64,27 @@ export default function HomeScreen() {
 
   return <>
     <Page bottomPadding={bottomPadding + 24} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Palette.black} />}>
-      <ScreenHeader title={`day ${planDayNumber(prefs.planStartedAt, checkIns)}`} />
+      <ScreenHeader title={`Day ${planDayNumber(prefs.planStartedAt, checkIns)}`} />
       {prefs.petType === 'selfie' && prefs.customSprite ? <View style={styles.selfie}><PixelPet petType="selfie" mood={mood} customSprite={prefs.customSprite} color={prefs.petColor} pixelSize={7} /></View>
         : <PetStage state={stage} color={prefs.petColor} name={petName} />}
-      <Pressable onPress={() => router.navigate('/(tabs)/settings?focusHabit=1')} accessibilityRole="button" accessibilityLabel={`edit goal: ${habitName}`}>
-        <Feedback title={title} goal={`goal: ${habitName}`} />
+      <Pressable onPress={() => router.navigate('/(tabs)/settings?focusHabit=1')} accessibilityRole="button" accessibilityLabel={`Edit goal: ${habitName}`}>
+        <Feedback title={title} goal={`Goal: ${habitName}`} />
       </Pressable>
       {error ? <Text accessibilityRole="alert" style={DesignType.supporting}>{error}</Text> : null}
       {syncNotice ? <Text accessibilityLiveRegion="polite" style={DesignType.calendar}>{syncNotice}</Text> : null}
-      {outcome || stage === 'success' || stage === 'double-success' ? <Button label="continue" onPress={() => { setOutcome(null); setCelebrationDismissed(true); }} />
-        : mood === 'dead' ? <Button label="start again" onPress={beginCheckIn} state={busy ? 'loading' : 'default'} />
+      {outcome || stage === 'success' || stage === 'double-success' ? <Button label="Continue" onPress={() => { setOutcome(null); setCelebrationDismissed(true); }} />
+        : mood === 'dead' ? <Button label="Start again" onPress={beginCheckIn} state={busy ? 'loading' : 'default'} />
           : <CheckInActions onNegative={() => setOutcome('not-yet')} onPositive={beginCheckIn} state={busy ? 'submitting' : 'ready'} />}
       <View style={styles.lifeInfo}>
-        <Pressable accessibilityRole="button" accessibilityLabel={showLives ? 'hide lives info' : 'show lives info'} accessibilityState={{ expanded: showLives }} style={styles.details} onPress={() => setShowLives(value => !value)}>
-          <Text style={DesignType.calendar}>{lives} {lives === 1 ? 'heart' : 'hearts'} · {showLives ? 'hide details' : 'details'}</Text>
+        <Pressable accessibilityRole="button" accessibilityLabel={showLives ? 'Hide lives info' : 'Show lives info'} accessibilityState={{ expanded: showLives }} style={styles.details} onPress={() => setShowLives(value => !value)}>
+          <Text style={DesignType.calendar}>{lives} {lives === 1 ? 'heart' : 'hearts'} · {showLives ? 'Hide details' : 'Details'}</Text>
         </Pressable>
-        {showLives && <Text style={DesignType.supporting}>{mood === 'dead' ? 'all three hearts are gone. restart to check in again.' : habit?.nextDeadlineAt ? `${formatLifeTimer(habit.timeRemainingMs)} until the next heart is lost. each check-in refills three hearts.` : 'three hearts. your first check-in starts the next interval.'}</Text>}
+        {showLives && <Text style={DesignType.supporting}>{mood === 'dead' ? 'All three hearts are gone. Restart to check in again.' : habit?.nextDeadlineAt ? `${formatLifeTimer(habit.timeRemainingMs)} until the next heart is lost. Each check-in refills three hearts.` : 'Three hearts. Your first check-in starts the next interval.'}</Text>}
       </View>
       {!user && isConfigured && checkIns.length > 0 && !prefs.accountPromptDismissed && !pendingCoupon && <View style={styles.account}>
-        <Text style={DesignType.supporting}>save your progress across devices.</Text>
-        <Button label="save my progress" onPress={() => router.push('/auth')} />
-        <Button label="later" appearance="secondary" onPress={() => void updatePrefs({ accountPromptDismissed: true })} />
+        <Text style={DesignType.supporting}>Save your progress across devices.</Text>
+        <Button label="Save my progress" onPress={() => router.push('/auth')} />
+        <Button label="Later" appearance="secondary" onPress={() => void updatePrefs({ accountPromptDismissed: true })} />
       </View>}
     </Page>
     <RestartPaywall visible={restartVisible} onClose={() => setRestartVisible(false)} onUnlocked={async () => { setRestartVisible(false); await submit(); }} />

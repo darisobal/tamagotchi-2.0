@@ -21,12 +21,12 @@ export const Artwork = memo(function Artwork({ asset, left = 0, top = 0, width, 
     return () => { active = false; };
   }, [asset, definition.source]);
   const slotW = width ?? definition.width;
-  const slotH = height ?? definition.height;
+  const slotH = height ?? definition.height * (slotW / definition.width);
   // Only the separate body-fill asset is recolored. Original paths and line art stay unchanged.
   const renderedXml = color && xml ? xml.replace(asset === '6dd10' ? /fill="black"/g : /fill="#FF7254"/gi, `fill="${/^#[0-9a-f]{6}$/i.test(color) ? color : Palette.coral}"`) : xml;
   return <View pointerEvents="none" aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ position: 'absolute', left, top, width: slotW, height: slotH, transform: [{ rotate: `${rotation}deg` }] }}>
     <View style={{ width: definition.width, height: definition.height, transformOrigin: 'top left', transform: [{ scaleX: slotW / definition.width }, { scaleY: slotH / definition.height }] }}>
-      {renderedXml ? <SvgXml xml={renderedXml} /> : error ? <Text style={DesignType.calendar}>artwork unavailable</Text> : null}
+      {renderedXml ? <SvgXml xml={renderedXml} /> : error ? <Text style={DesignType.calendar}>Artwork unavailable</Text> : null}
     </View>
   </View>;
 });
@@ -37,7 +37,7 @@ export const petBounds = {
   missed: { width: 157.068, height: 267.971 }, 'double-success': { width: 160.175, height: 286.603 },
 };
 
-export const PetArtwork = memo(function PetArtwork({ state = 'idle', color = Palette.coral }: { state?: PetPose; color?: string }) {
+export const PetArtwork = memo(function PetArtwork({ state = 'idle', color = Palette.coral, showHat = true }: { state?: PetPose; color?: string; showHat?: boolean }) {
   const missed = state === 'missed';
   if (state === 'success') return <View style={petBounds.success}>
     <Artwork asset="6dd10" left={41.17} top={37.07} rotation={180} color={color} />
@@ -58,8 +58,8 @@ export const PetArtwork = memo(function PetArtwork({ state = 'idle', color = Pal
   return <View style={petBounds[state]}>
     <Artwork asset={missed ? '901f3' : '6dd10'} left={missed ? 27.53 : 0} top={11} color={missed ? undefined : color} />
     <Artwork asset={missed ? '8dcbc' : '9953f'} left={missed ? -.305 : 4.454} top={21.853} />
-    <Artwork asset={missed ? '33d31' : '9217e'} left={missed ? 72.447 : 44.917} top={-2.987} />
-    <Artwork asset={missed ? 'e92e0' : '7725d'} left={missed ? 62.37 : 34.84} top={18.967} />
+    {showHat && <><Artwork asset={missed ? '33d31' : '9217e'} left={missed ? 72.447 : 44.917} top={-2.987} />
+    <Artwork asset={missed ? 'e92e0' : '7725d'} left={missed ? 62.37 : 34.84} top={18.967} /></>}
   </View>;
 });
 function RotatedLimb({ asset, left, top, boxW, boxH, width, height, rotation, offsetX, offsetY }: {

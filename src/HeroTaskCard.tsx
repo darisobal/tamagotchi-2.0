@@ -58,7 +58,7 @@ export default function HeroTaskCard({
           onPress={onHabitNamePress}
           disabled={!onHabitNamePress}
           accessibilityRole={onHabitNamePress ? 'button' : undefined}
-          accessibilityLabel={onHabitNamePress ? 'edit habit name' : undefined}
+          accessibilityLabel={onHabitNamePress ? 'Edit habit name' : undefined}
           style={({ pressed }) => [pressed && onHabitNamePress ? styles.titlePressed : null]}
         >
           <Text style={[styles.title, { color: accentColor }]} selectable={false}>

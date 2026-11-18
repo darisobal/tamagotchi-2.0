@@ -51,7 +51,7 @@ export function moodToScene(mood: Mood): StateScene {
 const DEFAULT_NAME = 'champ';
 
 /** Shared copy + palette tokens used across the four Figma home frames. */
-const CHECK_IN_LABEL = 'i did it!!!!!1';
+const CHECK_IN_LABEL = 'I did it!!!!!1';
 
 export interface StateThemeOptions {
   /** Most recent check-in was a paid €1 restart (not a habit log). */
@@ -80,10 +80,10 @@ export function getStateTheme(mood: Mood, options?: StateThemeOptions): StateThe
       inkSoft: '#1A1A1A',
       showCrossOut: false,
       greeting: (name = DEFAULT_NAME) => {
-        if (paidRestart) return 'paid for\ngood vibes';
-        return `hi ${name}!`;
+        if (paidRestart) return 'Paid for\ngood vibes';
+        return `Hi ${name}!`;
       },
-      motto: () => 'skip = rip.',
+      motto: () => 'Skip = RIP.',
       checkInLabel: CHECK_IN_LABEL,
     };
   }
@@ -95,9 +95,9 @@ export function getStateTheme(mood: Mood, options?: StateThemeOptions): StateThe
       bg: Colors.stateBadBg,
       inkSoft: '#330000',
       showCrossOut: true,
-      greeting: (name = DEFAULT_NAME) => `ugh, ${name}!`,
-      motto: () => 'i died waiting.',
-      checkInLabel: 'restart for 1€',
+      greeting: (name = DEFAULT_NAME) => `Ugh, ${name}!`,
+      motto: () => 'I died waiting.',
+      checkInLabel: 'Restart for 1€',
     };
   }
 
@@ -108,8 +108,8 @@ export function getStateTheme(mood: Mood, options?: StateThemeOptions): StateThe
       bg: Colors.stateSadBg,
       inkSoft: '#1A1A1A',
       showCrossOut: false,
-      greeting: (name = DEFAULT_NAME) => `hi ${name}!`,
-      motto: () => 'your laziness, my funeral.',
+      greeting: (name = DEFAULT_NAME) => `Hi ${name}!`,
+      motto: () => 'Your laziness, my funeral.',
       checkInLabel: CHECK_IN_LABEL,
     };
   }
@@ -121,9 +121,9 @@ export function getStateTheme(mood: Mood, options?: StateThemeOptions): StateThe
       bg: Colors.stateGoodBg,
       inkSoft: '#1A1A1A',
       showCrossOut: false,
-      greeting: () => "you've got zero progress.",
-      motto: () => 'your first check-in wakes them up.',
-      checkInLabel: 'start tracking',
+      greeting: () => "You've got zero progress.",
+      motto: () => 'Your first check-in wakes them up.',
+      checkInLabel: 'Start tracking',
     };
   }
 
@@ -134,8 +134,8 @@ export function getStateTheme(mood: Mood, options?: StateThemeOptions): StateThe
     bg: Colors.stateTodoBg,
     inkSoft: '#1A1A1A',
     showCrossOut: false,
-    greeting: (name = DEFAULT_NAME) => `hi ${name}!`,
-    motto: () => "don't make me die cringe.",
+    greeting: (name = DEFAULT_NAME) => `Hi ${name}!`,
+    motto: () => "Don't make me die cringe.",
     checkInLabel: CHECK_IN_LABEL,
   };
 }

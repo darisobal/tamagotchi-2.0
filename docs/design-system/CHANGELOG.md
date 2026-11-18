@@ -25,3 +25,8 @@ Extensions beyond the source: hover/focus/pressed/disabled/loading/error states,
 Moved the file from Business Drafts into Team project and published all 69 variables, nine styles and 17 component assets. The subsequent patch release records the completed cross-file import and update test.
 
 The public app repository was inspected: `darisobal/tamagotchi-2.0`, main at `738299e` at the recorded inspection. Open PRs #1 and #3 were left untouched. The small design registry stays with the app; the visual library is maintained separately in Figma.
+
+## Application correction — 2026-11-18
+
+- Preserve the original 382 × 438 card proportions across all states and calendar previews.
+- Supersede the lowercase-only application rule with original Figma capitalization at the user's request. Published library version remains 0.1.1.

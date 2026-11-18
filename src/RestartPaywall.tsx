@@ -73,10 +73,10 @@ export default function RestartPaywall({ visible, onClose, onUnlocked }: Props) 
     if (result.cancelled) return;
     if (result.needsMock) {
       setUseMock(true);
-      setError(result.error ?? 'store unavailable — use the test card below');
+      setError(result.error ?? 'Store unavailable — use the test card below');
       return;
     }
-    setError(result.error ?? 'purchase failed');
+    setError(result.error ?? 'Purchase failed');
   };
 
   const handleMockPay = async () => {
@@ -89,24 +89,24 @@ export default function RestartPaywall({ visible, onClose, onUnlocked }: Props) 
       await finishUnlock();
       return;
     }
-    setError(result.error ?? 'payment failed');
+    setError(result.error ?? 'Payment failed');
   };
 
   return <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}>
     <Page>
-      <View style={{ alignItems: 'flex-end' }}><CloseButton onPress={onClose} accessibilityLabel="close" /></View>
-      <ScreenHeader title="restart?" size="compact" />
-      <Text style={DesignType.supporting}>restart with three hearts.</Text>
-      {loading ? <ActivityIndicator accessibilityLabel="loading price" color={Palette.black} /> : <>
+      <View style={{ alignItems: 'flex-end' }}><CloseButton onPress={onClose} accessibilityLabel="Close" /></View>
+      <ScreenHeader title="Restart?" size="compact" />
+      <Text style={DesignType.supporting}>Restart with three hearts.</Text>
+      {loading ? <ActivityIndicator accessibilityLabel="Loading price" color={Palette.black} /> : <>
         {useMock && <>
-          <Text style={DesignType.calendar}>test mode — use card {MOCK_TEST_CARD.number}. no charge.</Text>
-          <TextField label="card number" value={cardNumber} onChangeText={setCardNumber} keyboardType="number-pad" editable={!busy} placeholder={MOCK_TEST_CARD.number} />
-          <TextField label="expiry" value={expiry} onChangeText={setExpiry} keyboardType="numbers-and-punctuation" multiline={false} editable={!busy} placeholder={MOCK_TEST_CARD.expiry} />
-          <TextField label="cvc" value={cvc} onChangeText={setCvc} keyboardType="number-pad" multiline={false} editable={!busy} placeholder={MOCK_TEST_CARD.cvc} secureTextEntry />
+          <Text style={DesignType.calendar}>Test mode — use card {MOCK_TEST_CARD.number}. No charge.</Text>
+          <TextField label="Card number" value={cardNumber} onChangeText={setCardNumber} keyboardType="number-pad" editable={!busy} placeholder={MOCK_TEST_CARD.number} />
+          <TextField label="Expiry" value={expiry} onChangeText={setExpiry} keyboardType="numbers-and-punctuation" multiline={false} editable={!busy} placeholder={MOCK_TEST_CARD.expiry} />
+          <TextField label="CVC" value={cvc} onChangeText={setCvc} keyboardType="number-pad" multiline={false} editable={!busy} placeholder={MOCK_TEST_CARD.cvc} secureTextEntry />
         </>}
-        <Button label={`pay ${displayPrice}`} state={busy ? 'loading' : 'default'} loadingLabel={useMock ? 'processing…' : 'waiting for store…'} onPress={useMock ? handleMockPay : handleStorePay} />
+        <Button label={`Pay ${displayPrice}`} state={busy ? 'loading' : 'default'} loadingLabel={useMock ? 'Processing…' : 'Waiting for store…'} onPress={useMock ? handleMockPay : handleStorePay} />
       </>}
-      {error ? <Text accessibilityRole="alert" style={DesignType.supporting}>{error.toLowerCase()}</Text> : null}
+      {error ? <Text accessibilityRole="alert" style={DesignType.supporting}>{error}</Text> : null}
     </Page>
   </Modal>;
 }

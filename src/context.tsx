@@ -135,7 +135,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       await AsyncStorage.removeItem(`tamagotchi_sync_pending_${identity}`);
       setSyncNotice(null);
     } catch {
-      setSyncNotice('progress is saved on this device. cloud sync could not finish.');
+      setSyncNotice('Progress is saved on this device. Cloud sync could not finish.');
     }
   }, [identity, repo]);
 
@@ -201,7 +201,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setLoadedIdentity(identity);
         setLoading(false);
       } catch {
-        if (!cancelled) setLoadError('could not load your account. your local progress is safe. reconnect and try again.');
+        if (!cancelled) setLoadError('Could not load your account. Your local progress is safe. Reconnect and try again.');
       }
     })();
     return () => { cancelled = true; syncReady.current = false; };
@@ -219,8 +219,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       syncReady.current = true;
       setLoadedIdentity(identity);
       setLoading(false);
-      setSyncNotice('using your account progress. a backup of your device progress is kept on this device.');
-    } catch { setLoadError('could not switch profiles. your saved progress has been kept. try again.'); }
+      setSyncNotice('Using your account progress. A backup of your device progress is kept on this device.');
+    } catch { setLoadError('Could not switch profiles. Your saved progress has been kept. Try again.'); }
   };
 
   useEffect(() => {
@@ -245,7 +245,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const doCheckIn = useCallback(
     async (trackType: TrackType, intensity: Intensity, note: string | null) => {
-      if (loading || loadedIdentity !== identity || !prefs.onboardingDone) throw new Error('your plan is still loading. try again.');
+      if (loading || loadedIdentity !== identity || !prefs.onboardingDone) throw new Error('Your plan is still loading. Try again.');
       const now = new Date();
       const state = tracksRef.current.find((t) => t.trackType === trackType);
       if (!state) return;
@@ -256,7 +256,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (restartingFromDeath) {
         const paid = await consumePendingPaidRestart();
         if (!paid) {
-          throw new Error('payment required to start again');
+          throw new Error('Payment required to start again');
         }
         isPaidRestart = true;
       }

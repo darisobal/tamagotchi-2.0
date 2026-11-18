@@ -4,27 +4,27 @@
  */
 
 export const CONFIRMATION_MESSAGES = [
-  'wait. you actually did it?\nno bullshit?',
-  'look me in the eyes.\ndid you actually do it?',
-  'you wouldn’t lie to this face, would you?',
-  'okay, serious question.\ndid you really do it?',
-  'this is between you and your conscience.\ndid you do it?',
+  'Wait. You actually did it?\nNo bullshit?',
+  'Look me in the eyes.\nDid you actually do it?',
+  'You wouldn’t lie to this face, would you?',
+  'Okay, serious question.\nDid you really do it?',
+  'This is between you and your conscience.\nDid you do it?',
 ] as const;
 
 export const POSITIVE_BUTTON_LABELS = [
-  'yep, i did',
-  'i swear',
-  'hell yeah',
+  'Yep, I did',
+  'I swear',
+  'Hell yeah',
   '100% did it',
-  'cross my heart',
+  'Cross my heart',
 ] as const;
 
 export const NEGATIVE_BUTTON_LABELS = [
-  'okay, you got me',
-  'fine, i lied',
-  '…not really',
-  'abort mission',
-  'okay, busted',
+  'Okay, you got me',
+  'Fine, I lied',
+  '…Not really',
+  'Abort mission',
+  'Okay, busted',
 ] as const;
 
 export type ConfirmationMessage = (typeof CONFIRMATION_MESSAGES)[number];

@@ -7,7 +7,7 @@ type ButtonProps = Omit<PressableProps, 'children' | 'style'> & {
   label: string; loadingLabel?: string; appearance?: 'primary' | 'secondary'; state?: ButtonState;
   compact?: boolean; style?: PressableProps['style'];
 };
-export function Button({ label, loadingLabel = 'saving…', appearance = 'primary', state = 'default', compact = false, disabled, style, ...props }: ButtonProps) {
+export function Button({ label, loadingLabel = 'Saving…', appearance = 'primary', state = 'default', compact = false, disabled, style, ...props }: ButtonProps) {
   const [focused, setFocused] = useState(false);
   const [hovered, setHovered] = useState(false);
   const blocked = disabled || state === 'disabled' || state === 'loading';
@@ -44,7 +44,7 @@ export const TextField = forwardRef<TextInput, TextFieldProps>(function TextFiel
     <TextInput {...props} ref={ref} accessibilityLabel={props.accessibilityLabel ?? label}
       aria-labelledby={`${id}-label`} aria-describedby={message || errorMessage ? `${id}-message` : undefined}
       aria-invalid={Boolean(errorMessage)} aria-disabled={state === 'disabled' || props.editable === false} accessibilityState={{ ...props.accessibilityState, disabled: state === 'disabled' || props.editable === false }} editable={state === 'disabled' ? false : props.editable}
-      multiline={multiline} scrollEnabled={!multiline} autoCapitalize={props.autoCapitalize ?? 'none'} placeholderTextColor={Palette['gray-text']}
+      multiline={multiline} scrollEnabled={!multiline} autoCapitalize={props.autoCapitalize ?? 'sentences'} placeholderTextColor={Palette['gray-text']}
       submitBehavior={props.submitBehavior ?? (props.onSubmitEditing ? 'blurAndSubmit' : undefined)}
       blurOnSubmit={props.blurOnSubmit ?? (props.onSubmitEditing ? true : undefined)}
       onFocus={e => { setFocused(true); onFocus?.(e); }} onBlur={e => { setFocused(false); onBlur?.(e); }}
@@ -64,7 +64,7 @@ export function Feedback({ title, goal, showGoal = true, surface = 'plain' }: { 
     {showGoal && goal ? <Text style={[DesignType.supporting, styles.wrap]}>{goal}</Text> : null}
   </View>;
 }
-export function CheckInActions({ onNegative, onPositive, state = 'ready', negative = 'no', positive = 'yes' }: { onNegative: () => void; onPositive: () => void; state?: 'ready' | 'submitting'; negative?: string; positive?: string }) {
+export function CheckInActions({ onNegative, onPositive, state = 'ready', negative = 'No', positive = 'Yes' }: { onNegative: () => void; onPositive: () => void; state?: 'ready' | 'submitting'; negative?: string; positive?: string }) {
   return <View style={styles.actions}>
     <Button label={negative} appearance="secondary" disabled={state === 'submitting'} onPress={onNegative} style={styles.action} />
     <Button label={positive} state={state === 'submitting' ? 'loading' : 'default'} onPress={onPositive} style={styles.action} />
@@ -73,7 +73,7 @@ export function CheckInActions({ onNegative, onPositive, state = 'ready', negati
 export function MonthChip({ label, selected = false, ...props }: Omit<ButtonProps, 'appearance' | 'compact'> & { selected?: boolean }) {
   return <Button {...props} label={label} compact appearance={selected ? 'primary' : 'secondary'} aria-pressed={!props.accessibilityRole || props.accessibilityRole === 'button' ? selected : undefined} accessibilityState={{ ...props.accessibilityState, selected }} />;
 }
-export function SelectionTile({ label = 'none', selected, onPress, disabled }: { label?: string; selected: boolean; onPress?: () => void; disabled?: boolean }) {
+export function SelectionTile({ label = 'None', selected, onPress, disabled }: { label?: string; selected: boolean; onPress?: () => void; disabled?: boolean }) {
   const [focused, setFocused] = useState(false);
   return <Pressable accessibilityRole="radio" accessibilityLabel={label} aria-checked={selected} accessibilityState={{ checked: selected, disabled }}
     onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} disabled={disabled} onPress={onPress}

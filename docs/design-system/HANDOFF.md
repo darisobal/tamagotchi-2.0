@@ -8,7 +8,7 @@ The library is published in Business → Team project and enabled in Business Vi
 
 The new visual language uses Hepta Slab headings, Aleo reading text, the green gradient, coral pet artwork, 20 px control corners and 3 px outlines. Replace the legacy visual theme only after the setup gates pass. Preserve authentication, SQLite/Supabase state, check-in cadence, rewards, purchases and existing setup/home/progress routes. Keep mobile and web on shared components.
 
-Implement reusable components before migrating screens. Use the exact original pet artwork; export the native library assets rather than redrawing the pets or flattening whole screens. Add and load Aleo as needed. Keep text lowercase, allow long labels/values to wrap, retain focus and disabled/loading/error states, and provide accessible date/status labels. Build real calendar logic; the Figma months are examples.
+Implement reusable components before migrating screens. Use the exact original pet artwork; export the native library assets rather than redrawing the pets or flattening whole screens. Add and load Aleo as needed. Match capitalization to the original Figma designs, allow long labels/values to wrap, retain focus and disabled/loading/error states, and provide accessible date/status labels. Build real calendar logic; the Figma months are examples.
 
 Hair/clothing artwork and opened navigation behavior were not supplied. Use the documented no-accessory choice and preserve existing routes; report any product decision needed before inventing new assets or destinations. The visual library is not permission to change application behavior.
 

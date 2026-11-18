@@ -67,13 +67,13 @@ export default function CheckInScreen() {
       router.back();
     } catch (err) {
       const message =
-        err instanceof Error ? err.message.toLowerCase() : 'could not save check-in';
+        err instanceof Error ? err.message : 'Could not save check-in';
       if (Platform.OS === 'web' && typeof window !== 'undefined') {
         window.alert(message);
       } else {
-        Alert.alert('oops', message);
+        Alert.alert('Oops', message);
       }
-      if (message.includes('payment')) {
+      if (message.toLowerCase().includes('payment')) {
         setUnlocked(false);
         setPaywallVisible(true);
       }
@@ -90,11 +90,11 @@ export default function CheckInScreen() {
       router.back();
     } catch (err) {
       const message =
-        err instanceof Error ? err.message.toLowerCase() : 'could not restart';
+        err instanceof Error ? err.message : 'Could not restart';
       if (Platform.OS === 'web' && typeof window !== 'undefined') {
         window.alert(message);
       } else {
-        Alert.alert('oops', message);
+        Alert.alert('Oops', message);
       }
     }
   };
@@ -109,19 +109,19 @@ export default function CheckInScreen() {
     <>
       <Page bottomPadding={48}>
           <View style={styles.header}>
-            <CloseButton onPress={() => router.back()} accessibilityLabel="close" />
+            <CloseButton onPress={() => router.back()} accessibilityLabel="Close" />
           </View>
 
           <ScreenHeader title={habitName} />
 
           {mood === 'dead' && (
             <Text style={styles.prompt}>
-              paid restart unlocked — what will you do first?
+              Paid restart unlocked — what will you do first?
             </Text>
           )}
 
-          <TextField label="note (optional)" editable={!saving}
-            placeholder="what did you work on?"
+          <TextField label="Note (optional)" editable={!saving}
+            placeholder="What did you work on?"
             placeholderTextColor={Colors.textMuted}
             value={note}
             onChangeText={setNote}
@@ -131,7 +131,7 @@ export default function CheckInScreen() {
 
           <View style={styles.spacer} />
 
-          <Button label={mood === 'dead' ? 'restart?' : 'done!'} state={saving ? 'loading' : 'default'} disabled={mood === 'dead' && !unlocked} onPress={handleSave} />
+          <Button label={mood === 'dead' ? 'Restart?' : 'Done!'} state={saving ? 'loading' : 'default'} disabled={mood === 'dead' && !unlocked} onPress={handleSave} />
       </Page>
 
       <RestartPaywall

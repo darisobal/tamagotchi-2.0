@@ -46,8 +46,8 @@ export default function CouponsTabContent({ checkIns }: CouponsTabContentProps) 
   if (groups.length === 0) {
     return (
       <View style={styles.empty}>
-        <Text style={styles.emptyTitle}>no coupons yet</Text>
-        <Text style={styles.emptySubtitle}>log progress to earn your first power coupon</Text>
+        <Text style={styles.emptyTitle}>No coupons yet</Text>
+        <Text style={styles.emptySubtitle}>Log progress to earn your first power coupon</Text>
       </View>
     );
   }
@@ -58,7 +58,7 @@ export default function CouponsTabContent({ checkIns }: CouponsTabContentProps) 
     <View style={styles.scroll}>
       {groups.map((group) => (
         <View key={group.dayIso} style={styles.dayGroup}>
-          <Text style={styles.dayLabel}>{group.dayLabel.toLowerCase()}</Text>
+          <Text style={styles.dayLabel}>{group.dayLabel}</Text>
           {group.items.map((item) => {
             const rotation = couponRotationForIndex(rotationIndex);
             rotationIndex += 1;

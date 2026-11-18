@@ -75,20 +75,20 @@ export interface UserPrefs {
 
 /** Pet colour swatches shown in onboarding + settings. */
 export const PET_COLOR_OPTIONS: { id: string; color: string; label: string }[] = [
-  { id: 'coral', color: '#FF7254', label: 'coral' },
-  { id: 'yellow', color: '#FED12E', label: 'yellow' },
-  { id: 'blue', color: '#3578EB', label: 'blue' },
-  { id: 'green', color: '#4BA952', label: 'green' },
-  { id: 'purple', color: '#9358D8', label: 'purple' },
+  { id: 'coral', color: '#FF7254', label: 'Coral' },
+  { id: 'yellow', color: '#FED12E', label: 'Yellow' },
+  { id: 'blue', color: '#3578EB', label: 'Blue' },
+  { id: 'green', color: '#4BA952', label: 'Green' },
+  { id: 'purple', color: '#9358D8', label: 'Purple' },
 ];
 
 export const DEFAULT_PET_COLOR = '#FF7254';
 
 export const PET_HAT_OPTIONS: { id: PetHat; label: string; symbol: string }[] = [
-  { id: 'none',   label: 'no hat',  symbol: 'x' },
-  { id: 'top',    label: 'top hat', symbol: 'T' },
-  { id: 'beanie', label: 'beanie',  symbol: 'B' },
-  { id: 'crown',  label: 'crown',   symbol: 'C' },
+  { id: 'none',   label: 'No hat',  symbol: 'x' },
+  { id: 'top',    label: 'Top hat', symbol: 'T' },
+  { id: 'beanie', label: 'Beanie',  symbol: 'B' },
+  { id: 'crown',  label: 'Crown',   symbol: 'C' },
 ];
 
 export const MAIN_TRACK: TrackType = 'main';
@@ -139,9 +139,9 @@ export const DEFAULT_HABIT_CADENCE: HabitCadence = 'daily';
 
 /** Labels for the cadence picker in settings / onboarding. */
 export const CADENCE_OPTIONS: { id: HabitCadence; label: string }[] = [
-  { id: 'daily', label: 'daily' },
-  { id: 'every2days', label: 'every two days' },
-  { id: 'weekly', label: 'weekly' },
+  { id: 'daily', label: 'Daily' },
+  { id: 'every2days', label: 'Every two days' },
+  { id: 'weekly', label: 'Weekly' },
 ];
 
 export const INTENSITY_POINTS: Record<Intensity, number> = {

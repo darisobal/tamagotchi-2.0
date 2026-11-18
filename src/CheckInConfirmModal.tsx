@@ -35,11 +35,11 @@ export default function CheckInConfirmModal({
       onRequestClose={onCancel}
     >
       <Page bottomPadding={40}>
-        <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}><CloseButton onPress={onCancel} accessibilityLabel="close" /></View>
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}><CloseButton onPress={onCancel} accessibilityLabel="Close" /></View>
         <ScreenHeader title={message} size="compact" />
         <View style={{ flex: 1 }} />
-        <Button label={negativeLabel || 'cancel'} appearance="secondary" onPress={onCancel} />
-        <Button label={positiveLabel || 'confirm'} onPress={onConfirm} />
+        <Button label={negativeLabel || 'Cancel'} appearance="secondary" onPress={onCancel} />
+        <Button label={positiveLabel || 'Confirm'} onPress={onConfirm} />
       </Page>
     </Modal>
   );

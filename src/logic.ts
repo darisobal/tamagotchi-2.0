@@ -116,14 +116,14 @@ export function computePetMood(
   habitName: string = DEFAULT_HABIT_NAME,
 ): PetMoodInfo {
   if (habits.length === 0) {
-    return { mood: 'sleeping', reason: "you've got zero progress.", lives: PET_LIVES_MAX };
+    return { mood: 'sleeping', reason: "You've got zero progress.", lives: PET_LIVES_MAX };
   }
 
   const habit = habits[0];
   const name = habitName || DEFAULT_HABIT_NAME;
 
   if (habit.lastCheckInAt === null && habit.lives === PET_LIVES_MAX) {
-    return { mood: 'sleeping', lives: PET_LIVES_MAX, reason: "you've got zero progress." };
+    return { mood: 'sleeping', lives: PET_LIVES_MAX, reason: "You've got zero progress." };
   }
 
   const lives = habit.lives;
@@ -139,7 +139,7 @@ export function computePetMood(
     return { mood, lives, reason: `${name} — missed a check-in` };
   }
 
-  return { mood, lives, reason: 'keep it up!' };
+  return { mood, lives, reason: 'Keep it up!' };
 }
 
 // ─── Mood helpers ────────────────────────────────────────

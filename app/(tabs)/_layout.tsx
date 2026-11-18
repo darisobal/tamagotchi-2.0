@@ -168,9 +168,9 @@ export default function TabLayout() {
         tabBarInactiveTintColor: Colors.ink,
       }}
     >
-      <Tabs.Screen name="settings" options={{ title: 'setup' }} />
-      <Tabs.Screen name="index" options={{ title: 'home' }} />
-      <Tabs.Screen name="progress" options={{ title: 'progress' }} />
+      <Tabs.Screen name="settings" options={{ title: 'Setup' }} />
+      <Tabs.Screen name="index" options={{ title: 'Home' }} />
+      <Tabs.Screen name="progress" options={{ title: 'Progress' }} />
     </Tabs>
   );
 }

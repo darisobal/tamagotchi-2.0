@@ -43,7 +43,7 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
     // Serialize saves; navigation and final commit flush the latest draft.
     saving.current = saving.current.catch(() => {}).then(() => updatePrefs({
       onboardingDraft: { step, habitName: habit, habitCadence: cadence, petName: pet },
-    })).catch(() => setError('could not save your draft. please try again.'));
+    })).catch(() => setError('Could not save your draft. Please try again.'));
   }, [step, habit, cadence, pet, updatePrefs]);
 
   useEffect(() => {
@@ -63,8 +63,8 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
 
   const next = async () => {
     if (busy) return;
-    const message = step === 0 && !habit.trim() ? 'give your habit a name before continuing.'
-      : step === 2 && !pet.trim() ? 'give your pet a name before continuing.' : '';
+    const message = step === 0 && !habit.trim() ? 'Give your habit a name before continuing.'
+      : step === 2 && !pet.trim() ? 'Give your pet a name before continuing.' : '';
     if (message) { setError(message); AccessibilityInfo.announceForAccessibility(message); input.current?.focus(); return; }
     setError('');
     if (step < 2) { setStep(step + 1); return; }
@@ -74,31 +74,31 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
       finished.current = true;
       await startHabitPlan(habit, cadence, pet);
       router.replace('/(tabs)');
-    } catch { finished.current = false; setError('could not start your plan. please try again.'); }
+    } catch { finished.current = false; setError('Could not start your plan. Please try again.'); }
     finally { setBusy(false); }
   };
 
   return <Page ref={scroll} bottomPadding={48}>
     <View style={styles.top}>
-      <Text style={DesignType.calendar}>{step + 1} of 3</Text>
-      {step > 0 && <Pressable accessibilityRole="button" disabled={busy} style={styles.link} onPress={() => { setError(''); setStep(step - 1); }}><Text style={DesignType.calendar}>back</Text></Pressable>}
+      <Text style={DesignType.calendar}>{step + 1} Of 3</Text>
+      {step > 0 && <Pressable accessibilityRole="button" disabled={busy} style={styles.link} onPress={() => { setError(''); setStep(step - 1); }}><Text style={DesignType.calendar}>Back</Text></Pressable>}
     </View>
-    <ScreenHeader title={['name your habit', 'how often?', pet.trim() ? `meet ${pet.trim().toLowerCase()}.` : 'name your pet'][step]} />
-    {step !== 2 && <Text style={DesignType.supporting}>{['pick one small thing. your pet will show your progress.', 'each check-in restarts the interval.'][step]}</Text>}
+    <ScreenHeader title={['Name your habit', 'How often?', pet.trim() ? `Meet ${pet.trim()}.` : 'Name your pet'][step]} />
+    {step !== 2 && <Text style={DesignType.supporting}>{['Pick one small thing. Your pet will show your progress.', 'Each check-in restarts the interval.'][step]}</Text>}
     {step === 0 && <>
-      <TextField ref={input} label="habit" autoFocus accessibilityHint="choose a concrete, achievable action" value={habit} onChangeText={setHabit} maxLength={HABIT_NAME_MAX} placeholder="e.g. read 10 pages" returnKeyType="next" onSubmitEditing={() => void next()} />
-      <View style={styles.habitSuggestions}>{['meditate', 'run', 'read 10 pages'].map(value => <Pressable key={value} accessibilityRole="button" accessibilityHint="fills your habit field so you can edit it" style={styles.tagTarget} onPress={() => { setHabit(value); setError(''); input.current?.focus(); }}><Text style={[DesignType.calendar, { textDecorationLine: 'underline' }]}>{value}</Text></Pressable>)}</View>
+      <TextField ref={input} label="Habit" autoFocus accessibilityHint="Choose a concrete, achievable action" value={habit} onChangeText={setHabit} maxLength={HABIT_NAME_MAX} placeholder="E.g. read 10 pages" returnKeyType="next" onSubmitEditing={() => void next()} />
+      <View style={styles.habitSuggestions}>{['meditate', 'run', 'read 10 pages'].map(value => <Pressable key={value} accessibilityRole="button" accessibilityHint="Fills your habit field so you can edit it" style={styles.tagTarget} onPress={() => { setHabit(value); setError(''); input.current?.focus(); }}><Text style={[DesignType.calendar, { textDecorationLine: 'underline' }]}>{value}</Text></Pressable>)}</View>
     </>}
-    {step === 1 && <View accessibilityRole="radiogroup" accessibilityLabel="check-in interval" style={{ gap: 12 }}>
-      {CADENCE_OPTIONS.map(option => <MonthChip key={option.id} label={{ daily: 'every 24 hours', every2days: 'every 48 hours', weekly: 'every 7 days' }[option.id]} selected={cadence === option.id} accessibilityRole="radio" accessibilityState={{ checked: cadence === option.id }} onPress={() => setCadence(option.id)} />)}
+    {step === 1 && <View accessibilityRole="radiogroup" accessibilityLabel="Check-in interval" style={{ gap: 12 }}>
+      {CADENCE_OPTIONS.map(option => <MonthChip key={option.id} label={{ daily: 'Every 24 hours', every2days: 'Every 48 hours', weekly: 'Every 7 days' }[option.id]} selected={cadence === option.id} accessibilityRole="radio" accessibilityState={{ checked: cadence === option.id }} onPress={() => setCadence(option.id)} />)}
     </View>}
     {step === 2 && <>
-      <View accessible accessibilityRole="image" accessibilityLabel={`${pet.trim() || 'your pet'}, with three hearts`} style={styles.pet}><PetArtwork color={prefs.petColor} /><PetLives lives={3} color={prefs.petColor} size={24} /></View>
-      <TextField ref={input} label="name" value={pet} onChangeText={setPet} maxLength={40} returnKeyType="done" onSubmitEditing={() => void next()} />
-      <Text style={DesignType.supporting}>check-ins refill three hearts. each missed interval costs one. lose all three and your pet dies. restarting costs {price.toLowerCase()}{mock ? ' (test checkout here)' : ''}. “let’s start” starts the clock.</Text>
+      <View accessible accessibilityRole="image" accessibilityLabel={`${pet.trim() || 'Your pet'}, with three hearts`} style={styles.pet}><PetArtwork color={prefs.petColor} /><PetLives lives={3} color={prefs.petColor} size={24} /></View>
+      <TextField ref={input} label="Name" value={pet} onChangeText={setPet} maxLength={40} returnKeyType="done" onSubmitEditing={() => void next()} />
+      <Text style={DesignType.supporting}>Check-ins refill three hearts. Each missed interval costs one. Lose all three and your pet dies. Restarting costs {price}{mock ? ' (test checkout here)' : ''}. “Let’s start” starts the clock.</Text>
     </>}
     {error ? <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={DesignType.supporting}>{error}</Text> : null}
-    <Button label={step === 2 ? 'let’s start' : 'next'} state={busy ? 'loading' : 'default'} onPress={() => void next()} />
+    <Button label={step === 2 ? 'Let’s start' : 'Next'} state={busy ? 'loading' : 'default'} onPress={() => void next()} />
   </Page>;
 }
 

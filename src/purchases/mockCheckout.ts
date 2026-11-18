@@ -34,13 +34,13 @@ export async function purchaseRestartViaMock(input: {
   await new Promise((r) => setTimeout(r, 50));
 
   if (!isValidMockCardNumber(input.cardNumber)) {
-    return { ok: false, error: 'use the test card 4242 4242 4242 4242' };
+    return { ok: false, error: 'Use the test card 4242 4242 4242 4242' };
   }
   if (!isValidMockExpiry(input.expiry)) {
-    return { ok: false, error: 'enter a valid future expiry (mm/yy)' };
+    return { ok: false, error: 'Enter a valid future expiry (MM/YY)' };
   }
   if (!isValidMockCvc(input.cvc)) {
-    return { ok: false, error: 'enter a valid cvc' };
+    return { ok: false, error: 'Enter a valid CVC' };
   }
 
   return { ok: true, method: 'mock', displayPrice: RESTART_PRICE_LABEL };

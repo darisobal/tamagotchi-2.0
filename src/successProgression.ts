@@ -41,4 +41,4 @@ export function getSuccessCelebration(params: {
   };
 }
 
-export const BALLS_GREETING = 'holy shit.\nyou have balls!';
+export const BALLS_GREETING = 'Holy shit.\nYou have balls!';

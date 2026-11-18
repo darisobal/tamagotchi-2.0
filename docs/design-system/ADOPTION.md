@@ -17,7 +17,7 @@ The 22 SVG files in `assets/design-system` came from the published library's des
 
 [application-components.json](application-components.json) records the verified Figma-to-source correspondence for all 12 component families. These are source references, not published Code Connect mappings. The connected Business workspace reports a Professional plan; the Code Connect workflow requires an Organization or Enterprise plan. Publication was not attempted and no account plan was changed.
 
-The payment action adds a contextual loading label (`processing…` / `waiting for store…`) to the shared button. Its default loading copy remains the library's `saving…`. Password inputs remain single-line; general text fields grow with their content. Fields with a submit action now submit and blur on the keyboard action key on iOS and web; ordinary multiline notes retain line breaks. Confirmation labels follow the lowercase copy rule.
+The payment action adds a contextual loading label (`processing…` / `waiting for store…`) to the shared button. Its default loading copy remains the library's `saving…`. Password inputs remain single-line; general text fields grow with their content. Fields with a submit action now submit and blur on the keyboard action key on iOS and web; ordinary multiline notes retain line breaks. Capitalization now follows the original Figma designs and sentence case in supporting flows; user values, locale-formatted dates and external messages are no longer forced to lowercase.
 
 ## Validation — 18 November 2026
 
@@ -48,3 +48,13 @@ Review passed internally for necessity/clarity, then consistency/visual focus. I
 - [iPhone success with a long goal, initial viewport](validation/ios-success-long-goal.png)
 
 Before adoption is complete: resolve native scrolling and verify touch reachability, finish Android and screen-reader review, publish Code Connect when the workspace supports it, and review the draft application PR. Nothing was merged or deployed.
+
+## Card proportions and capitalization correction — 18 November 2026
+
+The shared stage now scales a single 382 × 438 canvas uniformly instead of shrinking width while retaining a fixed height. Setup, idle, success, missed and double-success were reviewed on web at 320 and 430 px and on iPhone 16 Plus. Cards measure 272 × 311.87 at 320 px and 382 × 438 at 430 px; the wide layout retains 382 × 438. Calendar miniatures use the same proportions. A wrapped setup name extends its container without stretching the artwork. Setup uses the source white card and hat-free pet.
+
+Original Figma source nodes: 4727:145, 4727:181, 4727:228, 4727:265 and 4727:1899 in eU62JH6PqW61UeGlLaGk7T. Screenshots: `validation/proportions-{state}-{430|ios}.png`.
+
+At the user's request, original Figma capitalization supersedes the v0.1.1 lowercase examples throughout the application. The lowercase Cursor rule was removed and AGENTS.md updated. Supporting flows use sentence case; user values and locale formatting retain their casing. This is an application correction, not a new Figma library publication.
+
+Validation: 91 tests pass; seven existing type errors remain, with no new errors. Native state artwork was inspected before the Mac relocked; the earlier scrolling report remains unresolved.

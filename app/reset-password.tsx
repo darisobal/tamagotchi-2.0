@@ -48,11 +48,11 @@ export default function ResetPasswordScreen() {
   const handleSave = async () => {
     setError(null);
     if (password.length < 6) {
-      setError('use at least 6 characters.');
+      setError('Use at least 6 characters.');
       return;
     }
     if (password !== confirmPassword) {
-      setError('passwords do not match.');
+      setError('Passwords do not match.');
       return;
     }
 
@@ -71,23 +71,23 @@ export default function ResetPasswordScreen() {
 
   return (
     <Page bottomPadding={48}>
-          <ScreenHeader title="new password" />
-          <Text style={styles.subtitle}>choose a new password for your account</Text>
+          <ScreenHeader title="New password" />
+          <Text style={styles.subtitle}>Choose a new password for your account</Text>
 
-          <TextField label="password" multiline={false} editable={!busy}
+          <TextField label="Password" multiline={false} editable={!busy}
             value={password}
             onChangeText={setPassword}
-            placeholder="at least 6 characters"
+            placeholder="At least 6 characters"
             placeholderTextColor={Colors.textMuted}
             secureTextEntry
             autoCapitalize="none"
             textContentType="newPassword"
           />
 
-          <TextField label="confirm password" multiline={false} editable={!busy}
+          <TextField label="Confirm password" multiline={false} editable={!busy}
             value={confirmPassword}
             onChangeText={setConfirmPassword}
-            placeholder="type it again"
+            placeholder="Type it again"
             placeholderTextColor={Colors.textMuted}
             secureTextEntry
             autoCapitalize="none"
@@ -96,7 +96,7 @@ export default function ResetPasswordScreen() {
 
           {error ? <Text accessibilityRole="alert" style={styles.error}>{error}</Text> : null}
 
-          <Button label="save password" state={busy ? 'loading' : 'default'} onPress={handleSave} />
+          <Button label="Save password" state={busy ? 'loading' : 'default'} onPress={handleSave} />
     </Page>
   );
 }

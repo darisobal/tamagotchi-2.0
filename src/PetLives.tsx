@@ -96,7 +96,7 @@ export default function PetLives({
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel="how lives work"
+      accessibilityLabel="How lives work"
       hitSlop={8}
     >
       {hearts}

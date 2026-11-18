@@ -15,7 +15,7 @@ type CloseButtonProps = {
  */
 export default function CloseButton({
   onPress,
-  accessibilityLabel = 'close',
+  accessibilityLabel = 'Close',
   style,
   size = 36,
 }: CloseButtonProps) {
@@ -28,7 +28,7 @@ export default function CloseButton({
       accessibilityLabel={accessibilityLabel}
       activeOpacity={0.7}
     >
-      <Text style={styles.icon}>x</Text>
+      <Text style={styles.icon}>X</Text>
     </TouchableOpacity>
   );
 }

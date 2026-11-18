@@ -42,7 +42,7 @@ Record each release with its date, changed assets, compatibility impact, validat
 
 The new source uses Hepta Slab Bold headlines, Hepta Slab ExtraBold feedback titles, Aleo body text, a green page gradient, coral pet artwork, 20 px rounded controls and 3 px outlines. The existing app's blue pet and mood backgrounds are legacy values, not defaults for the new library.
 
-All new product copy remains lowercase under the project rules. Preserve the original reference copy in the original file. Missing hair/clothing artwork must not be represented as finished assets. Do not add speculative dark themes, decorative shadows or extra controls.
+Match capitalization to the original Figma designs, including sentence case and intentional emphasis. Use sentence case for supporting flows without source copy. Preserve user-entered values and locale-formatted dates. The former lowercase-only rule was removed at Darya’s request on 18 November 2026. Missing hair/clothing artwork must not be represented as finished assets. Do not add speculative dark themes, decorative shadows or extra controls.
 
 The source is 430 px wide with 24 px page margins. Review examples cover 320 px and 430 px phone layouts and a centered 430 px column on a 1024 px web viewport. Buttons retain a 72 px minimum height and grow for wrapping labels; fields grow for long values. Setup content must scroll. Keep option rows scrollable or wrapped when they exceed the viewport.
 

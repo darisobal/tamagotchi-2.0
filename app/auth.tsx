@@ -84,7 +84,7 @@ export default function AuthScreen() {
   const handleResendConfirmation = async () => {
     clearMessages();
     if (!email.trim()) {
-      setError('enter your email first.');
+      setError('Enter your email first.');
       return;
     }
     setBusy(true);
@@ -94,13 +94,13 @@ export default function AuthScreen() {
       setError(err);
       return;
     }
-    setResendNotice('confirmation email sent again. check your inbox.');
+    setResendNotice('Confirmation email sent again. Check your inbox.');
   };
 
   const handleForgotPassword = async () => {
     clearMessages();
     if (!email.trim()) {
-      setError('enter your email.');
+      setError('Enter your email.');
       return;
     }
     setBusy(true);
@@ -133,7 +133,7 @@ export default function AuthScreen() {
                 disabled={busy}
                 hitSlop={12}
                 accessibilityRole="button"
-                accessibilityLabel="back to sign in"
+                accessibilityLabel="Back to sign in"
                 activeOpacity={0.7}
               >
                 <Svg width={18} height={18} viewBox="0 0 18 18">
@@ -147,30 +147,30 @@ export default function AuthScreen() {
                   />
                 </Svg>
               </TouchableOpacity>
-              <ScreenHeader title="forgot password" />
+              <ScreenHeader title="Forgot password" />
               <Text style={styles.subtitle}>
-                enter your email and we will send a reset link
+                Enter your email and we will send a reset link
               </Text>
             </>
           ) : (
             <>
-              <ScreenHeader title="welcome" />
-              <Text style={styles.subtitle}>your habit has a heartbeat</Text>
+              <ScreenHeader title="Welcome" />
+              <Text style={styles.subtitle}>Your habit has a heartbeat</Text>
             </>
           )}
 
           {isLocalOnly ? (
             <Text style={styles.hint}>
               {mode === 'forgot'
-                ? 'password reset is unavailable in local mode.'
-                : 'local mode: data stays on this device.'}
+                ? 'Password reset is unavailable in local mode.'
+                : 'Local mode: data stays on this device.'}
             </Text>
           ) : null}
 
-          <TextField label="email" multiline={false} editable={!busy}
+          <TextField label="Email" multiline={false} editable={!busy}
             value={email}
             onChangeText={setEmail}
-            placeholder="you@example.com"
+            placeholder="You@example.com"
             placeholderTextColor={Colors.textMuted}
             autoCapitalize="none"
             autoCorrect={false}
@@ -180,10 +180,10 @@ export default function AuthScreen() {
 
           {mode === 'sign_in' ? (
             <>
-              <TextField label="password" multiline={false} editable={!busy}
+              <TextField label="Password" multiline={false} editable={!busy}
                 value={password}
                 onChangeText={setPassword}
-                placeholder="at least 6 characters"
+                placeholder="At least 6 characters"
                 placeholderTextColor={Colors.textMuted}
                 secureTextEntry
                 autoCapitalize="none"
@@ -197,7 +197,7 @@ export default function AuthScreen() {
                   disabled={busy}
                   activeOpacity={0.85}
                 >
-                  <Text style={styles.linkBtnText}>forgot password?</Text>
+                  <Text style={styles.linkBtnText}>Forgot password?</Text>
                 </TouchableOpacity>
               ) : null}
             </>
@@ -206,20 +206,20 @@ export default function AuthScreen() {
           {error ? <Text accessibilityRole="alert" style={styles.error}>{error}</Text> : null}
           {confirmationSent ? (
             <Text style={styles.success}>
-              check your email to confirm your account, then open the link to continue.
+              Check your email to confirm your account, then open the link to continue.
             </Text>
           ) : null}
           {resendNotice ? <Text style={styles.success}>{resendNotice}</Text> : null}
           {resetSent ? (
             <Text style={styles.success}>
-              reset link sent. check your email and open the link to choose a new password.
+              Reset link sent. Check your email and open the link to choose a new password.
             </Text>
           ) : null}
 
-          <Button label={mode === 'forgot' ? 'send reset link' : 'go'} state={busy ? 'loading' : 'default'} loadingLabel={mode === 'forgot' ? 'sending…' : 'connecting…'} onPress={mode === 'forgot' ? handleForgotPassword : handleContinue} />
+          <Button label={mode === 'forgot' ? 'Send reset link' : 'Go'} state={busy ? 'loading' : 'default'} loadingLabel={mode === 'forgot' ? 'Sending…' : 'Connecting…'} onPress={mode === 'forgot' ? handleForgotPassword : handleContinue} />
 
           {mode === 'sign_in' && confirmationSent && isConfigured ? (
-            <Button label="resend confirmation email" appearance="secondary" disabled={busy} onPress={handleResendConfirmation} />
+            <Button label="Resend confirmation email" appearance="secondary" disabled={busy} onPress={handleResendConfirmation} />
           ) : null}
     </Page>
   );

@@ -57,7 +57,7 @@
         }
       }
     },
-    "description": "Primary and secondary actions. Source: 4727:154. States are explicit; loading blocks repeat submission. Lowercase label. Minimum height 72; wrap and grow for long labels. Loading uses fixed saving… copy.",
+    "description": "Primary and secondary actions. Source: 4727:154. States are explicit; loading blocks repeat submission. Match original Figma capitalization (application override to v0.1.1 copy). Minimum height 72; wrap and grow for long labels. Loading uses fixed saving… copy.",
     "nestedInstanceCount": 0
   },
   {
@@ -201,7 +201,7 @@
         }
       }
     },
-    "description": "Month selector; selected uses black surface and inverse text. Minimum 60px high. Label property is lowercase.",
+    "description": "Month selector; selected uses black surface and inverse text. Minimum 60px high. Match original Figma capitalization (application override to v0.1.1 copy).",
     "nestedInstanceCount": 0
   },
   {
