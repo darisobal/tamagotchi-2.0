@@ -19,12 +19,12 @@ export const PetStage = memo(function PetStage({ state = 'idle', name, showName 
   // Scale the entire authored 382 × 438 scene uniformly, including every decoration.
   const height = 438 * scale + nameOffset;
   return <View onLayout={e => setWidth(e.nativeEvent.layout.width)} accessible={!compact} accessibilityRole={compact ? undefined : 'image'} accessibilityLabel={compact ? undefined : `${name || 'Your pet'}, ${state.replace('-', ' ')}`}
-    style={[styles.stage, { width: explicitWidth ?? '100%', height, minHeight: height, backgroundColor: state === 'success' || state === 'setup' ? Palette.white : state === 'missed' ? Palette.coral : state === 'double-success' ? Palette.lavender : 'transparent', borderWidth: bounded ? Geometry.border * (compact ? scale : 1) : 0, borderRadius: Geometry.radius * (compact ? scale : 1) }]}>
+    style={[styles.stage, { overflow: state === 'idle' ? 'visible' : 'hidden', width: explicitWidth ?? '100%', height, minHeight: height, backgroundColor: state === 'success' || state === 'setup' ? Palette.white : state === 'missed' ? Palette.coral : state === 'double-success' ? Palette.lavender : 'transparent', borderWidth: bounded ? Geometry.border * (compact ? scale : 1) : 0, borderRadius: Geometry.radius * (compact ? scale : 1) }]}>
     <View style={{ position: 'absolute', left: -(bounded ? Geometry.border * (compact ? scale : 1) : 0), top: nameOffset - (bounded ? Geometry.border * (compact ? scale : 1) : 0), width: 382, height: 438, transformOrigin: 'top left', transform: [{ scale }] }}>
       {bounded && state !== 'setup' && <Artwork asset={state === 'success' ? '0c112' : state === 'missed' ? '7a3e3' : 'd0ef1'} width={382} height={438} />}
       {state === 'idle' && <>
-        <Artwork asset="f3a85" left={16} top={330.892} width={350.073} />
-        <Artwork asset="8517d" left={260.5} top={-.426} width={104.952} height={90.364} />
+        <Artwork asset="f3a85" left={14} top={330.892} width={350.073} />
+        <Artwork asset="8517d" left={260.606} top={-12.426} width={104.952} height={90.364} />
       </>}
       <View style={{ position: 'absolute', left, top }}><PetArtwork state={pose} color={color} showHat={state !== 'setup'} /></View>
     </View>

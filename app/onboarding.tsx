@@ -80,7 +80,7 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
 
   return <Page ref={scroll} bottomPadding={48}>
     <View style={styles.top}>
-      <Text style={DesignType.calendar}>{step + 1} Of 3</Text>
+      <Text style={DesignType.calendar}>{step + 1} of 3</Text>
       {step > 0 && <Pressable accessibilityRole="button" disabled={busy} style={styles.link} onPress={() => { setError(''); setStep(step - 1); }}><Text style={DesignType.calendar}>Back</Text></Pressable>}
     </View>
     <ScreenHeader title={['Name your habit', 'How often?', pet.trim() ? `Meet ${pet.trim()}.` : 'Name your pet'][step]} />

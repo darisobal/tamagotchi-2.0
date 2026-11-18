@@ -67,14 +67,14 @@ export default function HomeScreen() {
       <ScreenHeader title={`Day ${planDayNumber(prefs.planStartedAt, checkIns)}`} />
       {prefs.petType === 'selfie' && prefs.customSprite ? <View style={styles.selfie}><PixelPet petType="selfie" mood={mood} customSprite={prefs.customSprite} color={prefs.petColor} pixelSize={7} /></View>
         : <PetStage state={stage} color={prefs.petColor} name={petName} />}
-      <Pressable onPress={() => router.navigate('/(tabs)/settings?focusHabit=1')} accessibilityRole="button" accessibilityLabel={`Edit goal: ${habitName}`}>
-        <Feedback title={title} goal={`Goal: ${habitName}`} />
+      <Pressable style={{ marginTop: stage === 'idle' ? -14 : 12, marginBottom: stage === 'idle' ? -12 : 20 }} onPress={() => router.navigate('/(tabs)/settings?focusHabit=1')} accessibilityRole="button" accessibilityLabel={`Edit goal: ${habitName}`}>
+        <Feedback surface={stage === 'idle' ? 'card' : 'plain'} title={title} goal={`Goal: ${habitName}`} />
       </Pressable>
       {error ? <Text accessibilityRole="alert" style={DesignType.supporting}>{error}</Text> : null}
       {syncNotice ? <Text accessibilityLiveRegion="polite" style={DesignType.calendar}>{syncNotice}</Text> : null}
       {outcome || stage === 'success' || stage === 'double-success' ? <Button label="Continue" onPress={() => { setOutcome(null); setCelebrationDismissed(true); }} />
         : mood === 'dead' ? <Button label="Start again" onPress={beginCheckIn} state={busy ? 'loading' : 'default'} />
-          : <CheckInActions onNegative={() => setOutcome('not-yet')} onPositive={beginCheckIn} state={busy ? 'submitting' : 'ready'} />}
+          : <CheckInActions negative="Ja lox" positive="I did it" onNegative={() => setOutcome('not-yet')} onPositive={beginCheckIn} state={busy ? 'submitting' : 'ready'} />}
       <View style={styles.lifeInfo}>
         <Pressable accessibilityRole="button" accessibilityLabel={showLives ? 'Hide lives info' : 'Show lives info'} accessibilityState={{ expanded: showLives }} style={styles.details} onPress={() => setShowLives(value => !value)}>
           <Text style={DesignType.calendar}>{lives} {lives === 1 ? 'heart' : 'hearts'} · {showLives ? 'Hide details' : 'Details'}</Text>

@@ -58,3 +58,13 @@ Original Figma source nodes: 4727:145, 4727:181, 4727:228, 4727:265 and 4727:189
 At the user's request, original Figma capitalization supersedes the v0.1.1 lowercase examples throughout the application. The lowercase Cursor rule was removed and AGENTS.md updated. Supporting flows use sentence case; user values and locale formatting retain their casing. This is an application correction, not a new Figma library publication.
 
 Validation: 91 tests pass; seven existing type errors remain, with no new errors. Native state artwork was inspected before the Mac relocked; the earlier scrolling report remains unresolved.
+
+## Setup and screen-detail review — 18 November 2026
+
+Compared the running setup with source 4727:1899, and home with source 4727:145/181/228/265. Setup now follows Name → Colour → Hair → Clothes → Habit → Check In. At 430 px, label tops match the source exactly: 603, 755, 903, 1051, 1199 and 1351 px. Fields retain the source white fill, 72 px height, 24 px text inset and 16 px label gap. Sections have 36 px spacing. The card remains white, bordered and proportional.
+
+Colour options are 68 px circles in one horizontally scrollable row, separated by 12 px, with a 10 px selected dot. They use dynamic native controls so saved custom colours remain supported. The selected accessory tile is white with a 2 px outline; empty source placeholders are not exposed as fake choices. Check In uses the source Every / 24h layout and opens the existing 24-hour, 48-hour and weekly choices when pressed. Values remain editable and Save retains its existing persistence behavior.
+
+Home restores the idle white question card, source feedback widths and spacing, source action labels, and exact idle arrow/ground positioning. Calendar columns and status miniatures were visually checked against the library frame; actual dates/history and existing navigation remain functional rather than copying static sample data.
+
+Web checks: 430 px source coordinates, 320 px horizontal colour access and preview update, interval open/select/close, home idle and calendar. Evidence: `validation/detail-setup-430.png`, `validation/detail-home-idle.png`. iPhone runtime verification of this additional pass is blocked by the locked Mac; the earlier scrolling report remains open.

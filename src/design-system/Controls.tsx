@@ -60,7 +60,7 @@ export function ScreenHeader({ title, size }: { title: string; size?: 'regular' 
 }
 export function Feedback({ title, goal, showGoal = true, surface = 'plain' }: { title: string; goal?: string; showGoal?: boolean; surface?: 'plain' | 'card' }) {
   return <View style={[styles.feedback, surface === 'card' && styles.card]}>
-    <Text style={[DesignType.feedback, styles.wrap]}>{title}</Text>
+    <Text style={[DesignType.feedback, styles.wrap, { maxWidth: 306 }]}>{title}</Text>
     {showGoal && goal ? <Text style={[DesignType.supporting, styles.wrap]}>{goal}</Text> : null}
   </View>;
 }
@@ -77,8 +77,8 @@ export function SelectionTile({ label = 'None', selected, onPress, disabled }: {
   const [focused, setFocused] = useState(false);
   return <Pressable accessibilityRole="radio" accessibilityLabel={label} aria-checked={selected} accessibilityState={{ checked: selected, disabled }}
     onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} disabled={disabled} onPress={onPress}
-    style={[styles.button, styles.tile, { backgroundColor: disabled ? Palette['gray-disabled'] : selected ? Palette.lavender : Palette.white, borderWidth: focused ? Geometry.focus : Geometry.border }]}>
-    <Text style={DesignType.calendar}>{label}</Text>
+    style={[styles.button, styles.tile, { backgroundColor: disabled ? Palette['gray-disabled'] : Palette.white, borderWidth: focused ? Geometry.focus : selected ? 2 : 0 }]}>
+    {label !== 'None' && <Text style={DesignType.calendar}>{label}</Text>}
   </Pressable>;
 }
 
@@ -86,11 +86,11 @@ const styles = StyleSheet.create({
   button: { minHeight: Size.control, minWidth: 0, borderWidth: Geometry.border, borderColor: Palette.black, borderRadius: Geometry.radius, paddingHorizontal: 24, paddingVertical: 9, alignItems: 'center', justifyContent: 'center', ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as object : {}) },
   compact: { minHeight: Size.compactControl, paddingVertical: 13 },
   buttonText: { textAlign: 'center', flexShrink: 1, width: '100%' },
-  field: { gap: 8, width: '100%' },
-  input: { ...DesignType.body, color: Palette.black, borderWidth: Geometry.border, borderColor: Palette.black, borderRadius: Geometry.radius, backgroundColor: Palette.white, minHeight: Size.control, paddingHorizontal: 24, paddingVertical: 11, ...(Platform.OS === 'web' ? { fieldSizing: 'content', overflowWrap: 'anywhere', outlineStyle: 'none' } as object : {}) },
-  focus: { borderWidth: Geometry.focus }, disabled: { backgroundColor: Palette['gray-disabled'] },
+  field: { gap: 16, width: '100%' },
+  input: { ...DesignType.body, color: Palette.black, borderWidth: Geometry.border, borderColor: 'transparent', borderRadius: Geometry.radius, backgroundColor: Palette.white, minHeight: Size.control, paddingHorizontal: 21, paddingVertical: 11, ...(Platform.OS === 'web' ? { fieldSizing: 'content', overflowWrap: 'anywhere', outlineStyle: 'none' } as object : {}) },
+  focus: { borderWidth: Geometry.focus, borderColor: Palette.black }, disabled: { backgroundColor: Palette['gray-disabled'] },
   wrap: { color: Palette.black, flexShrink: 1, ...(Platform.OS === 'web' ? { overflowWrap: 'anywhere' } as object : {}) },
-  feedback: { gap: 16 }, card: { padding: 24, backgroundColor: Palette.white, borderRadius: Geometry.radius, borderWidth: Geometry.border },
+  feedback: { gap: 16 }, card: { padding: 25, minHeight: 246, backgroundColor: Palette.white, borderRadius: Geometry.radius, borderWidth: Geometry.border },
   actions: { flexDirection: 'row', gap: 12, alignItems: 'stretch' }, action: { flex: 1, paddingHorizontal: 12 },
   tile: { width: Size.option, minHeight: Size.option, paddingHorizontal: 8 },
 });
