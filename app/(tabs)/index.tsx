@@ -5,7 +5,6 @@ import { router } from 'expo-router';
 import { useAuth } from '../../src/authContext';
 import { useAppState } from '../../src/context';
 import { DEFAULT_HABIT_NAME, MAIN_TRACK } from '../../src/types';
-import { formatLifeTimer } from '../../src/logic';
 import { planDayNumber } from '../../src/calendar';
 import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
 import { Page } from '../../src/design-system/Page';
@@ -21,7 +20,7 @@ import { findCouponForReveal } from '../../src/coupons';
 
 export default function HomeScreen() {
   const scale = useDesignScale();
-  const { prefs, computedHabits, tracks, mood, lives, refresh, doCheckIn, checkIns, collectCoupon, couponRevealCheckInId, updatePrefs, syncNotice } = useAppState();
+  const { prefs, tracks, mood, refresh, doCheckIn, checkIns, collectCoupon, couponRevealCheckInId, updatePrefs, syncNotice } = useAppState();
   const { user, isConfigured } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -31,9 +30,7 @@ export default function HomeScreen() {
   const [confirmCopy, setConfirmCopy] = useState<CheckInConfirmCopy | null>(null);
   const [outcome, setOutcome] = useState<'success' | 'not-yet' | null>(null);
   const [celebrationDismissed, setCelebrationDismissed] = useState(false);
-  const [showLives, setShowLives] = useState(false);
   const bottomPadding = useFloatingTabBarExtraPadding();
-  const habit = computedHabits[0];
   const habitName = (prefs.habitName || DEFAULT_HABIT_NAME).trim();
   const petName = prefs.petName.trim();
   const track = tracks.find(item => item.trackType === MAIN_TRACK);
@@ -77,12 +74,6 @@ export default function HomeScreen() {
       {outcome || stage === 'success' || stage === 'double-success' ? <Button label="Continue" onPress={() => { setOutcome(null); setCelebrationDismissed(true); }} />
         : mood === 'dead' ? <Button label="Start again" onPress={beginCheckIn} state={busy ? 'loading' : 'default'} />
           : <CheckInActions negative="Ja lox" positive="I did it" onNegative={() => setOutcome('not-yet')} onPositive={beginCheckIn} state={busy ? 'submitting' : 'ready'} />}
-      <View style={styles.lifeInfo}>
-        <Pressable accessibilityRole="button" accessibilityLabel={showLives ? 'Hide lives info' : 'Show lives info'} accessibilityState={{ expanded: showLives }} style={styles.details} onPress={() => setShowLives(value => !value)}>
-          <Text style={DesignType.calendar}>{lives} {lives === 1 ? 'heart' : 'hearts'} · {showLives ? 'Hide details' : 'Details'}</Text>
-        </Pressable>
-        {showLives && <Text style={DesignType.supporting}>{mood === 'dead' ? 'All three hearts are gone. Restart to check in again.' : habit?.nextDeadlineAt ? `${formatLifeTimer(habit.timeRemainingMs)} until the next heart is lost. Each check-in refills three hearts.` : 'Three hearts. Your first check-in starts the next interval.'}</Text>}
-      </View>
       {!user && isConfigured && checkIns.length > 0 && !prefs.accountPromptDismissed && !pendingCoupon && <View style={styles.account}>
         <Text style={DesignType.supporting}>Save your progress across devices.</Text>
         <Button label="Save my progress" onPress={() => router.push('/auth')} />
@@ -94,4 +85,4 @@ export default function HomeScreen() {
     <CouponRewardOverlay visible={Boolean(pendingCoupon)} pendingCheckIn={pendingCoupon} checkIns={checkIns} onCollected={collectCoupon} />
   </>;
 }
-const styles = StyleSheet.create({ selfie: { height: 438, alignItems: 'center', justifyContent: 'center' }, lifeInfo: { gap: 8 }, details: { minHeight: 44, justifyContent: 'center' }, account: { gap: 16 } });
+const styles = StyleSheet.create({ selfie: { height: 438, alignItems: 'center', justifyContent: 'center' }, account: { gap: 16 } });
