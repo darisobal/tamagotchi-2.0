@@ -1,4 +1,5 @@
 import { ResponsiveText as Text } from './design-system/ResponsiveText';
+import { DesignType } from './design-system/tokens';
 import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -27,5 +28,5 @@ const styles = StyleSheet.create({
   content: { padding: Spacing.lg, gap: Spacing.lg, width: '100%', maxWidth: 680, alignSelf: 'center' },
   body: { fontFamily: Slab.regular, fontSize: FontSize.md },
   button: { padding: Spacing.md, minHeight: 56, backgroundColor: Colors.ink, borderRadius: Radius.md, borderWidth: Border.thick },
-  primary: { color: Colors.white, fontFamily: Slab.bold, fontSize: FontSize.lg, textAlign: 'center' },
+  primary: { color: Colors.white, fontFamily: Slab.bold, fontSize: DesignType.button.fontSize, textAlign: 'center' },
 });

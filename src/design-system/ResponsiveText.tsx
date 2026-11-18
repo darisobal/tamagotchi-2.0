@@ -8,9 +8,9 @@ export function useDesignScale() {
 }
 
 /** Responsive design sizing is separate from the user's accessibility font scaling. */
-export const ResponsiveText = forwardRef<NativeText, TextProps>(function ResponsiveText({ style, ...props }, ref) {
+export const ResponsiveText = forwardRef<NativeText, TextProps & { designMinimumSize?: number }>(function ResponsiveText({ style, designMinimumSize = 16, ...props }, ref) {
   const scale = useDesignScale();
-  return <NativeText {...props} ref={ref} style={[style, scaledTypography(StyleSheet.flatten(style), scale)]} />;
+  return <NativeText {...props} ref={ref} style={[style, scaledTypography(StyleSheet.flatten(style), scale, designMinimumSize)]} />;
 });
 export const ResponsiveTextInput = forwardRef<NativeTextInput, TextInputProps>(function ResponsiveTextInput({ style, ...props }, ref) {
   const scale = useDesignScale();

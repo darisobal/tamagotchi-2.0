@@ -19,3 +19,9 @@ describe('responsive design typography', () => {
     expect(scaledTypography(undefined, scale)).toEqual({});
   });
 });
+
+it('scales compact calendar text with its grid without shrinking other reading text', () => {
+  expect(scaledTypography({ fontSize: 14, lineHeight: 18 }, contentScale(350), 10).fontSize).toBeCloseTo(14 * 302 / 382);
+  expect(scaledTypography({ fontSize: 14 }, contentScale(320), 10).fontSize).toBe(10);
+  expect(scaledTypography({ fontSize: 14 }, contentScale(430), 10).fontSize).toBe(14);
+});
