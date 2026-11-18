@@ -1,3 +1,4 @@
+import { useDesignScale } from './ResponsiveText';
 import React, { forwardRef, useId } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, ScrollViewProps, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,13 +13,14 @@ export function PageBackground() {
   </Svg></View>;
 }
 export const Page = forwardRef<ScrollView, ScrollViewProps & { bottomPadding?: number }>(function Page({ children, contentContainerStyle, bottomPadding = 24, ...props }, ref) {
+  const scale = useDesignScale();
   return <View style={styles.root}>
     <PageBackground />
     <SafeAreaView style={styles.root} edges={['top', 'left', 'right']}>
       <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView {...props} ref={ref} keyboardShouldPersistTaps="handled" contentContainerStyle={styles.scrollContent}>
           <PageBackground />
-          <View style={[styles.content, { paddingBottom: bottomPadding }, contentContainerStyle]}>{children}</View>
+          <View style={[styles.content, { paddingBottom: bottomPadding, paddingTop: 40 * scale, gap: 24 * scale }, contentContainerStyle]}>{children}</View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

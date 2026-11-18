@@ -1,5 +1,6 @@
+import { ResponsiveText as Text } from './ResponsiveText';
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { buildMonthGrid, calendarStatus, CalendarStatus } from '../calendar';
 import { CheckIn } from '../types';
 import { DesignType, Geometry, Palette } from './tokens';

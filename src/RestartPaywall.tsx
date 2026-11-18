@@ -1,5 +1,6 @@
+import { ResponsiveText as Text } from './design-system/ResponsiveText';
 import React, { useEffect, useState } from 'react';
-import { View, Text, Modal, ActivityIndicator } from 'react-native';
+import { View, Modal, ActivityIndicator } from 'react-native';
 import { Page } from './design-system/Page';
 import { Button, ScreenHeader, TextField } from './design-system/Controls';
 import { DesignType, Palette } from './design-system/tokens';

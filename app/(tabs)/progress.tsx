@@ -1,5 +1,6 @@
+import { ResponsiveText as Text } from '../../src/design-system/ResponsiveText';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { useAppState } from '../../src/context';
 import { CheckIn } from '../../src/types';
 import { groupCheckInsByDay } from '../../src/calendar';

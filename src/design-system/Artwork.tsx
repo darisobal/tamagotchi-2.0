@@ -1,5 +1,6 @@
+import { ResponsiveText as Text } from './ResponsiveText';
 import React, { memo, useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { artworkAssets, ArtworkAsset } from './artworkAssets';
 import { readAsset } from './readAsset';

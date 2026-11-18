@@ -1,5 +1,6 @@
+import { ResponsiveText as Text } from './ResponsiveText';
 import React, { memo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Artwork, PetArtwork, PetPose } from './Artwork';
 import { DesignType, Geometry, Palette } from './tokens';
 
@@ -15,12 +16,12 @@ export const PetStage = memo(function PetStage({ state = 'idle', name, showName 
   const bounded = state !== 'idle';
   const top = ({ setup: 106, idle: 62, success: 82, missed: 62, 'double-success': 143 })[state];
   const left = ({ setup: 114, idle: 116, success: 95, missed: 88.474, 'double-success': 122 })[state];
-  const nameOffset = showName && name ? Math.max(0, 32 * scale + nameHeight + 16 - top * scale) : 0;
+  const nameOffset = showName && name ? Math.max(0, 32 * scale + nameHeight + 16 * scale - top * scale) : 0;
   // Scale the entire authored 382 × 438 scene uniformly, including every decoration.
   const height = 438 * scale + nameOffset;
   return <View onLayout={e => setWidth(e.nativeEvent.layout.width)} accessible={!compact} accessibilityRole={compact ? undefined : 'image'} accessibilityLabel={compact ? undefined : `${name || 'Your pet'}, ${state.replace('-', ' ')}`}
-    style={[styles.stage, { overflow: state === 'idle' ? 'visible' : 'hidden', width: explicitWidth ?? '100%', height, minHeight: height, backgroundColor: state === 'success' || state === 'setup' ? Palette.white : state === 'missed' ? Palette.coral : state === 'double-success' ? Palette.lavender : 'transparent', borderWidth: bounded ? Geometry.border * (compact ? scale : 1) : 0, borderRadius: Geometry.radius * (compact ? scale : 1) }]}>
-    <View style={{ position: 'absolute', left: -(bounded ? Geometry.border * (compact ? scale : 1) : 0), top: nameOffset - (bounded ? Geometry.border * (compact ? scale : 1) : 0), width: 382, height: 438, transformOrigin: 'top left', transform: [{ scale }] }}>
+    style={[styles.stage, { overflow: state === 'idle' ? 'visible' : 'hidden', width: explicitWidth ?? '100%', height, minHeight: height, backgroundColor: state === 'success' || state === 'setup' ? Palette.white : state === 'missed' ? Palette.coral : state === 'double-success' ? Palette.lavender : 'transparent', borderWidth: bounded ? Geometry.border * scale : 0, borderRadius: Geometry.radius * scale }]}>
+    <View style={{ position: 'absolute', left: -(bounded ? Geometry.border * scale : 0), top: nameOffset - (bounded ? Geometry.border * scale : 0), width: 382, height: 438, transformOrigin: 'top left', transform: [{ scale }] }}>
       {bounded && state !== 'setup' && <Artwork asset={state === 'success' ? '0c112' : state === 'missed' ? '7a3e3' : 'd0ef1'} width={382} height={438} />}
       {state === 'idle' && <>
         <Artwork asset="f3a85" left={14} top={330.892} width={350.073} />
@@ -28,7 +29,7 @@ export const PetStage = memo(function PetStage({ state = 'idle', name, showName 
       </>}
       <View style={{ position: 'absolute', left, top }}><PetArtwork state={pose} color={color} showHat={state !== 'setup'} /></View>
     </View>
-    {showName && name ? <Text onLayout={e => setNameHeight(e.nativeEvent.layout.height)} style={[DesignType.label, styles.name, { top: 32 * scale }]}>{name}</Text> : null}
+    {showName && name ? <Text onLayout={e => setNameHeight(e.nativeEvent.layout.height)} style={[DesignType.label, styles.name, { top: 32 * scale, left: 24 * scale, right: 24 * scale }]}>{name}</Text> : null}
   </View>;
 });
 const styles = StyleSheet.create({ stage: { overflow: 'hidden', borderColor: Palette.black, flexShrink: 0 }, name: { position: 'absolute', left: 24, right: 24, textAlign: 'center' } });

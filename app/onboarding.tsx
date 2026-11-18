@@ -1,5 +1,6 @@
+import { ResponsiveText as Text } from '../src/design-system/ResponsiveText';
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, AccessibilityInfo, Pressable, ScrollView, StyleSheet, Text, TextInput, View, BackHandler } from 'react-native';
+import { ActivityIndicator, AccessibilityInfo, Pressable, ScrollView, StyleSheet, TextInput, View, BackHandler } from 'react-native';
 import { Redirect, router } from 'expo-router';
 import { useAppState } from '../src/context';
 import { useAuth } from '../src/authContext';

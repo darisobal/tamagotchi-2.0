@@ -1,5 +1,6 @@
+import { ResponsiveText as Text, useDesignScale } from '../../src/design-system/ResponsiveText';
 import React, { useCallback, useRef, useState } from 'react';
-import { Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { Pressable, RefreshControl, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from '../../src/authContext';
 import { useAppState } from '../../src/context';
@@ -19,6 +20,7 @@ import CouponRewardOverlay from '../../src/CouponRewardOverlay';
 import { findCouponForReveal } from '../../src/coupons';
 
 export default function HomeScreen() {
+  const scale = useDesignScale();
   const { prefs, computedHabits, tracks, mood, lives, refresh, doCheckIn, checkIns, collectCoupon, couponRevealCheckInId, updatePrefs, syncNotice } = useAppState();
   const { user, isConfigured } = useAuth();
   const [error, setError] = useState<string | null>(null);
@@ -67,7 +69,7 @@ export default function HomeScreen() {
       <ScreenHeader title={`Day ${planDayNumber(prefs.planStartedAt, checkIns)}`} />
       {prefs.petType === 'selfie' && prefs.customSprite ? <View style={styles.selfie}><PixelPet petType="selfie" mood={mood} customSprite={prefs.customSprite} color={prefs.petColor} pixelSize={7} /></View>
         : <PetStage state={stage} color={prefs.petColor} name={petName} />}
-      <Pressable style={{ marginTop: stage === 'idle' ? -14 : 12, marginBottom: stage === 'idle' ? -12 : 20 }} onPress={() => router.navigate('/(tabs)/settings?focusHabit=1')} accessibilityRole="button" accessibilityLabel={`Edit goal: ${habitName}`}>
+      <Pressable style={{ marginTop: (stage === 'idle' ? -14 : 12) * scale, marginBottom: (stage === 'idle' ? -12 : 20) * scale }} onPress={() => router.navigate('/(tabs)/settings?focusHabit=1')} accessibilityRole="button" accessibilityLabel={`Edit goal: ${habitName}`}>
         <Feedback surface={stage === 'idle' ? 'card' : 'plain'} title={title} goal={`Goal: ${habitName}`} />
       </Pressable>
       {error ? <Text accessibilityRole="alert" style={DesignType.supporting}>{error}</Text> : null}

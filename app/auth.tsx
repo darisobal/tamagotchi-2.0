@@ -1,9 +1,9 @@
+import { ResponsiveText as Text } from '../src/design-system/ResponsiveText';
 import { Page } from '../src/design-system/Page';
 import { Button, ScreenHeader, TextField } from '../src/design-system/Controls';
 import React, { useState } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,

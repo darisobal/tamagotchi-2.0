@@ -1,5 +1,6 @@
-import React, { forwardRef, useId, useState } from 'react';
-import { Platform, Pressable, PressableProps, StyleSheet, Text, TextInput, TextInputProps, View, useWindowDimensions } from 'react-native';
+import { ResponsiveText as Text, ResponsiveTextInput, useDesignScale } from './ResponsiveText';
+import React, { forwardRef, useEffect, useId, useState } from 'react';
+import { Platform, Pressable, PressableProps, StyleSheet, TextInput, TextInputProps, View } from 'react-native';
 import { DesignType, Geometry, Palette, Size } from './tokens';
 
 export type ButtonState = 'default' | 'hover' | 'pressed' | 'focus' | 'disabled' | 'loading';
@@ -8,6 +9,7 @@ type ButtonProps = Omit<PressableProps, 'children' | 'style'> & {
   compact?: boolean; style?: PressableProps['style'];
 };
 export function Button({ label, loadingLabel = 'Saving…', appearance = 'primary', state = 'default', compact = false, disabled, style, ...props }: ButtonProps) {
+  const styles = useControlStyles();
   const [focused, setFocused] = useState(false);
   const [hovered, setHovered] = useState(false);
   const blocked = disabled || state === 'disabled' || state === 'loading';
@@ -35,36 +37,42 @@ function buttonColor(appearance: string, state: ButtonState) {
 
 export interface TextFieldProps extends TextInputProps { label: string; message?: string; error?: string; state?: 'empty' | 'filled' | 'focus' | 'error' | 'disabled'; }
 export const TextField = forwardRef<TextInput, TextFieldProps>(function TextField({ label, message, error, state, style, onContentSizeChange, onFocus, onBlur, multiline = true, ...props }, ref) {
+  const styles = useControlStyles();
   const [focused, setFocused] = useState(false);
-  const [height, setHeight] = useState(Size.control);
+  const controlHeight = Math.max(44, Size.control * useDesignScale());
+  const [height, setHeight] = useState(controlHeight);
+  useEffect(() => setHeight(controlHeight), [controlHeight]);
   const id = useId();
   const errorMessage = error || (state === 'error' ? message : undefined);
   return <View style={styles.field}>
     <Text nativeID={`${id}-label`} style={DesignType.label}>{label}</Text>
-    <TextInput {...props} ref={ref} accessibilityLabel={props.accessibilityLabel ?? label}
+    <ResponsiveTextInput {...props} ref={ref} accessibilityLabel={props.accessibilityLabel ?? label}
       aria-labelledby={`${id}-label`} aria-describedby={message || errorMessage ? `${id}-message` : undefined}
       aria-invalid={Boolean(errorMessage)} aria-disabled={state === 'disabled' || props.editable === false} accessibilityState={{ ...props.accessibilityState, disabled: state === 'disabled' || props.editable === false }} editable={state === 'disabled' ? false : props.editable}
       multiline={multiline} scrollEnabled={!multiline} autoCapitalize={props.autoCapitalize ?? 'sentences'} placeholderTextColor={Palette['gray-text']}
       submitBehavior={props.submitBehavior ?? (props.onSubmitEditing ? 'blurAndSubmit' : undefined)}
       blurOnSubmit={props.blurOnSubmit ?? (props.onSubmitEditing ? true : undefined)}
       onFocus={e => { setFocused(true); onFocus?.(e); }} onBlur={e => { setFocused(false); onBlur?.(e); }}
-      onContentSizeChange={e => { setHeight(Math.max(Size.control, e.nativeEvent.contentSize.height)); onContentSizeChange?.(e); }}
-      style={[styles.input, multiline && { minHeight: height }, (focused || state === 'focus') && styles.focus, (props.editable === false || state === 'disabled') && styles.disabled, style]} />
+      onContentSizeChange={e => { setHeight(Math.max(controlHeight, e.nativeEvent.contentSize.height)); onContentSizeChange?.(e); }}
+      style={[styles.input, multiline && { minHeight: Math.max(controlHeight, height) }, (focused || state === 'focus') && styles.focus, (props.editable === false || state === 'disabled') && styles.disabled, style]} />
     {errorMessage || message ? <Text nativeID={`${id}-message`} accessibilityRole={errorMessage ? 'alert' : undefined} style={DesignType.calendar}>{errorMessage || message}</Text> : null}
   </View>;
 });
 
 export function ScreenHeader({ title, size }: { title: string; size?: 'regular' | 'compact' }) {
-  const { width } = useWindowDimensions();
-  return <Text accessibilityRole="header" style={[size === 'compact' || (!size && width < 390) ? DesignType.compactTitle : DesignType.title, styles.wrap]}>{title}</Text>;
+  const styles = useControlStyles();
+  return <Text accessibilityRole="header" style={[size === 'compact' ? DesignType.compactTitle : DesignType.title, styles.wrap]}>{title}</Text>;
 }
 export function Feedback({ title, goal, showGoal = true, surface = 'plain' }: { title: string; goal?: string; showGoal?: boolean; surface?: 'plain' | 'card' }) {
+  const styles = useControlStyles();
+  const scale = useDesignScale();
   return <View style={[styles.feedback, surface === 'card' && styles.card]}>
-    <Text style={[DesignType.feedback, styles.wrap, { maxWidth: 306 }]}>{title}</Text>
+    <Text style={[DesignType.feedback, styles.wrap, { maxWidth: 306 * scale }]}>{title}</Text>
     {showGoal && goal ? <Text style={[DesignType.supporting, styles.wrap]}>{goal}</Text> : null}
   </View>;
 }
 export function CheckInActions({ onNegative, onPositive, state = 'ready', negative = 'No', positive = 'Yes' }: { onNegative: () => void; onPositive: () => void; state?: 'ready' | 'submitting'; negative?: string; positive?: string }) {
+  const styles = useControlStyles();
   return <View style={styles.actions}>
     <Button label={negative} appearance="secondary" disabled={state === 'submitting'} onPress={onNegative} style={styles.action} />
     <Button label={positive} state={state === 'submitting' ? 'loading' : 'default'} onPress={onPositive} style={styles.action} />
@@ -74,6 +82,7 @@ export function MonthChip({ label, selected = false, ...props }: Omit<ButtonProp
   return <Button {...props} label={label} compact appearance={selected ? 'primary' : 'secondary'} aria-pressed={!props.accessibilityRole || props.accessibilityRole === 'button' ? selected : undefined} accessibilityState={{ ...props.accessibilityState, selected }} />;
 }
 export function SelectionTile({ label = 'None', selected, onPress, disabled }: { label?: string; selected: boolean; onPress?: () => void; disabled?: boolean }) {
+  const styles = useControlStyles();
   const [focused, setFocused] = useState(false);
   return <Pressable accessibilityRole="radio" accessibilityLabel={label} aria-checked={selected} accessibilityState={{ checked: selected, disabled }}
     onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} disabled={disabled} onPress={onPress}
@@ -82,7 +91,7 @@ export function SelectionTile({ label = 'None', selected, onPress, disabled }: {
   </Pressable>;
 }
 
-const styles = StyleSheet.create({
+const baseStyles = StyleSheet.create({
   button: { minHeight: Size.control, minWidth: 0, borderWidth: Geometry.border, borderColor: Palette.black, borderRadius: Geometry.radius, paddingHorizontal: 24, paddingVertical: 9, alignItems: 'center', justifyContent: 'center', ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as object : {}) },
   compact: { minHeight: Size.compactControl, paddingVertical: 13 },
   buttonText: { textAlign: 'center', flexShrink: 1, width: '100%' },
@@ -94,3 +103,13 @@ const styles = StyleSheet.create({
   actions: { flexDirection: 'row', gap: 12, alignItems: 'stretch' }, action: { flex: 1, paddingHorizontal: 12 },
   tile: { width: Size.option, minHeight: Size.option, paddingHorizontal: 8 },
 });
+
+function useControlStyles() {
+  const scale = useDesignScale();
+  const keys = new Set(['paddingHorizontal', 'paddingVertical', 'padding', 'gap', 'borderRadius', 'width', 'minHeight']);
+  return Object.fromEntries(Object.entries(baseStyles).map(([name, style]) => [name,
+    Object.fromEntries(Object.entries(style).map(([key, value]) => [key,
+      keys.has(key) && typeof value === 'number' ? (key === 'minHeight' ? Math.max(44, value * scale) : value * scale) : value,
+    ])),
+  ])) as typeof baseStyles;
+}

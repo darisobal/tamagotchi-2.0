@@ -1,5 +1,6 @@
+import { ResponsiveText as Text } from './design-system/ResponsiveText';
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Pressable, Platform } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Pressable, Platform } from 'react-native';
 import { Spacing, FontSize, Slab, Radius, Border } from './theme';
 
 export type HeroTaskCardProps = {

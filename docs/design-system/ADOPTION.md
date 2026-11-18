@@ -74,3 +74,13 @@ Web checks: 430 px source coordinates, 320 px horizontal colour access and previ
 After unlocking, the revised setup card, wrapped name, Name-before-Colour order, white fields, horizontal colour row, selected dot, accessory tile outlines and Every / 24h control were inspected on iPhone 16 Plus / iOS 18.6. Purple then Coral selection and Daily → Every two days → Daily changes succeeded through accessibility actions. Original values were restored without saving new preferences. Darya confirmed manual touch-style scrolling works; the scrolled home shows its Continue action and Details. No app code change was needed for scrolling.
 
 Evidence: `validation/ios-scroll-confirmed.png`, `validation/ios-setup-controls.png`. This closes the reported scrolling blocker, not the outstanding Android or screen-reader review.
+
+## Responsive typography correction — 18 November 2026
+
+Audit found that the pet canvas scaled to the available content width while typography, fields and colour controls retained their 430 px source sizes. At the roughly 350 px preview width this made text and controls oversized relative to the card. Shared ResponsiveText and ResponsiveTextInput now scale authored font size/line height by the same content ratio, capped at the original source size. Controls, option sizes, section gaps and page spacing scale with them. The discontinuous title breakpoint was replaced by proportional sizing.
+
+At 350 px: 22 px reading/label text becomes 17.39 px, 42 px feedback becomes 33.20 px, and colour options become 53.76 px. At 320 px, primary reading text has a 16 px floor; existing 14 px calendar text and smaller navigation labels are preserved. Native accessibility font scaling is still enabled. At 430 px and wider, source typography and the 72 px field height are unchanged.
+
+Applied to setup, home, progress, onboarding, auth/reset, check-in, confirmation, restart and profile/error flows via shared text and controls. Coupon/reward artwork already scales its typography with its own artboard and remains on that path to avoid double scaling. Web runtime checked setup at 320/350/430, home and confirmation at 350; calendar and supporting flow callsites audited. iPhone 16 Plus setup inspected with long name/habit values. Auth/recovery/store flows were source-audited, not newly transacted.
+
+Validation: 94 tests / 13 suites pass, including proportional feedback and readable minimum checks. Seven baseline type errors remain, no new errors. Evidence: `validation/type-setup-350.png`, `validation/type-home-350.png`.

@@ -7,8 +7,8 @@
   "complete": false,
   "sharedMobileWebComponents": true,
   "tests": {
-    "suitesPassed": 12,
-    "testsPassed": 91
+    "suitesPassed": 13,
+    "testsPassed": 94
   },
   "productionExports": {
     "web": "passed",
@@ -61,5 +61,17 @@
     "date": "2026-11-18",
     "method": "Manual click-and-hold upward drag in Simulator",
     "evidence": "validation/ios-scroll-confirmed.png"
+  },
+  "responsiveTypography": {
+    "sourceWidth": 430,
+    "verifiedWebWidths": [
+      320,
+      350,
+      430
+    ],
+    "minimumReadingFont": 16,
+    "minimumControlTarget": 44,
+    "nativeFontScaling": "preserved",
+    "coupons": "existing artboard scaling retained"
   }
 }

@@ -1,5 +1,6 @@
+import { ResponsiveText as Text } from '../../src/design-system/ResponsiveText';
 import { Redirect, Tabs } from 'expo-router';
-import { View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
 import { CommonActions } from '@react-navigation/native';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

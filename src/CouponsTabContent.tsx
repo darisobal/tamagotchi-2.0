@@ -1,5 +1,6 @@
+import { ResponsiveText as Text } from './design-system/ResponsiveText';
 import React, { useMemo } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { CheckIn } from './types';
 import { toDateString } from './logic';
 import { Colors, Spacing } from './theme';
