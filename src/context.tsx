@@ -25,7 +25,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { pullUserSnapshot, pushUserSnapshot, canSyncToCloud, createUserSnapshot } from './sync';
 import { useAuth } from './authContext';
 import { processCheckIn, computeAllHabits, computePetMood, recomputeStreakFromCheckIns, recomputeCelebrationFromCheckIns } from './logic';
-import { checkInEarnsCoupon } from './coupons';
 import { syncPetStatusWidget } from './widgetSync';
 import { consumePendingPaidRestart } from './purchases';
 import * as Crypto from 'expo-crypto';
@@ -41,9 +40,6 @@ interface AppState {
   computedHabits: ComputedHabit[];
   refresh: () => Promise<void>;
   doCheckIn: (trackType: TrackType, intensity: Intensity, note: string | null) => Promise<void>;
-  collectCoupon: (checkInId: string) => Promise<void>;
-  /** Set only right after a full-lives check-in — drives the coupon overlay once. */
-  couponRevealCheckInId: string | null;
   deleteCheckInById: (id: string) => Promise<void>;
   updatePrefs: (prefs: Partial<UserPrefs>) => Promise<void>;
   resetAll: () => Promise<void>;
@@ -89,7 +85,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [lives, setLives] = useState<number>(3);
   const [petMoodInfo, setPetMoodInfo] = useState<PetMoodInfo>({ mood: 'okay', reason: '', lives: 3 });
   const [computedHabits, setComputedHabits] = useState<ComputedHabit[]>([]);
-  const [couponRevealCheckInId, setCouponRevealCheckInId] = useState<string | null>(null);
   const [offlineChoice, setOfflineChoice] = useState<UserSnapshot | null>(null);
   const tracksRef = useRef<TrackState[]>([]);
   const moodRef = useRef<Mood>('okay');
@@ -164,7 +159,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setOfflineChoice(null);
     setSyncNotice(null);
     setLoadError(null);
-    setCouponRevealCheckInId(null);
     syncReady.current = false;
     (async () => {
       try {
@@ -261,10 +255,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         isPaidRestart = true;
       }
 
-      const habits = computeAllHabits(tracksRef.current, now.getTime(), habitCadenceRef.current, planStartedRef.current);
-      const livesBeforeCheckIn = computePetMood(habits, habitNameRef.current).lives;
-      const couponEarned = checkInEarnsCoupon(livesBeforeCheckIn, isPaidRestart);
-
       const newCheckIn: CheckIn = {
         id: Crypto.randomUUID(),
         trackType,
@@ -272,8 +262,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         note,
         timestamp: now.toISOString(),
         isPaidRestart,
-        couponEarned,
-        couponCollected: couponEarned ? false : true,
+        couponEarned: false,
+        couponCollected: true,
       };
 
       const updatedState = processCheckIn(state, intensity, now, isPaidRestart);
@@ -284,22 +274,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       await refresh();
       await syncToCloud();
 
-      if (couponEarned) {
-        setCouponRevealCheckInId(newCheckIn.id);
-      }
     },
     [refresh, syncToCloud, repo, markPending, loading, loadedIdentity, identity, prefs.onboardingDone]
-  );
-
-  const collectCoupon = useCallback(
-    async (checkInId: string) => {
-      await markPending();
-      await repo.markCouponCollected(checkInId);
-      setCouponRevealCheckInId(null);
-      await refresh();
-      await syncToCloud();
-    },
-    [refresh, syncToCloud, repo, markPending],
   );
 
   const deleteCheckInById = useCallback(
@@ -360,7 +336,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const resetAll = useCallback(async () => {
     await markPending();
     await repo.resetAllData();
-    setCouponRevealCheckInId(null);
     await refresh();
     await syncToCloud();
   }, [refresh, syncToCloud, repo, markPending]);
@@ -402,8 +377,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         computedHabits,
         refresh,
         doCheckIn,
-        collectCoupon,
-        couponRevealCheckInId,
         deleteCheckInById,
         updatePrefs,
         resetAll,

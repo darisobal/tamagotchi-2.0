@@ -15,12 +15,10 @@ import PixelPet from '../../src/PixelPet';
 import RestartPaywall from '../../src/RestartPaywall';
 import CheckInConfirmModal from '../../src/CheckInConfirmModal';
 import { CheckInConfirmCopy, pickCheckInConfirmCopy } from '../../src/checkInConfirmCopy';
-import CouponRewardOverlay from '../../src/CouponRewardOverlay';
-import { findCouponForReveal } from '../../src/coupons';
 
 export default function HomeScreen() {
   const scale = useDesignScale();
-  const { prefs, tracks, mood, refresh, doCheckIn, checkIns, collectCoupon, couponRevealCheckInId, updatePrefs, syncNotice } = useAppState();
+  const { prefs, tracks, mood, refresh, doCheckIn, checkIns, updatePrefs, syncNotice } = useAppState();
   const { user, isConfigured } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -34,7 +32,6 @@ export default function HomeScreen() {
   const habitName = (prefs.habitName || DEFAULT_HABIT_NAME).trim();
   const petName = prefs.petName.trim();
   const track = tracks.find(item => item.trackType === MAIN_TRACK);
-  const pendingCoupon = findCouponForReveal(checkIns, couponRevealCheckInId);
   const stage: PetStageState = mood === 'dead' || mood === 'sad' ? 'missed'
     : mood === 'happy' && !celebrationDismissed ? (track && track.celebrationCount > 1 ? 'double-success' : 'success') : 'idle';
   const title = outcome === 'not-yet' ? 'One step at a time.' : mood === 'dead' ? 'Time to start again.'
@@ -74,7 +71,7 @@ export default function HomeScreen() {
       {outcome || stage === 'success' || stage === 'double-success' ? <Button label="Continue" onPress={() => { setOutcome(null); setCelebrationDismissed(true); }} />
         : mood === 'dead' ? <Button label="Start again" onPress={beginCheckIn} state={busy ? 'loading' : 'default'} />
           : <CheckInActions negative="Ja lox" positive="I did it" onNegative={() => setOutcome('not-yet')} onPositive={beginCheckIn} state={busy ? 'submitting' : 'ready'} />}
-      {!user && isConfigured && checkIns.length > 0 && !prefs.accountPromptDismissed && !pendingCoupon && <View style={styles.account}>
+      {!user && isConfigured && checkIns.length > 0 && !prefs.accountPromptDismissed && <View style={styles.account}>
         <Text style={DesignType.supporting}>Save your progress across devices.</Text>
         <Button label="Save my progress" onPress={() => router.push('/auth')} />
         <Button label="Later" appearance="secondary" onPress={() => void updatePrefs({ accountPromptDismissed: true })} />
@@ -82,7 +79,6 @@ export default function HomeScreen() {
     </Page>
     <RestartPaywall visible={restartVisible} onClose={() => setRestartVisible(false)} onUnlocked={async () => { setRestartVisible(false); await submit(); }} />
     <CheckInConfirmModal visible={Boolean(confirmCopy)} copy={confirmCopy} onConfirm={() => void submit()} onCancel={() => setConfirmCopy(null)} />
-    <CouponRewardOverlay visible={Boolean(pendingCoupon)} pendingCheckIn={pendingCoupon} checkIns={checkIns} onCollected={collectCoupon} />
   </>;
 }
 const styles = StyleSheet.create({ selfie: { height: 438, alignItems: 'center', justifyContent: 'center' }, account: { gap: 16 } });

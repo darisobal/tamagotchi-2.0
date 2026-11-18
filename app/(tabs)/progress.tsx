@@ -9,14 +9,12 @@ import { Page } from '../../src/design-system/Page';
 import { Button, MonthChip, ScreenHeader } from '../../src/design-system/Controls';
 import { CalendarMonth } from '../../src/design-system/CalendarMonth';
 import { DesignType, Geometry, Palette } from '../../src/design-system/tokens';
-import CouponsTabContent from '../../src/CouponsTabContent';
 import TrashButton from '../../src/TrashButton';
 
 export default function ProgressScreen() {
   const { checkIns, deleteCheckInById, prefs } = useAppState();
   const bottomPadding = useFloatingTabBarExtraPadding();
   const [cursor, setCursor] = useState(() => new Date(new Date().getFullYear(), new Date().getMonth(), 1));
-  const [tab, setTab] = useState<'logs' | 'coupons'>('logs');
   const [details, setDetails] = useState(false);
   const [error, setError] = useState('');
   const [deleting, setDeleting] = useState<string | null>(null);
@@ -44,11 +42,6 @@ export default function ProgressScreen() {
   };
   return <Page bottomPadding={bottomPadding + 24}>
     <ScreenHeader title="Your progress" />
-    <View style={styles.tabs}>
-      <MonthChip label="Logs" selected={tab === 'logs'} accessibilityRole="tab" onPress={() => setTab('logs')} style={styles.tab} />
-      <MonthChip label="Coupons" selected={tab === 'coupons'} accessibilityRole="tab" onPress={() => setTab('coupons')} style={styles.tab} />
-    </View>
-    {tab === 'coupons' ? <CouponsTabContent checkIns={checkIns} /> : <>
       <ScrollView ref={monthScroll} horizontal onLayout={event => setMonthWidth(event.nativeEvent.layout.width)} showsHorizontalScrollIndicator={false} contentContainerStyle={styles.months}>
         {[-1, 0, 1].map(offset => {
           const date = new Date(cursor.getFullYear(), cursor.getMonth() + offset, 1);
@@ -65,7 +58,6 @@ export default function ProgressScreen() {
         <Text accessibilityRole="header" style={DesignType.label}>{new Date(`${date}T12:00:00`).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</Text>
         {days[date].map(item => <LogItem key={item.id} item={item} habitName={prefs.habitName} onDelete={requestDelete} deleting={deleting === item.id} />)}
       </View>)}
-    </>}
   </Page>;
 }
 function LogItem({ item, habitName, onDelete, deleting }: { item: CheckIn; habitName: string; onDelete: (id: string) => void; deleting: boolean }) {
@@ -80,4 +72,4 @@ function LogItem({ item, habitName, onDelete, deleting }: { item: CheckIn; habit
     <TrashButton onPress={() => onDelete(item.id)} accessibilityLabel="Delete check-in" size={24} style={styles.delete} />
   </View>;
 }
-const styles = StyleSheet.create({ tabs: { flexDirection: 'row', gap: 12 }, tab: { flex: 1, paddingHorizontal: 8 }, months: { gap: 12 }, day: { gap: 16 }, item: { flexDirection: 'row', gap: 12, padding: 16, backgroundColor: Palette.white, borderWidth: Geometry.border, borderRadius: Geometry.radius }, itemContent: { flex: 1, gap: 8 }, delete: { minWidth: 44, minHeight: 44 } });
+const styles = StyleSheet.create({ months: { gap: 12 }, day: { gap: 16 }, item: { flexDirection: 'row', gap: 12, padding: 16, backgroundColor: Palette.white, borderWidth: Geometry.border, borderRadius: Geometry.radius }, itemContent: { flex: 1, gap: 8 }, delete: { minWidth: 44, minHeight: 44 } });
