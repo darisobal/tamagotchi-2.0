@@ -96,3 +96,7 @@ At 350 px: 22 px reading/label text becomes 17.39 px, 42 px feedback becomes 33.
 Applied to setup, home, progress, onboarding, auth/reset, check-in, confirmation, restart and profile/error flows via shared text and controls. Coupon/reward artwork already scales its typography with its own artboard and remains on that path to avoid double scaling. Web runtime checked setup at 320/350/430, home and confirmation at 350; calendar and supporting flow callsites audited. iPhone 16 Plus setup inspected with long name/habit values. Auth/recovery/store flows were source-audited, not newly transacted.
 
 Validation: 94 tests / 13 suites pass, including proportional feedback and readable minimum checks. Seven baseline type errors remain, no new errors. Evidence: `validation/type-setup-350.png`, `validation/type-home-350.png`.
+
+### v0.2.0 selection follow-up — 18 November 2026
+
+SelectionOption now keeps its white background when disabled, matching the published library. SelectionTile inherits this shared behavior. Web inspection confirmed all five selected/unselected/disabled/tile examples remain white, disabled semantics remain present, and keyboard focus reaches the enabled option. The temporary verification route was removed. Dedicated native disabled-state, Android and screen-reader runtime review remain pending; adoption is not marked complete.

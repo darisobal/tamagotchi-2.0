@@ -88,7 +88,7 @@ export function SelectionOption({ label, selected, tile = false, hideLabel = fal
   const [focused, setFocused] = useState(false);
   return <Pressable {...props} accessibilityRole="radio" accessibilityLabel={props.accessibilityLabel ?? label} aria-checked={selected} accessibilityState={{ ...props.accessibilityState, checked: selected, disabled: Boolean(disabled) }}
     onFocus={e => { setFocused(true); props.onFocus?.(e); }} onBlur={e => { setFocused(false); props.onBlur?.(e); }} disabled={disabled}
-    style={press => [styles.button, tile && styles.tile, { backgroundColor: disabled ? Palette['gray-disabled'] : Palette.white, borderWidth: (focused ? Geometry.focus : 2) * scale, borderColor: selected || focused ? Palette.black : 'transparent' }, typeof style === 'function' ? style(press) : style]}>
+    style={press => [styles.button, tile && styles.tile, { backgroundColor: Palette.white, borderWidth: (focused ? Geometry.focus : 2) * scale, borderColor: selected || focused ? Palette.black : 'transparent' }, typeof style === 'function' ? style(press) : style]}>
     {!hideLabel && <Text style={[DesignType.body, styles.buttonText, { color: Palette.black }]}>{label}</Text>}
   </Pressable>;
 }

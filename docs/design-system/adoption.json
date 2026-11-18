@@ -1,9 +1,9 @@
 {
-  "libraryVersion": "0.1.1",
+  "libraryVersion": "0.2.0",
   "date": "2026-11-18",
   "branch": "codex/tamagotchi-redesign",
   "setupCommit": "9aa1e65",
-  "status": "v0.2.0-design-reconciled-application-verification-pending",
+  "status": "v0.2.0-adopted-runtime-review-partial",
   "complete": false,
   "sharedMobileWebComponents": true,
   "tests": {
@@ -92,5 +92,10 @@
       "issue": "Disabled background uses gray-disabled; approved shared selection surface remains white in every state."
     }
   ],
-  "reconciliationEvidence": "reconciliation-verification.json"
+  "reconciliationEvidence": "reconciliation-verification.json",
+  "selectionDisabledReview": {
+    "background": "White in all selection states, matching published v0.2.0",
+    "web": "Verified selected, unselected, disabled-selected, disabled-unselected and tile; disabled semantics preserved; keyboard focus reaches enabled option",
+    "native": "Shared code path; dedicated disabled-state runtime review pending"
+  }
 }
