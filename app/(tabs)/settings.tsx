@@ -8,7 +8,7 @@ import { CADENCE_RULES } from '../../src/onboarding';
 import { CADENCE_OPTIONS, HABIT_NAME_MAX, PET_COLOR_OPTIONS, HabitCadence } from '../../src/types';
 import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
 import { Page } from '../../src/design-system/Page';
-import { Button, ScreenHeader, SelectionTile, TextField } from '../../src/design-system/Controls';
+import { Button, ScreenHeader, SelectionOption, SelectionTile, TextField } from '../../src/design-system/Controls';
 import { ColorOption } from '../../src/design-system/ColorOption';
 import { PetStage } from '../../src/design-system/PetStage';
 import { DesignType } from '../../src/design-system/tokens';
@@ -57,7 +57,7 @@ export default function SettingsScreen() {
     <View style={{ gap: 16 * scale }}>
       <Text style={DesignType.label}>Check in every</Text>
       <View accessibilityRole="radiogroup" accessibilityLabel="Check in every" style={{ flexDirection: 'row', gap: 12 * scale }}>
-        {CADENCE_OPTIONS.map(option => <Button key={option.id} label={{ daily: '24h', every2days: '48h', weekly: 'Weekly' }[option.id]} compact style={{ flex: 1, paddingHorizontal: 4 * scale }} appearance={cadence === option.id ? 'primary' : 'secondary'} accessibilityRole="radio" accessibilityHint={CADENCE_RULES[option.id]} accessibilityState={{ checked: cadence === option.id }} disabled={busy} onPress={() => setCadence(option.id)} />)}
+        {CADENCE_OPTIONS.map(option => <SelectionOption key={option.id} label={{ daily: '24h', every2days: '48h', weekly: 'Weekly' }[option.id]} style={{ flex: 1, paddingHorizontal: 4 * scale }} selected={cadence === option.id} accessibilityHint={CADENCE_RULES[option.id]} accessibilityState={{ checked: cadence === option.id }} disabled={busy} onPress={() => setCadence(option.id)} />)}
       </View>
     </View>
     {error && !error.startsWith('Enter ') ? <Text accessibilityRole="alert" style={DesignType.supporting}>{error}</Text> : null}

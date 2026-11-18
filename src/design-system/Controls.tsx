@@ -78,17 +78,22 @@ export function CheckInActions({ onNegative, onPositive, state = 'ready', negati
     <Button label={positive} state={state === 'submitting' ? 'loading' : 'default'} onPress={onPositive} style={styles.action} />
   </View>;
 }
-export function MonthChip({ label, selected = false, ...props }: Omit<ButtonProps, 'appearance' | 'compact'> & { selected?: boolean }) {
-  return <Button {...props} label={label} compact appearance={selected ? 'primary' : 'secondary'} aria-pressed={!props.accessibilityRole || props.accessibilityRole === 'button' ? selected : undefined} accessibilityState={{ ...props.accessibilityState, selected }} />;
-}
-export function SelectionTile({ label = 'None', selected, onPress, disabled }: { label?: string; selected: boolean; onPress?: () => void; disabled?: boolean }) {
+type SelectionOptionProps = Omit<PressableProps, 'children' | 'style'> & {
+  label: string; selected: boolean; tile?: boolean; hideLabel?: boolean; style?: PressableProps['style'];
+};
+/** Shared choice control: white surface, black text, outline only when selected/focused. */
+export function SelectionOption({ label, selected, tile = false, hideLabel = false, disabled, style, ...props }: SelectionOptionProps) {
   const styles = useControlStyles();
+  const scale = useDesignScale();
   const [focused, setFocused] = useState(false);
-  return <Pressable accessibilityRole="radio" accessibilityLabel={label} aria-checked={selected} accessibilityState={{ checked: selected, disabled }}
-    onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} disabled={disabled} onPress={onPress}
-    style={[styles.button, styles.tile, { backgroundColor: disabled ? Palette['gray-disabled'] : Palette.white, borderWidth: focused ? Geometry.focus : selected ? 2 : 0 }]}>
-    {label !== 'None' && <Text style={DesignType.calendar}>{label}</Text>}
+  return <Pressable {...props} accessibilityRole="radio" accessibilityLabel={props.accessibilityLabel ?? label} aria-checked={selected} accessibilityState={{ ...props.accessibilityState, checked: selected, disabled: Boolean(disabled) }}
+    onFocus={e => { setFocused(true); props.onFocus?.(e); }} onBlur={e => { setFocused(false); props.onBlur?.(e); }} disabled={disabled}
+    style={press => [styles.button, tile && styles.tile, { backgroundColor: disabled ? Palette['gray-disabled'] : Palette.white, borderWidth: (focused ? Geometry.focus : 2) * scale, borderColor: selected || focused ? Palette.black : 'transparent' }, typeof style === 'function' ? style(press) : style]}>
+    {!hideLabel && <Text style={[DesignType.body, styles.buttonText, { color: Palette.black }]}>{label}</Text>}
   </Pressable>;
+}
+export function SelectionTile({ label = 'None', ...props }: { label?: string; selected: boolean; onPress?: () => void; disabled?: boolean }) {
+  return <SelectionOption {...props} label={label} tile hideLabel={label === 'None'} />;
 }
 
 const baseStyles = StyleSheet.create({

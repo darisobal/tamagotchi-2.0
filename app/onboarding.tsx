@@ -7,7 +7,7 @@ import { useAuth } from '../src/authContext';
 import { CADENCE_OPTIONS, HabitCadence, HABIT_NAME_MAX } from '../src/types';
 import { Colors, Spacing } from '../src/theme';
 import { Page } from '../src/design-system/Page';
-import { Button, ScreenHeader, TextField, MonthChip } from '../src/design-system/Controls';
+import { Button, ScreenHeader, TextField, SelectionOption } from '../src/design-system/Controls';
 import { PetArtwork } from '../src/design-system/Artwork';
 import { DesignType } from '../src/design-system/tokens';
 import PetLives from '../src/PetLives';
@@ -91,7 +91,7 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
       <View style={styles.habitSuggestions}>{['meditate', 'run', 'read 10 pages'].map(value => <Pressable key={value} accessibilityRole="button" accessibilityHint="Fills your habit field so you can edit it" style={styles.tagTarget} onPress={() => { setHabit(value); setError(''); input.current?.focus(); }}><Text style={[DesignType.calendar, { textDecorationLine: 'underline' }]}>{value}</Text></Pressable>)}</View>
     </>}
     {step === 1 && <View accessibilityRole="radiogroup" accessibilityLabel="Check-in interval" style={{ gap: 12 }}>
-      {CADENCE_OPTIONS.map(option => <MonthChip key={option.id} label={{ daily: 'Every 24 hours', every2days: 'Every 48 hours', weekly: 'Every 7 days' }[option.id]} selected={cadence === option.id} accessibilityRole="radio" accessibilityState={{ checked: cadence === option.id }} onPress={() => setCadence(option.id)} />)}
+      {CADENCE_OPTIONS.map(option => <SelectionOption key={option.id} label={{ daily: 'Every 24 hours', every2days: 'Every 48 hours', weekly: 'Every 7 days' }[option.id]} selected={cadence === option.id} accessibilityRole="radio" accessibilityState={{ checked: cadence === option.id }} onPress={() => setCadence(option.id)} />)}
     </View>}
     {step === 2 && <>
       <View accessible accessibilityRole="image" accessibilityLabel={`${pet.trim() || 'Your pet'}, with three hearts`} style={styles.pet}><PetArtwork color={prefs.petColor} /><PetLives lives={3} color={prefs.petColor} size={24} /></View>

@@ -71,3 +71,7 @@ Do not wire new tokens into the running application before the library is review
 No gate may be marked complete from a successful tool call alone. Send the prepared handoff to the identified Tamagotchi developer chat only after these setup gates pass. Track dispatch and application adoption separately from setup readiness; publication does not mean the running application has migrated.
 
 Application implementation and validation are recorded separately in [ADOPTION.md](ADOPTION.md), [adoption.json](adoption.json) and [application-components.json](application-components.json).
+
+### Application selection controls
+
+Use `SelectionOption` from `src/design-system/Controls.tsx` for text choices and `SelectionTile` for accessory choices. Both share a white surface, 20 px source radius, and 2 px selected outline (scaled with the layout); unselected outlines are transparent. Text choices use the shared Aleo body typography. Keyboard focus remains visible and radio state is exposed to assistive technology. Use `Button` for actions such as Save, not as a selectable option. Reuse these components for equivalent controls on new or existing screens; keep page-specific code to labels, values, and arrangement.
