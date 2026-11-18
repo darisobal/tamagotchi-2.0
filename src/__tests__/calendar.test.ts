@@ -1,4 +1,4 @@
-import { buildMonthGrid, calendarStatus, groupCheckInsByDay, planDayNumber } from '../calendar';
+import { buildMonthGrid, loggedMonths, calendarStatus, groupCheckInsByDay, planDayNumber } from '../calendar';
 import { CheckIn } from '../types';
 
 const checkIn = (timestamp: string, id = timestamp): CheckIn => ({ id, timestamp, trackType: 'main', intensity: 'medium', note: null });
@@ -34,5 +34,18 @@ describe('progress calendar', () => {
     expect(planDayNumber(new Date(2026, 2, 28, 23).toISOString(), [], new Date(2026, 2, 30, 1))).toBe(3);
     expect(planDayNumber(null, [], new Date(2026, 10, 18))).toBe(1);
     expect(planDayNumber('invalid')).toBe(1);
+  });
+});
+
+describe('logged month navigation', () => {
+  it('omits empty months and deduplicates entries within each local month', () => {
+    expect(loggedMonths([
+      checkIn(new Date(2026, 9, 3).toISOString()),
+      checkIn(new Date(2026, 9, 9).toISOString()),
+      checkIn(new Date(2026, 11, 1).toISOString()),
+      checkIn(new Date(2025, 11, 31).toISOString()),
+      checkIn('invalid'),
+    ])).toEqual([{ year: 2026, month: 9 }, { year: 2026, month: 11 }, { year: 2025, month: 11 }]);
+    expect(loggedMonths([])).toEqual([]);
   });
 });

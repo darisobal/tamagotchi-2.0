@@ -42,3 +42,15 @@ export function planDayNumber(planStartedAt?: string | null, checkIns: CheckIn[]
   // Calendar days, not elapsed 24-hour periods (which differ across DST changes).
   return Math.max(1, Math.floor((Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(start.getFullYear(), start.getMonth(), start.getDate())) / 86400000) + 1);
 }
+
+/** Only months backed by valid persisted check-ins are navigation destinations. */
+export function loggedMonths(checkIns: CheckIn[]) {
+  const unique = new Map<string, { year: number; month: number }>();
+  for (const entry of checkIns) {
+    const date = new Date(entry.timestamp);
+    if (!Number.isFinite(date.getTime())) continue;
+    const year = date.getFullYear(), month = date.getMonth();
+    unique.set(`${year}-${month}`, { year, month });
+  }
+  return [...unique.values()].sort((a, b) => b.year - a.year || a.month - b.month);
+}

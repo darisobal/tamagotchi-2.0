@@ -5,8 +5,8 @@ import { Artwork, PetArtwork, PetPose } from './Artwork';
 import { DesignType, Geometry, Palette } from './tokens';
 
 export type PetStageState = PetPose | 'setup';
-export const PetStage = memo(function PetStage({ state = 'idle', name, showName = false, color = Palette.coral, width: explicitWidth, compact = false }: {
-  state?: PetStageState; name?: string; showName?: boolean; color?: string; width?: number; compact?: boolean;
+export const PetStage = memo(function PetStage({ state = 'idle', name, showName = false, color = Palette.coral, width: explicitWidth, compact = false, calendar = false }: {
+  state?: PetStageState; name?: string; showName?: boolean; color?: string; width?: number; compact?: boolean; calendar?: boolean;
 }) {
   const [measuredWidth, setWidth] = useState(382);
   const [nameHeight, setNameHeight] = useState(0);
@@ -20,7 +20,7 @@ export const PetStage = memo(function PetStage({ state = 'idle', name, showName 
   // Scale the entire authored 382 × 438 scene uniformly, including every decoration.
   const height = 438 * scale + nameOffset;
   return <View onLayout={e => setWidth(e.nativeEvent.layout.width)} accessible={!compact} accessibilityRole={compact ? undefined : 'image'} accessibilityLabel={compact ? undefined : `${name || 'Your pet'}, ${state.replace('-', ' ')}`}
-    style={[styles.stage, { overflow: state === 'idle' ? 'visible' : 'hidden', width: explicitWidth ?? '100%', height, minHeight: height, backgroundColor: state === 'success' || state === 'setup' ? Palette.white : state === 'missed' ? Palette.coral : state === 'double-success' ? Palette.lavender : 'transparent', borderWidth: bounded ? Geometry.border * scale : 0, borderRadius: Geometry.radius * scale }]}>
+    style={[styles.stage, { overflow: state === 'idle' ? 'visible' : 'hidden', width: explicitWidth ?? '100%', height, minHeight: height, backgroundColor: calendar ? 'transparent' : state === 'success' || state === 'setup' ? Palette.white : state === 'missed' ? Palette.coral : state === 'double-success' ? Palette.lavender : 'transparent', borderWidth: bounded && !calendar ? Geometry.border * scale : 0, borderRadius: Geometry.radius * scale }]}>
     <View style={{ position: 'absolute', left: -(bounded ? Geometry.border * scale : 0), top: nameOffset - (bounded ? Geometry.border * scale : 0), width: 382, height: 438, transformOrigin: 'top left', transform: [{ scale }] }}>
       {bounded && state !== 'setup' && <Artwork asset={state === 'success' ? '0c112' : state === 'missed' ? '7a3e3' : 'd0ef1'} width={382} height={438} />}
       {state === 'idle' && <>
