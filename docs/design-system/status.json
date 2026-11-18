@@ -182,7 +182,9 @@
     "setupDocumentationPushed": true,
     "inspectionNote": "Original branch/open-PR snapshot below is historical setup evidence. Reconciliation prepared on current codex/tamagotchi-redesign at 5027922; PR #7 remains unmerged.",
     "reconciliationBranch": "codex/tamagotchi-redesign",
-    "implementationPullRequest": "https://github.com/darisobal/tamagotchi-2.0/pull/7"
+    "implementationPullRequest": "https://github.com/darisobal/tamagotchi-2.0/pull/7",
+    "reconciliationCommit": "22d5d79",
+    "reconciliationDocumentationPushed": true
   },
   "sourceNotes": [
     "Original page has 7 frames and no components.",
@@ -918,11 +920,13 @@
   "handoff": {
     "chatTitle": "Implement Tamagotchi design system",
     "dispatched": "2026-11-18",
-    "libraryVersion": "0.1.1",
-    "scope": "Shared mobile/web application implementation; setup complete.",
+    "libraryVersion": "0.2.0",
+    "scope": "Verify application adoption of published v0.2.0; correct disabled selection surface and complete remaining platform/accessibility checks.",
     "reconciliationVersion": "0.2.0",
-    "reconciliationDispatchPending": true,
-    "reconciliationScope": "Published Figma library and connected examples; app disabled-selection correction and final adoption review remain with the implementation chat."
+    "reconciliationDispatchPending": false,
+    "reconciliationScope": "Published Figma library and connected examples; app disabled-selection correction and final adoption review remain with the implementation chat.",
+    "initialLibraryVersion": "0.1.1",
+    "reconciliationDispatched": "2026-11-18"
   },
   "applicationAdoption": "adoption.json"
 }
