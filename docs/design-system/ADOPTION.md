@@ -1,6 +1,6 @@
 # Application adoption — library v0.1.1
 
-Implemented on `codex/tamagotchi-redesign`, based on setup commit `9aa1e65`. The application is in draft review in [PR #7](https://github.com/darisobal/tamagotchi-2.0/pull/7); adoption is not marked complete because native scrolling, remaining device/accessibility review and Code Connect publication remain open. This does not change the published Figma library version or merge setup PR #6.
+Implemented on `codex/tamagotchi-redesign`, based on setup commit `9aa1e65`. The application is in draft review in [PR #7](https://github.com/darisobal/tamagotchi-2.0/pull/7); adoption is not marked complete because remaining device/accessibility review and Code Connect publication remain open. This does not change the published Figma library version or merge setup PR #6.
 
 ## Implementation
 
@@ -30,7 +30,7 @@ The payment action adds a contextual loading label (`processing…` / `waiting f
 | Web runtime | Local-only onboarding, saved setup choices/reload, successful check-in/confirmation, coupon collection/access, calendar navigation/details, and continue-to-prompt checked. No cloud data or real payments used. |
 | Responsive / states | 320, 430 and 1024 px inspected. Long name/habit/action text, selected colours, keyboard focus, hover/pressed, disabled/loading and field errors checked. Missed/double-success poses checked through temporary local fixtures. |
 | iOS runtime | iPhone 16 Plus, iOS 18.6, Expo Go 54.0.7: local onboarding, software-keyboard next, growing long fields, setup saving, fonts/SVGs, safe areas, check-in confirmation, reward collection, success/continue and calendar record/details checked. Controls below the viewport were invoked through accessibility actions; this does not establish touch reachability. |
-| Native scrolling / remaining review | Unresolved: the user reported that the home page would not scroll. Layout diagnostics measured content taller than the viewport, and focusing a field scrolled setup, but automated drags did not trigger a scroll gesture. A manual click-and-hold upward drag was requested to distinguish touch scrolling from simulator mouse-wheel behavior. Do not mark native interaction review passed until resolved. Android runtime and VoiceOver/TalkBack review remain open; no Android SDK is available locally. |
+| Native scrolling / remaining review | Resolved on iPhone Simulator: Darya confirmed click-and-hold upward dragging scrolls on 18 November 2026. The scrolled home screen shows Continue and Details above the tab bar. Automated dragging behaves like a tap and is not reliable evidence of scroll failure. Setup colour and interval selections were checked through accessibility actions; Android runtime and VoiceOver/TalkBack remain open. |
 | External flows | Live Supabase email/recovery/sync and store purchase transactions were not exercised. Their existing code and unit coverage are retained. |
 
 Review passed internally for necessity/clarity, then consistency/visual focus. It found and corrected a split narrow “coupons” label, long-name clipping, selected month visibility and loading text contrast.
@@ -47,7 +47,7 @@ Review passed internally for necessity/clarity, then consistency/visual focus. I
 - [iPhone confirmation with visible actions](validation/ios-confirmation.png)
 - [iPhone success with a long goal, initial viewport](validation/ios-success-long-goal.png)
 
-Before adoption is complete: resolve native scrolling and verify touch reachability, finish Android and screen-reader review, publish Code Connect when the workspace supports it, and review the draft application PR. Nothing was merged or deployed.
+Before adoption is complete: finish Android and screen-reader review, publish Code Connect when the workspace supports it, and review the draft application PR. Nothing was merged or deployed.
 
 ## Card proportions and capitalization correction — 18 November 2026
 
@@ -57,7 +57,7 @@ Original Figma source nodes: 4727:145, 4727:181, 4727:228, 4727:265 and 4727:189
 
 At the user's request, original Figma capitalization supersedes the v0.1.1 lowercase examples throughout the application. The lowercase Cursor rule was removed and AGENTS.md updated. Supporting flows use sentence case; user values and locale formatting retain their casing. This is an application correction, not a new Figma library publication.
 
-Validation: 91 tests pass; seven existing type errors remain, with no new errors. Native state artwork was inspected before the Mac relocked; the earlier scrolling report remains unresolved.
+Validation: 91 tests pass; seven existing type errors remain, with no new errors. Native state artwork was inspected before the Mac relocked; the scrolling report was subsequently resolved by user-confirmed manual dragging (see below).
 
 ## Setup and screen-detail review — 18 November 2026
 
@@ -67,4 +67,10 @@ Colour options are 68 px circles in one horizontally scrollable row, separated b
 
 Home restores the idle white question card, source feedback widths and spacing, source action labels, and exact idle arrow/ground positioning. Calendar columns and status miniatures were visually checked against the library frame; actual dates/history and existing navigation remain functional rather than copying static sample data.
 
-Web checks: 430 px source coordinates, 320 px horizontal colour access and preview update, interval open/select/close, home idle and calendar. Evidence: `validation/detail-setup-430.png`, `validation/detail-home-idle.png`. iPhone runtime verification of this additional pass is blocked by the locked Mac; the earlier scrolling report remains open.
+Web checks: 430 px source coordinates, 320 px horizontal colour access and preview update, interval open/select/close, home idle and calendar. Evidence: `validation/detail-setup-430.png`, `validation/detail-home-idle.png`. The Mac was subsequently unlocked and this pass rechecked on iPhone (see below).
+
+## iPhone follow-up — 18 November 2026
+
+After unlocking, the revised setup card, wrapped name, Name-before-Colour order, white fields, horizontal colour row, selected dot, accessory tile outlines and Every / 24h control were inspected on iPhone 16 Plus / iOS 18.6. Purple then Coral selection and Daily → Every two days → Daily changes succeeded through accessibility actions. Original values were restored without saving new preferences. Darya confirmed manual touch-style scrolling works; the scrolled home shows its Continue action and Details. No app code change was needed for scrolling.
+
+Evidence: `validation/ios-scroll-confirmed.png`, `validation/ios-setup-controls.png`. This closes the reported scrolling blocker, not the outstanding Android or screen-reader review.

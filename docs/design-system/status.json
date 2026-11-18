@@ -12,17 +12,17 @@
     "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp",
     "planKey": "team::997171912960236676",
     "pages": {
-      "00 · start": "0:1",
-      "01 · foundations": "1:65",
-      "02 · controls": "1:66",
-      "03 · pet": "1:67",
-      "04 · patterns": "1:68",
-      "05 · review": "1:69"
+      "00 \u00b7 start": "0:1",
+      "01 \u00b7 foundations": "1:65",
+      "02 \u00b7 controls": "1:66",
+      "03 \u00b7 pet": "1:67",
+      "04 \u00b7 patterns": "1:68",
+      "05 \u00b7 review": "1:69"
     },
     "reviewFrames": [
       {
         "id": "10:2",
-        "name": "setup · 430",
+        "name": "setup \u00b7 430",
         "width": 430,
         "height": 1515
       },
@@ -52,25 +52,25 @@
       },
       {
         "id": "10:191",
-        "name": "calendar · 430",
+        "name": "calendar \u00b7 430",
         "width": 430,
         "height": 898
       },
       {
         "id": "10:1837",
-        "name": "calendar expanded · 430",
+        "name": "calendar expanded \u00b7 430",
         "width": 430,
         "height": 1518
       },
       {
         "id": "10:3351",
-        "name": "daily · 320",
+        "name": "daily \u00b7 320",
         "width": 320,
         "height": 882
       },
       {
         "id": "10:3381",
-        "name": "web · 1024",
+        "name": "web \u00b7 1024",
         "width": 1024,
         "height": 915
       }
@@ -98,7 +98,7 @@
     "setupComplete": true
   },
   "pending": [
-    "Resolve reported iOS scrolling and verify touch reachability; complete Android runtime and screen-reader review.",
+    "Complete Android runtime and screen-reader review; reported iOS scrolling confirmed working by the user.",
     "Code Connect publication requires an Organization or Enterprise Figma plan."
   ],
   "git": {
@@ -310,25 +310,25 @@
     "frames": [
       {
         "id": "4745:467",
-        "name": "daily · 430",
+        "name": "daily \u00b7 430",
         "width": 430,
         "height": 937
       },
       {
         "id": "4745:515",
-        "name": "daily · 320",
+        "name": "daily \u00b7 320",
         "width": 320,
         "height": 948
       },
       {
         "id": "4745:545",
-        "name": "calendar · 430",
+        "name": "calendar \u00b7 430",
         "width": 430,
         "height": 733
       },
       {
         "id": "4745:2189",
-        "name": "web · 1024",
+        "name": "web \u00b7 1024",
         "width": 1024,
         "height": 937
       }
