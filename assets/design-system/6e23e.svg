@@ -1,0 +1,9 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="68" height="68" viewBox="0 0 68 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="color-option">
+<mask id="path-1-inside-1_0_10" fill="white">
+<path d="M0 34C0 15.2223 15.2223 0 34 0V0C52.7777 0 68 15.2223 68 34V34C68 52.7777 52.7777 68 34 68V68C15.2223 68 0 52.7777 0 34V34Z"/>
+</mask>
+<path d="M0 34M68 34M68 34M0 34M34 0M68 34M34 68M0 34M34 68V66C16.3269 66 2 51.6731 2 34H0H-2C-2 53.8823 14.1177 70 34 70V68ZM68 34H66C66 51.6731 51.6731 66 34 66V68V70C53.8823 70 70 53.8823 70 34H68ZM34 0V2C51.6731 2 66 16.3269 66 34H68H70C70 14.1177 53.8823 -2 34 -2V0ZM34 0V-2C14.1177 -2 -2 14.1177 -2 34H0H2C2 16.3269 16.3269 2 34 2V0Z" fill="black" mask="url(#path-1-inside-1_0_10)"/>
+<circle id="swatch" cx="34" cy="34" r="27" fill="#FF7254" stroke-width="2" stroke="black"/>
+</g>
+</svg>

@@ -55,9 +55,9 @@ export function useAuth(): AuthState {
 
 function formatAuthError(error: unknown): string {
   if (error && typeof error === 'object' && 'message' in error) {
-    return String((error as { message: string }).message).toLowerCase();
+    return String((error as { message: string }).message);
   }
-  return 'something went wrong. try again.';
+  return 'Something went wrong. Try again.';
 }
 
 function isEmailNotConfirmedError(message: string): boolean {
@@ -172,15 +172,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [handleAuthCallbackUrl]);
 
   const localContinue = useCallback(async (email: string, password: string): Promise<ContinueResult> => {
-    if (!email.trim()) return { outcome: 'error', message: 'enter your email.' };
-    if (password.length < 6) return { outcome: 'error', message: 'use at least 6 characters.' };
+    if (!email.trim()) return { outcome: 'error', message: 'Enter your email.' };
+    if (password.length < 6) return { outcome: 'error', message: 'Use at least 6 characters.' };
 
     const existing = await readLocalUser();
     const normalized = email.trim().toLowerCase();
     if (existing && existing.email !== normalized) {
       return {
         outcome: 'error',
-        message: 'this device has a different account. sign out from settings first.',
+        message: 'This device has a different account. Sign out from settings first.',
       };
     }
 
@@ -228,8 +228,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const continueWithPassword = useCallback(
     async (email: string, password: string): Promise<ContinueResult> => {
-      if (!email.trim()) return { outcome: 'error', message: 'enter your email.' };
-      if (password.length < 6) return { outcome: 'error', message: 'use at least 6 characters.' };
+      if (!email.trim()) return { outcome: 'error', message: 'Enter your email.' };
+      if (password.length < 6) return { outcome: 'error', message: 'Use at least 6 characters.' };
 
       const supabase = getSupabase();
       if (!supabase) return localContinue(email, password);
@@ -254,7 +254,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const signUpMessage = formatAuthError(signUpError);
         const lower = signUpMessage.toLowerCase();
         if (lower.includes('already') || lower.includes('registered')) {
-          return { outcome: 'error', message: 'incorrect password. try again.' };
+          return { outcome: 'error', message: 'Incorrect password. Try again.' };
         }
         return { outcome: 'error', message: signUpMessage };
       }
@@ -271,7 +271,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithMagicLink = useCallback(async (email: string) => {
     const supabase = getSupabase();
     if (!supabase) {
-      return 'magic links need supabase. use email + password for now, or add expo_public_supabase_* keys.';
+      return 'Magic links need Supabase. Use email + password for now, or add EXPO_PUBLIC_SUPABASE_* keys.';
     }
     const { error } = await supabase.auth.signInWithOtp({
       email,
@@ -286,9 +286,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const resendConfirmationEmail = useCallback(async (email: string) => {
     const supabase = getSupabase();
     if (!supabase) {
-      return 'email confirmation needs supabase. add expo_public_supabase_* keys.';
+      return 'Email confirmation needs Supabase. Add EXPO_PUBLIC_SUPABASE_* keys.';
     }
-    if (!email.trim()) return 'enter your email.';
+    if (!email.trim()) return 'Enter your email.';
     const { error } = await supabase.auth.resend({
       type: 'signup',
       email: email.trim(),
@@ -300,9 +300,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const requestPasswordReset = useCallback(async (email: string) => {
     const supabase = getSupabase();
     if (!supabase) {
-      return 'password reset needs supabase. add expo_public_supabase_* keys.';
+      return 'Password reset needs Supabase. Add EXPO_PUBLIC_SUPABASE_* keys.';
     }
-    if (!email.trim()) return 'enter your email.';
+    if (!email.trim()) return 'Enter your email.';
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
       redirectTo: getAuthRedirectUrl(),
     });
@@ -310,10 +310,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const updatePassword = useCallback(async (password: string) => {
-    if (password.length < 6) return 'use at least 6 characters.';
+    if (password.length < 6) return 'Use at least 6 characters.';
     const supabase = getSupabase();
     if (!supabase) {
-      return 'password reset needs supabase. add expo_public_supabase_* keys.';
+      return 'Password reset needs Supabase. Add EXPO_PUBLIC_SUPABASE_* keys.';
     }
     const { error } = await supabase.auth.updateUser({ password });
     if (error) return formatAuthError(error);

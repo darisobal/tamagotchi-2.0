@@ -25,7 +25,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { pullUserSnapshot, pushUserSnapshot, canSyncToCloud, createUserSnapshot } from './sync';
 import { useAuth } from './authContext';
 import { processCheckIn, computeAllHabits, computePetMood, recomputeStreakFromCheckIns, recomputeCelebrationFromCheckIns } from './logic';
-import { checkInEarnsCoupon } from './coupons';
 import { syncPetStatusWidget } from './widgetSync';
 import { consumePendingPaidRestart } from './purchases';
 import * as Crypto from 'expo-crypto';
@@ -41,9 +40,6 @@ interface AppState {
   computedHabits: ComputedHabit[];
   refresh: () => Promise<void>;
   doCheckIn: (trackType: TrackType, intensity: Intensity, note: string | null) => Promise<void>;
-  collectCoupon: (checkInId: string) => Promise<void>;
-  /** Set only right after a full-lives check-in — drives the coupon overlay once. */
-  couponRevealCheckInId: string | null;
   deleteCheckInById: (id: string) => Promise<void>;
   updatePrefs: (prefs: Partial<UserPrefs>) => Promise<void>;
   resetAll: () => Promise<void>;
@@ -89,7 +85,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [lives, setLives] = useState<number>(3);
   const [petMoodInfo, setPetMoodInfo] = useState<PetMoodInfo>({ mood: 'okay', reason: '', lives: 3 });
   const [computedHabits, setComputedHabits] = useState<ComputedHabit[]>([]);
-  const [couponRevealCheckInId, setCouponRevealCheckInId] = useState<string | null>(null);
   const [offlineChoice, setOfflineChoice] = useState<UserSnapshot | null>(null);
   const tracksRef = useRef<TrackState[]>([]);
   const moodRef = useRef<Mood>('okay');
@@ -135,7 +130,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       await AsyncStorage.removeItem(`tamagotchi_sync_pending_${identity}`);
       setSyncNotice(null);
     } catch {
-      setSyncNotice('progress is saved on this device. cloud sync could not finish.');
+      setSyncNotice('Progress is saved on this device. Cloud sync could not finish.');
     }
   }, [identity, repo]);
 
@@ -164,7 +159,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setOfflineChoice(null);
     setSyncNotice(null);
     setLoadError(null);
-    setCouponRevealCheckInId(null);
     syncReady.current = false;
     (async () => {
       try {
@@ -201,7 +195,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setLoadedIdentity(identity);
         setLoading(false);
       } catch {
-        if (!cancelled) setLoadError('could not load your account. your local progress is safe. reconnect and try again.');
+        if (!cancelled) setLoadError('Could not load your account. Your local progress is safe. Reconnect and try again.');
       }
     })();
     return () => { cancelled = true; syncReady.current = false; };
@@ -219,8 +213,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       syncReady.current = true;
       setLoadedIdentity(identity);
       setLoading(false);
-      setSyncNotice('using your account progress. a backup of your device progress is kept on this device.');
-    } catch { setLoadError('could not switch profiles. your saved progress has been kept. try again.'); }
+      setSyncNotice('Using your account progress. A backup of your device progress is kept on this device.');
+    } catch { setLoadError('Could not switch profiles. Your saved progress has been kept. Try again.'); }
   };
 
   useEffect(() => {
@@ -245,7 +239,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const doCheckIn = useCallback(
     async (trackType: TrackType, intensity: Intensity, note: string | null) => {
-      if (loading || loadedIdentity !== identity || !prefs.onboardingDone) throw new Error('your plan is still loading. try again.');
+      if (loading || loadedIdentity !== identity || !prefs.onboardingDone) throw new Error('Your plan is still loading. Try again.');
       const now = new Date();
       const state = tracksRef.current.find((t) => t.trackType === trackType);
       if (!state) return;
@@ -256,14 +250,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (restartingFromDeath) {
         const paid = await consumePendingPaidRestart();
         if (!paid) {
-          throw new Error('payment required to start again');
+          throw new Error('Payment required to start again');
         }
         isPaidRestart = true;
       }
-
-      const habits = computeAllHabits(tracksRef.current, now.getTime(), habitCadenceRef.current, planStartedRef.current);
-      const livesBeforeCheckIn = computePetMood(habits, habitNameRef.current).lives;
-      const couponEarned = checkInEarnsCoupon(livesBeforeCheckIn, isPaidRestart);
 
       const newCheckIn: CheckIn = {
         id: Crypto.randomUUID(),
@@ -272,8 +262,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         note,
         timestamp: now.toISOString(),
         isPaidRestart,
-        couponEarned,
-        couponCollected: couponEarned ? false : true,
+        couponEarned: false,
+        couponCollected: true,
       };
 
       const updatedState = processCheckIn(state, intensity, now, isPaidRestart);
@@ -284,22 +274,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       await refresh();
       await syncToCloud();
 
-      if (couponEarned) {
-        setCouponRevealCheckInId(newCheckIn.id);
-      }
     },
     [refresh, syncToCloud, repo, markPending, loading, loadedIdentity, identity, prefs.onboardingDone]
-  );
-
-  const collectCoupon = useCallback(
-    async (checkInId: string) => {
-      await markPending();
-      await repo.markCouponCollected(checkInId);
-      setCouponRevealCheckInId(null);
-      await refresh();
-      await syncToCloud();
-    },
-    [refresh, syncToCloud, repo, markPending],
   );
 
   const deleteCheckInById = useCallback(
@@ -360,7 +336,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const resetAll = useCallback(async () => {
     await markPending();
     await repo.resetAllData();
-    setCouponRevealCheckInId(null);
     await refresh();
     await syncToCloud();
   }, [refresh, syncToCloud, repo, markPending]);
@@ -402,8 +377,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         computedHabits,
         refresh,
         doCheckIn,
-        collectCoupon,
-        couponRevealCheckInId,
         deleteCheckInById,
         updatePrefs,
         resetAll,

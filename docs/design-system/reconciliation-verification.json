@@ -1,0 +1,1023 @@
+{
+  "version": "0.2.0",
+  "verified": "2026-11-18",
+  "libraryFileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+  "consumerFileKey": "eU62JH6PqW61UeGlLaGk7T",
+  "published": true,
+  "mainComponentBindings": {
+    "solid": 297,
+    "bound": 297,
+    "texts": 61,
+    "styled": 61,
+    "failures": [],
+    "fallbackCorrectionsVerified": [
+      "3:3653",
+      "3:3654",
+      "3:3671",
+      "3:3672",
+      "3:3707",
+      "3:3708"
+    ],
+    "scope": "Main component definitions, excluding virtual instance expansions. All solid paints are bound; all text layers use styles. Six stale coral fallback values were corrected and read back."
+  },
+  "libraryReviewFrames": [
+    {
+      "id": "10:2",
+      "name": "Set up · 430",
+      "width": 430,
+      "height": 1793,
+      "nodeCount": 70,
+      "types": {
+        "FRAME": 13,
+        "INSTANCE": 21,
+        "TEXT": 17,
+        "GROUP": 3,
+        "ELLIPSE": 7,
+        "VECTOR": 9
+      },
+      "rasterIds": [],
+      "wrongFonts": [],
+      "smallestReading": 14,
+      "stages": [
+        {
+          "id": "30:2217",
+          "width": 382,
+          "height": 438,
+          "properties": {
+            "show-name#6:6": {
+              "type": "BOOLEAN",
+              "value": true
+            },
+            "name#6:0": {
+              "type": "TEXT",
+              "value": "Lena banditka"
+            },
+            "state": {
+              "value": "setup",
+              "type": "VARIANT",
+              "boundVariables": {}
+            }
+          }
+        }
+      ],
+      "obsoleteCopy": []
+    },
+    {
+      "id": "10:78",
+      "name": "Idle · 430",
+      "width": 430,
+      "height": 953,
+      "nodeCount": 40,
+      "types": {
+        "FRAME": 2,
+        "INSTANCE": 8,
+        "TEXT": 5,
+        "VECTOR": 19,
+        "GROUP": 4,
+        "ELLIPSE": 2
+      },
+      "rasterIds": [],
+      "wrongFonts": [],
+      "smallestReading": 22,
+      "stages": [
+        {
+          "id": "30:2297",
+          "width": 382,
+          "height": 438,
+          "properties": {
+            "show-name#6:6": {
+              "type": "BOOLEAN",
+              "value": false
+            },
+            "name#6:0": {
+              "type": "TEXT",
+              "value": "tama"
+            },
+            "state": {
+              "value": "idle",
+              "type": "VARIANT",
+              "boundVariables": {}
+            }
+          }
+        }
+      ],
+      "obsoleteCopy": []
+    },
+    {
+      "id": "10:110",
+      "name": "Success · 430",
+      "width": 430,
+      "height": 931,
+      "nodeCount": 45,
+      "types": {
+        "FRAME": 2,
+        "INSTANCE": 6,
+        "TEXT": 4,
+        "ELLIPSE": 12,
+        "VECTOR": 17,
+        "GROUP": 4
+      },
+      "rasterIds": [],
+      "wrongFonts": [],
+      "smallestReading": 22,
+      "stages": [
+        {
+          "id": "30:2329",
+          "width": 382,
+          "height": 438,
+          "properties": {
+            "show-name#6:6": {
+              "type": "BOOLEAN",
+              "value": false
+            },
+            "name#6:0": {
+              "type": "TEXT",
+              "value": "tama"
+            },
+            "state": {
+              "value": "success",
+              "type": "VARIANT",
+              "boundVariables": {}
+            }
+          }
+        }
+      ],
+      "obsoleteCopy": []
+    },
+    {
+      "id": "10:137",
+      "name": "Missed · 430",
+      "width": 430,
+      "height": 931,
+      "nodeCount": 45,
+      "types": {
+        "FRAME": 2,
+        "INSTANCE": 8,
+        "TEXT": 5,
+        "VECTOR": 24,
+        "GROUP": 4,
+        "ELLIPSE": 2
+      },
+      "rasterIds": [],
+      "wrongFonts": [],
+      "smallestReading": 22,
+      "stages": [
+        {
+          "id": "30:2358",
+          "width": 382,
+          "height": 438,
+          "properties": {
+            "show-name#6:6": {
+              "type": "BOOLEAN",
+              "value": false
+            },
+            "name#6:0": {
+              "type": "TEXT",
+              "value": "tama"
+            },
+            "state": {
+              "value": "missed",
+              "type": "VARIANT",
+              "boundVariables": {}
+            }
+          }
+        }
+      ],
+      "obsoleteCopy": []
+    },
+    {
+      "id": "10:164",
+      "name": "Double success · 430",
+      "width": 430,
+      "height": 931,
+      "nodeCount": 41,
+      "types": {
+        "FRAME": 2,
+        "INSTANCE": 6,
+        "TEXT": 4,
+        "VECTOR": 23,
+        "GROUP": 4,
+        "ELLIPSE": 2
+      },
+      "rasterIds": [],
+      "wrongFonts": [],
+      "smallestReading": 22,
+      "stages": [
+        {
+          "id": "30:2390",
+          "width": 382,
+          "height": 438,
+          "properties": {
+            "show-name#6:6": {
+              "type": "BOOLEAN",
+              "value": false
+            },
+            "name#6:0": {
+              "type": "TEXT",
+              "value": "tama"
+            },
+            "state": {
+              "value": "double-success",
+              "type": "VARIANT",
+              "boundVariables": {}
+            }
+          }
+        }
+      ],
+      "obsoleteCopy": []
+    },
+    {
+      "id": "10:191",
+      "name": "Progress · 430",
+      "width": 430,
+      "height": 775,
+      "nodeCount": 267,
+      "types": {
+        "FRAME": 10,
+        "INSTANCE": 59,
+        "TEXT": 40,
+        "ELLIPSE": 40,
+        "VECTOR": 98,
+        "GROUP": 20
+      },
+      "rasterIds": [],
+      "wrongFonts": [],
+      "smallestReading": 22,
+      "calendarMin": 14,
+      "stages": [],
+      "obsoleteCopy": []
+    },
+    {
+      "id": "10:1837",
+      "name": "Progress · 350",
+      "width": 350,
+      "height": 619.198974609375,
+      "nodeCount": 267,
+      "types": {
+        "FRAME": 10,
+        "INSTANCE": 59,
+        "TEXT": 40,
+        "ELLIPSE": 40,
+        "VECTOR": 98,
+        "GROUP": 20
+      },
+      "rasterIds": [],
+      "wrongFonts": [],
+      "smallestReading": 17.392669677734375,
+      "calendarMin": 11.068062782287598,
+      "stages": [],
+      "obsoleteCopy": []
+    },
+    {
+      "id": "10:3351",
+      "name": "Idle · 320",
+      "width": 320,
+      "height": 688.5549926757812,
+      "nodeCount": 40,
+      "types": {
+        "FRAME": 2,
+        "INSTANCE": 8,
+        "TEXT": 5,
+        "VECTOR": 19,
+        "GROUP": 4,
+        "ELLIPSE": 2
+      },
+      "rasterIds": [],
+      "wrongFonts": [],
+      "smallestReading": 16.000001907348633,
+      "stages": [
+        {
+          "id": "30:2987",
+          "width": 272,
+          "height": 311.8743591308594,
+          "properties": {
+            "show-name#6:6": {
+              "type": "BOOLEAN",
+              "value": false
+            },
+            "name#6:0": {
+              "type": "TEXT",
+              "value": "tama"
+            },
+            "state": {
+              "value": "idle",
+              "type": "VARIANT",
+              "boundVariables": {}
+            }
+          }
+        }
+      ],
+      "obsoleteCopy": []
+    },
+    {
+      "id": "10:3381",
+      "name": "Web · 1024",
+      "width": 1024,
+      "height": 931,
+      "nodeCount": 45,
+      "types": {
+        "FRAME": 2,
+        "INSTANCE": 6,
+        "TEXT": 4,
+        "ELLIPSE": 12,
+        "VECTOR": 17,
+        "GROUP": 4
+      },
+      "rasterIds": [],
+      "wrongFonts": [],
+      "smallestReading": 22,
+      "stages": [
+        {
+          "id": "30:3019",
+          "width": 382,
+          "height": 438,
+          "properties": {
+            "show-name#6:6": {
+              "type": "BOOLEAN",
+              "value": false
+            },
+            "name#6:0": {
+              "type": "TEXT",
+              "value": "tama"
+            },
+            "state": {
+              "value": "success",
+              "type": "VARIANT",
+              "boundVariables": {}
+            }
+          }
+        }
+      ],
+      "obsoleteCopy": []
+    },
+    {
+      "id": "30:3045",
+      "name": "Set up · 320",
+      "width": 320,
+      "height": 1300.4713134765625,
+      "nodeCount": 70,
+      "types": {
+        "FRAME": 13,
+        "INSTANCE": 21,
+        "TEXT": 17,
+        "GROUP": 3,
+        "ELLIPSE": 7,
+        "VECTOR": 9
+      },
+      "rasterIds": [],
+      "wrongFonts": [],
+      "smallestReading": 14,
+      "stages": [
+        {
+          "id": "30:3049",
+          "width": 272,
+          "height": 312.93719482421875,
+          "properties": {
+            "show-name#6:6": {
+              "type": "BOOLEAN",
+              "value": true
+            },
+            "name#6:0": {
+              "type": "TEXT",
+              "value": "Lena banditka"
+            },
+            "state": {
+              "value": "setup",
+              "type": "VARIANT",
+              "boundVariables": {}
+            }
+          }
+        }
+      ],
+      "obsoleteCopy": []
+    },
+    {
+      "id": "30:3124",
+      "name": "Success · 320",
+      "width": 320,
+      "height": 672.8900756835938,
+      "nodeCount": 45,
+      "types": {
+        "FRAME": 2,
+        "INSTANCE": 6,
+        "TEXT": 4,
+        "ELLIPSE": 12,
+        "VECTOR": 17,
+        "GROUP": 4
+      },
+      "rasterIds": [],
+      "wrongFonts": [],
+      "smallestReading": 16.000001907348633,
+      "stages": [
+        {
+          "id": "30:3128",
+          "width": 272,
+          "height": 311.8743591308594,
+          "properties": {
+            "show-name#6:6": {
+              "type": "BOOLEAN",
+              "value": false
+            },
+            "name#6:0": {
+              "type": "TEXT",
+              "value": "tama"
+            },
+            "state": {
+              "value": "success",
+              "type": "VARIANT",
+              "boundVariables": {}
+            }
+          }
+        }
+      ],
+      "obsoleteCopy": []
+    },
+    {
+      "id": "30:3154",
+      "name": "Missed · 320",
+      "width": 320,
+      "height": 672.8900756835938,
+      "nodeCount": 45,
+      "types": {
+        "FRAME": 2,
+        "INSTANCE": 8,
+        "TEXT": 5,
+        "VECTOR": 24,
+        "GROUP": 4,
+        "ELLIPSE": 2
+      },
+      "rasterIds": [],
+      "wrongFonts": [],
+      "smallestReading": 16.000001907348633,
+      "stages": [
+        {
+          "id": "30:3158",
+          "width": 272,
+          "height": 311.8743591308594,
+          "properties": {
+            "show-name#6:6": {
+              "type": "BOOLEAN",
+              "value": false
+            },
+            "name#6:0": {
+              "type": "TEXT",
+              "value": "tama"
+            },
+            "state": {
+              "value": "missed",
+              "type": "VARIANT",
+              "boundVariables": {}
+            }
+          }
+        }
+      ],
+      "obsoleteCopy": []
+    },
+    {
+      "id": "30:3187",
+      "name": "Double success · 320",
+      "width": 320,
+      "height": 672.8900756835938,
+      "nodeCount": 41,
+      "types": {
+        "FRAME": 2,
+        "INSTANCE": 6,
+        "TEXT": 4,
+        "VECTOR": 23,
+        "GROUP": 4,
+        "ELLIPSE": 2
+      },
+      "rasterIds": [],
+      "wrongFonts": [],
+      "smallestReading": 16.000001907348633,
+      "stages": [
+        {
+          "id": "30:3191",
+          "width": 272,
+          "height": 311.8743591308594,
+          "properties": {
+            "show-name#6:6": {
+              "type": "BOOLEAN",
+              "value": false
+            },
+            "name#6:0": {
+              "type": "TEXT",
+              "value": "tama"
+            },
+            "state": {
+              "value": "double-success",
+              "type": "VARIANT",
+              "boundVariables": {}
+            }
+          }
+        }
+      ],
+      "obsoleteCopy": []
+    },
+    {
+      "id": "30:3217",
+      "name": "Progress · 320",
+      "width": 320,
+      "height": 560.5235595703125,
+      "nodeCount": 267,
+      "types": {
+        "FRAME": 10,
+        "INSTANCE": 59,
+        "TEXT": 40,
+        "ELLIPSE": 40,
+        "VECTOR": 98,
+        "GROUP": 20
+      },
+      "rasterIds": [],
+      "wrongFonts": [],
+      "smallestReading": 16.000001907348633,
+      "calendarMin": 10.000000953674316,
+      "stages": [],
+      "obsoleteCopy": []
+    },
+    {
+      "id": "30:3502",
+      "name": "Long name · 350",
+      "width": 350,
+      "height": 1455.9791259765625,
+      "nodeCount": 70,
+      "types": {
+        "FRAME": 13,
+        "INSTANCE": 21,
+        "TEXT": 17,
+        "GROUP": 3,
+        "ELLIPSE": 7,
+        "VECTOR": 9
+      },
+      "rasterIds": [],
+      "wrongFonts": [],
+      "smallestReading": 14,
+      "stages": [
+        {
+          "id": "30:3506",
+          "width": 302,
+          "height": 369.1361389160156,
+          "properties": {
+            "show-name#6:6": {
+              "type": "BOOLEAN",
+              "value": true
+            },
+            "name#6:0": {
+              "type": "TEXT",
+              "value": "Lena the unstoppable adventurer"
+            },
+            "state": {
+              "value": "setup",
+              "type": "VARIANT",
+              "boundVariables": {}
+            }
+          }
+        }
+      ],
+      "obsoleteCopy": []
+    }
+  ],
+  "consumer": {
+    "frames": [
+      {
+        "id": "4756:1165",
+        "name": "Set up · 430",
+        "width": 430,
+        "height": 1793,
+        "nodeCount": 71,
+        "wrongFonts": [],
+        "rasterIds": [],
+        "obsoleteCopy": [],
+        "scenes": [
+          {
+            "id": "4758:4031",
+            "width": 382,
+            "height": 438,
+            "state": "setup",
+            "remote": true
+          }
+        ],
+        "calendars": []
+      },
+      {
+        "id": "4745:467",
+        "name": "Idle · 430",
+        "width": 430,
+        "height": 953,
+        "nodeCount": 40,
+        "wrongFonts": [],
+        "rasterIds": [],
+        "obsoleteCopy": [],
+        "scenes": [
+          {
+            "id": "4758:4127",
+            "width": 382,
+            "height": 438,
+            "state": "idle",
+            "remote": true
+          }
+        ],
+        "calendars": []
+      },
+      {
+        "id": "4756:1278",
+        "name": "Success · 430",
+        "width": 430,
+        "height": 931,
+        "nodeCount": 45,
+        "wrongFonts": [],
+        "rasterIds": [],
+        "obsoleteCopy": [],
+        "scenes": [
+          {
+            "id": "4758:4161",
+            "width": 382,
+            "height": 438,
+            "state": "success",
+            "remote": true
+          }
+        ],
+        "calendars": []
+      },
+      {
+        "id": "4756:1307",
+        "name": "Missed · 430",
+        "width": 430,
+        "height": 931,
+        "nodeCount": 45,
+        "wrongFonts": [],
+        "rasterIds": [],
+        "obsoleteCopy": [],
+        "scenes": [
+          {
+            "id": "4758:4190",
+            "width": 382,
+            "height": 438,
+            "state": "missed",
+            "remote": true
+          }
+        ],
+        "calendars": []
+      },
+      {
+        "id": "4756:1339",
+        "name": "Double success · 430",
+        "width": 430,
+        "height": 931,
+        "nodeCount": 41,
+        "wrongFonts": [],
+        "rasterIds": [],
+        "obsoleteCopy": [],
+        "scenes": [
+          {
+            "id": "4758:4222",
+            "width": 382,
+            "height": 438,
+            "state": "double-success",
+            "remote": true
+          }
+        ],
+        "calendars": []
+      },
+      {
+        "id": "4745:545",
+        "name": "Progress · 430",
+        "width": 430,
+        "height": 775,
+        "nodeCount": 267,
+        "wrongFonts": [],
+        "rasterIds": [],
+        "obsoleteCopy": [],
+        "scenes": [],
+        "calendars": [
+          {
+            "id": "4758:4249",
+            "width": 382,
+            "height": 585,
+            "fills": [],
+            "mainWidth": 382,
+            "mainHeight": 585,
+            "title": "Nov 2026",
+            "titleSize": 62,
+            "remote": true
+          }
+        ]
+      },
+      {
+        "id": "4756:3014",
+        "name": "Progress · 350",
+        "width": 350,
+        "height": 619.198974609375,
+        "nodeCount": 267,
+        "wrongFonts": [],
+        "rasterIds": [],
+        "obsoleteCopy": [],
+        "scenes": [],
+        "calendars": [
+          {
+            "id": "4758:4946",
+            "width": 302,
+            "height": 463.0994873046875,
+            "fills": [],
+            "mainWidth": 382,
+            "mainHeight": 585,
+            "title": "Nov 2026",
+            "titleSize": 49.015708923339844,
+            "remote": true
+          }
+        ]
+      },
+      {
+        "id": "4745:515",
+        "name": "Idle · 320",
+        "width": 320,
+        "height": 688.5549926757812,
+        "nodeCount": 40,
+        "wrongFonts": [],
+        "rasterIds": [],
+        "obsoleteCopy": [],
+        "scenes": [
+          {
+            "id": "4758:5232",
+            "width": 272,
+            "height": 311.8743591308594,
+            "state": "idle",
+            "remote": true
+          }
+        ],
+        "calendars": []
+      },
+      {
+        "id": "4745:2189",
+        "name": "Web · 1024",
+        "width": 1024,
+        "height": 931,
+        "nodeCount": 45,
+        "wrongFonts": [],
+        "rasterIds": [],
+        "obsoleteCopy": [],
+        "scenes": [
+          {
+            "id": "4758:5264",
+            "width": 382,
+            "height": 438,
+            "state": "success",
+            "remote": true
+          }
+        ],
+        "calendars": []
+      },
+      {
+        "id": "4756:3832",
+        "name": "Set up · 320",
+        "width": 320,
+        "height": 1300.4713134765625,
+        "nodeCount": 71,
+        "wrongFonts": [],
+        "rasterIds": [],
+        "obsoleteCopy": [],
+        "scenes": [
+          {
+            "id": "4758:5293",
+            "width": 272,
+            "height": 312.93719482421875,
+            "state": "setup",
+            "remote": true
+          }
+        ],
+        "calendars": []
+      },
+      {
+        "id": "4756:3910",
+        "name": "Success · 320",
+        "width": 320,
+        "height": 672.8900756835938,
+        "nodeCount": 45,
+        "wrongFonts": [],
+        "rasterIds": [],
+        "obsoleteCopy": [],
+        "scenes": [
+          {
+            "id": "4758:5371",
+            "width": 272,
+            "height": 311.8743591308594,
+            "state": "success",
+            "remote": true
+          }
+        ],
+        "calendars": []
+      },
+      {
+        "id": "4756:3939",
+        "name": "Missed · 320",
+        "width": 320,
+        "height": 672.8900756835938,
+        "nodeCount": 45,
+        "wrongFonts": [],
+        "rasterIds": [],
+        "obsoleteCopy": [],
+        "scenes": [
+          {
+            "id": "4758:5400",
+            "width": 272,
+            "height": 311.8743591308594,
+            "state": "missed",
+            "remote": true
+          }
+        ],
+        "calendars": []
+      },
+      {
+        "id": "4756:3971",
+        "name": "Double success · 320",
+        "width": 320,
+        "height": 672.8900756835938,
+        "nodeCount": 41,
+        "wrongFonts": [],
+        "rasterIds": [],
+        "obsoleteCopy": [],
+        "scenes": [
+          {
+            "id": "4758:5432",
+            "width": 272,
+            "height": 311.8743591308594,
+            "state": "double-success",
+            "remote": true
+          }
+        ],
+        "calendars": []
+      },
+      {
+        "id": "4756:4000",
+        "name": "Progress · 320",
+        "width": 320,
+        "height": 560.5235595703125,
+        "nodeCount": 267,
+        "wrongFonts": [],
+        "rasterIds": [],
+        "obsoleteCopy": [],
+        "scenes": [],
+        "calendars": [
+          {
+            "id": "4758:5459",
+            "width": 272,
+            "height": 417.26177978515625,
+            "fills": [],
+            "mainWidth": 382,
+            "mainHeight": 585,
+            "title": "Nov 2026",
+            "titleSize": 44.14659881591797,
+            "remote": true
+          }
+        ]
+      },
+      {
+        "id": "4756:4759",
+        "name": "Long name · 350",
+        "width": 350,
+        "height": 1455.9791259765625,
+        "nodeCount": 71,
+        "wrongFonts": [],
+        "rasterIds": [],
+        "obsoleteCopy": [],
+        "scenes": [
+          {
+            "id": "4758:5745",
+            "width": 302,
+            "height": 369.1361389160156,
+            "state": "setup",
+            "remote": true
+          }
+        ],
+        "calendars": []
+      }
+    ],
+    "remoteInstanceCount": 302,
+    "localInstances": [],
+    "componentKeys": [
+      "a7e8ad330e40ef03685838b06bd90d26c502f8de",
+      "d8b3e50bd31728c93c38e640d65affd0491664b3",
+      "9d318592d665123d23c88706eb88a490bad3d82f",
+      "5ee80bc837657dad38ac17a1fec1b3a5c03103f8",
+      "fe858ed3789b60f94d89bbe063b45535e8c6b500",
+      "798b70f8fd92e6e5b7cadea4406deec817b208ee",
+      "622dae927032ac16989fab05c17fd991b8f912f2",
+      "66691b747d15acab085d2e09dbbfe5d97cd419f0",
+      "8525975aab22e6e7a9ea2f6e65d4f9fc61577d5f",
+      "c38df3123cf1ac2c38e9774a5de1fbdbf8ba095d",
+      "4e1cf497ee4e4aadcd8a6eb572312d4ef7a92c62",
+      "3f0d87ad9a8877c7057ac528c20b6005304bf1ee",
+      "405355149319f696791f6fd525c955afbfe8181f",
+      "d88eff561c59f3f859f42e12be4eea2d7a3022b5",
+      "1c3c4f03df281f3343ed9037fce2aea38b9f30e1",
+      "1c572dd25282ca5ed8fd6d0fd945afb24ee5027c",
+      "1f78c13bb60112f0e997f80e9d4d229f0c5ff970",
+      "4193c22b320421c94fd06b1c4342e5a96853fca5",
+      "174996f735eef186386dcd9d35aa007534cd1843",
+      "69b24e11a1b5584a921a631e3aac49eae8f9d282",
+      "54060b2665faeaf621c092c8463a28cc68a13498",
+      "ca39fb68e86e141b50ac06e50e5aaccc68830e09",
+      "97d8b14b4d452dfe5290ebcacff1130cf317d6bf",
+      "14aec89d7de6f7f87293026e67243e5628ad7d28",
+      "31b83acb7fae82d2f3d064a49797181ffc431990",
+      "e6346d057fd6be58e2ce901b3e461b5342c98de2",
+      "4d069cada3587e44b0daa4595b3426493a11d908",
+      "f73ab78075851e070e3f266be3beeaaa2765d8cc",
+      "4646d9bc01a7205e57b1fb2bc52e925af29b03cf",
+      "e8aee0056e7e56baacf60a61c6126ced9a11dea3",
+      "ee08526741d9a1e8d22f5b4595aca5c17f3fac24",
+      "e7ef16c3a4fe75e95d7e85fe9092d0feccf7972c",
+      "b2e173f1136c39bea76ca369f6e066e33c206d3a",
+      "250c2728923ca01b45bc995277811fda9577443a"
+    ],
+    "sourceFrames": [
+      {
+        "id": "4727:145",
+        "name": "iPhone 14 & 15 Pro Max - 38"
+      },
+      {
+        "id": "4727:181",
+        "name": "iPhone 14 & 15 Pro Max - 39"
+      },
+      {
+        "id": "4727:228",
+        "name": "iPhone 14 & 15 Pro Max - 45"
+      },
+      {
+        "id": "4727:265",
+        "name": "iPhone 14 & 15 Pro Max - 41"
+      },
+      {
+        "id": "4727:307",
+        "name": "iPhone 14 & 15 Pro Max - 43"
+      },
+      {
+        "id": "4727:842",
+        "name": "iPhone 14 & 15 Pro Max - 46"
+      },
+      {
+        "id": "4727:1899",
+        "name": "iPhone 14 & 15 Pro Max - 42"
+      }
+    ]
+  },
+  "existingInstanceUpdate": {
+    "before": {
+      "id": "4745:548",
+      "name": "month",
+      "type": "INSTANCE",
+      "width": 382,
+      "height": 596,
+      "main": {
+        "key": "4d069cada3587e44b0daa4595b3426493a11d908",
+        "name": "calendar-month",
+        "description": "Seven-column, Monday-first month. The example is November 2026: Sunday 1, Monday 30. The month label is editable; update every date/status instance when changing the month. This Figma component contains no date logic."
+      }
+    },
+    "after": {
+      "id": "4745:548",
+      "w": 382,
+      "h": 650,
+      "props": {
+        "month#8:18": {
+          "type": "TEXT",
+          "value": "november 2026"
+        }
+      },
+      "main": {
+        "id": "4754:1875",
+        "key": "4d069cada3587e44b0daa4595b3426493a11d908",
+        "description": "v0.2.0 · Calendar only, on page green background. Month-year is the screen title; no outer white card. Real November 2026 example: Sunday 1, Monday 30. Saved sample outcomes are explicit; missing and future days are empty. Update each cell when changing month. Use saved-month links beneath, grouped by year; no logs/coupons or detail controls. Release verification: 18 November 2026.",
+        "w": 382,
+        "h": 585,
+        "remote": true
+      }
+    },
+    "overridePreserved": true,
+    "note": "Accepted published updates through Figma Libraries. Existing month override remained november 2026; new title style wrapped it, growing the old instance to 650px. Examples were then recomposed with Nov 2026 and verified 382×585 main geometry."
+  },
+  "importRecovery": "The builder key cache initially returned old remote definitions after acceptance. Direct Plugin API imports resolved current published remote IDs; examples were rebuilt from those IDs without detaching. Final audit: 302 remote instances, zero local instances.",
+  "visualReview": {
+    "widths": [
+      320,
+      350,
+      430,
+      1024
+    ],
+    "coverage": [
+      "setup",
+      "idle",
+      "success",
+      "missed",
+      "double-success",
+      "calendar",
+      "long name",
+      "focus/disabled/error/loading component states"
+    ],
+    "result": "passed",
+    "note": "Scaled instance descendants can report empty textStyleId; rendered font metrics and current main styles were checked."
+  },
+  "remainingApplicationMismatch": "Disabled background is gray-disabled in code; approved Figma contract keeps the surface white in every state.",
+  "historicalConnectionEvidence": "consumer-verification.json",
+  "publicationVerification": "Figma Beta library manager showed No changes after the final publication on 2026-11-18."
+}

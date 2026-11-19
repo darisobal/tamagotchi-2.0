@@ -1,0 +1,87 @@
+{
+  "libraryVersion": "0.2.0",
+  "status": "source correspondence verified; one disabled-selection mismatch remains; Code Connect unpublished",
+  "codeConnectBlocker": "Unavailable on the connected Professional plan. Verified local correspondence supports the MCP workflow; no upgrade is required for this setup and none was made.",
+  "components": [
+    {
+      "figmaName": "button",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=2-2",
+      "source": "src/design-system/Controls.tsx",
+      "export": "Button"
+    },
+    {
+      "figmaName": "text-field",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=2-27",
+      "source": "src/design-system/Controls.tsx",
+      "export": "TextField"
+    },
+    {
+      "figmaName": "color-option",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=2-53",
+      "source": "src/design-system/ColorOption.tsx",
+      "export": "ColorOption"
+    },
+    {
+      "figmaName": "month-link",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=2-62",
+      "source": "app/(tabs)/progress.tsx",
+      "export": null,
+      "implementation": "Inline Pressable month links grouped by saved year; MonthChip export was removed."
+    },
+    {
+      "figmaName": "pet-artwork",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=5-2",
+      "source": "src/design-system/Artwork.tsx",
+      "export": "PetArtwork"
+    },
+    {
+      "figmaName": "feedback",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=8-2",
+      "source": "src/design-system/Controls.tsx",
+      "export": "Feedback"
+    },
+    {
+      "figmaName": "screen-header",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=8-9",
+      "source": "src/design-system/Controls.tsx",
+      "export": "ScreenHeader"
+    },
+    {
+      "figmaName": "check-in-actions",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=8-14",
+      "source": "src/design-system/Controls.tsx",
+      "export": "CheckInActions"
+    },
+    {
+      "figmaName": "calendar-day",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=8-25",
+      "source": "src/design-system/CalendarMonth.tsx",
+      "export": "CalendarDay"
+    },
+    {
+      "figmaName": "calendar-month",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=8-305",
+      "source": "src/design-system/CalendarMonth.tsx",
+      "export": "CalendarMonth"
+    },
+    {
+      "figmaName": "selection-tile",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=7-34",
+      "source": "src/design-system/Controls.tsx",
+      "export": "SelectionTile"
+    },
+    {
+      "figmaName": "pet-stage",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=6-69",
+      "source": "src/design-system/PetStage.tsx",
+      "export": "PetStage"
+    },
+    {
+      "figmaName": "selection-option",
+      "figmaUrl": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=26-49",
+      "source": "src/design-system/Controls.tsx",
+      "export": "SelectionOption",
+      "remainingMismatch": "Disabled background is gray-disabled in code; approved Figma contract keeps the surface white in every state."
+    }
+  ]
+}

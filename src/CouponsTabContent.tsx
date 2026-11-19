@@ -1,8 +1,10 @@
+import { ResponsiveText as Text } from './design-system/ResponsiveText';
 import React, { useMemo } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { CheckIn } from './types';
 import { toDateString } from './logic';
-import { Colors, FontSize, Slab, Spacing } from './theme';
+import { Colors, Spacing } from './theme';
+import { DesignType } from './design-system/tokens';
 import PowerCoupon from './PowerCoupon';
 import {
   couponRotationForIndex,
@@ -45,8 +47,8 @@ export default function CouponsTabContent({ checkIns }: CouponsTabContentProps) 
   if (groups.length === 0) {
     return (
       <View style={styles.empty}>
-        <Text style={styles.emptyTitle}>no coupons yet</Text>
-        <Text style={styles.emptySubtitle}>log progress to earn your first power coupon</Text>
+        <Text style={styles.emptyTitle}>No coupons yet</Text>
+        <Text style={styles.emptySubtitle}>Log progress to earn your first power coupon</Text>
       </View>
     );
   }
@@ -83,9 +85,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl / 2,
   },
   dayLabel: {
-    fontFamily: Slab.bold,
-    fontSize: FontSize.lg + 2,
-    lineHeight: FontSize.lg + 8,
+    ...DesignType.label,
     color: Colors.ink,
     marginTop: Spacing.lg / 2,
     marginBottom: Spacing.lg / 2,
@@ -103,14 +103,12 @@ const styles = StyleSheet.create({
     minHeight: 280,
   },
   emptyTitle: {
-    fontFamily: Slab.black,
-    fontSize: FontSize.xl,
+    ...DesignType.label,
     color: Colors.ink,
     marginBottom: Spacing.xs,
   },
   emptySubtitle: {
-    fontFamily: Slab.regular,
-    fontSize: FontSize.md,
+    ...DesignType.supporting,
     color: Colors.textSecondary,
     textAlign: 'center',
   },

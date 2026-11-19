@@ -23,7 +23,7 @@ export async function pullUserSnapshot(userId: string): Promise<UserSnapshot | n
     .eq('user_id', userId)
     .maybeSingle();
 
-  if (error) throw new Error('could not load your saved account. your local progress is safe.');
+  if (error) throw new Error('Could not load your saved account. Your local progress is safe.');
   if (!data?.snapshot) return null;
   return data.snapshot as UserSnapshot;
 }
@@ -41,7 +41,7 @@ export async function pushUserSnapshot(userId: string, snapshot: UserSnapshot): 
     },
     { onConflict: 'user_id' }
   );
-  if (error) throw new Error('progress is saved on this device; cloud sync could not finish.');
+  if (error) throw new Error('Progress is saved on this device; cloud sync could not finish.');
 }
 
 export function canSyncToCloud(): boolean {
@@ -58,11 +58,11 @@ export async function createUserSnapshot(userId: string, snapshot: UserSnapshot,
       .update({ snapshot, updated_at: new Date().toISOString() })
       .eq('user_id', userId).eq('snapshot', JSON.stringify(expectedEmpty))
       .select('user_id').maybeSingle();
-    if (error) throw new Error('could not save your guest progress to the account.');
+    if (error) throw new Error('Could not save your guest progress to the account.');
     return Boolean(data);
   }
   const { error } = await supabase.from(TABLE).insert({ user_id: userId, snapshot, updated_at: new Date().toISOString() });
   if (error?.code === '23505') return false;
-  if (error) throw new Error('could not save your guest progress to the account. it is still safe on this device.');
+  if (error) throw new Error('Could not save your guest progress to the account. It is still safe on this device.');
   return true;
 }

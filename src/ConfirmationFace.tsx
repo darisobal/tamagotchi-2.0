@@ -28,7 +28,7 @@ export default function ConfirmationFace({ width = 160, color = Colors.pet }: Pr
       width={width}
       height={height}
       viewBox={`0 0 ${VIEWBOX.w} ${VIEWBOX.h}`}
-      accessibilityLabel="suspicious pet face"
+      accessibilityLabel="Suspicious pet face"
     >
       {PATHS.map((d, i) => (
         <Path

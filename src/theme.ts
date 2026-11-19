@@ -1,14 +1,9 @@
-/**
- * Visual language inspired by Figma "Business Visual" frames:
- * - Bold slab-serif headlines (Hepta Slab via @expo-google-fonts/hepta-slab)
- * - Pastel page backgrounds that change with the pet's state
- * - Thick black-bordered, 20px-rounded "task cards"
- * - Royal-blue character on a white egg shell
- */
+import { DesignType, Palette } from './design-system/tokens';
 
+/** Published Tamagotchi library v0.1.1; legacy aliases keep retained flows compatible. */
 export const Colors = {
   // Neutral page bg used by screens that don't follow the mood palette
-  bg: '#FFEDD8',
+  bg: Palette['green-start'],
   surface: '#FFFFFF',
   card: '#FFFFFF',
 
@@ -16,15 +11,15 @@ export const Colors = {
   ink: '#000000',
   inkSoft: '#1A1A1A',
 
-  // Character / accent (Figma habit title uses #22f)
-  pet: '#2222FF',
-  petSoft: '#3F39FF',
+  // Character and accent
+  pet: Palette.coral,
+  petSoft: Palette.coral,
 
   // Mood-specific page palette
-  stateGoodBg: '#DCFFD8',
-  stateTodoBg: '#FFEDD8',
-  stateSadBg: '#FFDCC8',
-  stateBadBg: '#FF8484',
+  stateGoodBg: Palette['green-start'],
+  stateTodoBg: Palette['green-start'],
+  stateSadBg: Palette['green-start'],
+  stateBadBg: Palette['green-start'],
 
   // Confetti / sparkle dots used in "all good" state
   confetti: ['#1F1AE6', '#FF6F61', '#FFD93D', '#A66CFF', '#FF8FB1', '#000000'],
@@ -34,11 +29,11 @@ export const Colors = {
   primary: '#000000',
   primaryLight: '#FFFFFF',
   fitness: '#000000',
-  fitnessLight: '#FFEDD8',
+  fitnessLight: Palette['green-start'],
   selfRealization: '#000000',
-  selfRealizationLight: '#FFEDD8',
+  selfRealizationLight: Palette['green-start'],
   investing: '#000000',
-  investingLight: '#FFEDD8',
+  investingLight: Palette['green-start'],
   textPrimary: '#000000',
   textSecondary: '#222222',
   textMuted: '#666666',
@@ -51,9 +46,9 @@ export const Colors = {
 };
 
 export const TrackColors: Record<string, { main: string; light: string }> = {
-  fitness: { main: '#000000', light: '#FFEDD8' },
-  selfRealization: { main: '#000000', light: '#FFEDD8' },
-  investing: { main: '#000000', light: '#FFEDD8' },
+  fitness: { main: '#000000', light: Palette['green-start'] },
+  selfRealization: { main: '#000000', light: Palette['green-start'] },
+  investing: { main: '#000000', light: Palette['green-start'] },
 };
 
 export const Spacing = {
@@ -67,7 +62,7 @@ export const Spacing = {
 
 export const Radius = {
   sm: 8,
-  md: 14,
+  md: 20,
   lg: 20,
   xl: 28,
   full: 999,
@@ -75,9 +70,9 @@ export const Radius = {
 
 export const Border = {
   thin: 1,
-  base: 2,
-  thick: 4,
-  hero: 8,
+  base: 3,
+  thick: 3,
+  hero: 3,
   tabDivider: 4,
   tabIndicator: 4,
 };
@@ -91,7 +86,7 @@ export const FontSize = {
   xxl: 34,
   hero: 44,
   /** Greeting — scaled from Figma 62px @ 430w */
-  display: 52,
+  display: 62,
   /** Habit title inside the task card — scaled from Figma 54px */
   habitTitle: 46,
   /** Card motto — Figma 20px */
@@ -125,18 +120,6 @@ export const Font = {
  * — see `.cursor/rules/screen-titles.mdc`.
  */
 export const Type = {
-  screenTitle: {
-    fontFamily: Slab.black,
-    fontSize: FontSize.display,
-    letterSpacing: -1,
-    lineHeight: FontSize.display + 4,
-  },
-  /** Supporting line under a screen title (e.g. "your habit has a heartbeat"). */
-  screenDescription: {
-    fontFamily: Slab.bold,
-    fontSize: FontSize.lg,
-    color: Colors.ink,
-    /** Gap from the screen title above (was 4px; +8). */
-    marginTop: 12,
-  },
+  screenTitle: DesignType.title,
+  screenDescription: { ...DesignType.supporting, color: Colors.ink, marginTop: 12 },
 } as const;

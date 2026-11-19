@@ -53,7 +53,12 @@ export interface TrackState {
 
 export type PetHat = 'none' | 'top' | 'beanie' | 'crown';
 
+export type PetHair = 'none' | 'curls' | 'spikes' | 'swoop';
+export type PetClothes = 'none' | 'tee' | 'vest' | 'scarf';
+
 export interface UserPrefs {
+  petHair?: PetHair;
+  petClothes?: PetClothes;
   /** Independent timer anchor; never a logged achievement. */
   planStartedAt?: string | null;
   onboardingDraft?: { step: number; habitName: string; habitCadence: HabitCadence; petName: string } | null;
@@ -75,21 +80,20 @@ export interface UserPrefs {
 
 /** Pet colour swatches shown in onboarding + settings. */
 export const PET_COLOR_OPTIONS: { id: string; color: string; label: string }[] = [
-  { id: 'royal',  color: '#1F1AE6', label: 'royal' },
-  { id: 'coral',  color: '#FF6F61', label: 'coral' },
-  { id: 'forest', color: '#2E7D32', label: 'forest' },
-  { id: 'grape',  color: '#A66CFF', label: 'grape' },
-  { id: 'pink',   color: '#FF1493', label: 'pink' },
-  { id: 'ink',    color: '#000000', label: 'ink' },
+  { id: 'coral', color: '#FF7254', label: 'Coral' },
+  { id: 'yellow', color: '#FED12E', label: 'Yellow' },
+  { id: 'blue', color: '#3578EB', label: 'Blue' },
+  { id: 'green', color: '#4BA952', label: 'Green' },
+  { id: 'purple', color: '#9358D8', label: 'Purple' },
 ];
 
-export const DEFAULT_PET_COLOR = '#1F1AE6';
+export const DEFAULT_PET_COLOR = '#FF7254';
 
 export const PET_HAT_OPTIONS: { id: PetHat; label: string; symbol: string }[] = [
-  { id: 'none',   label: 'no hat',  symbol: 'x' },
-  { id: 'top',    label: 'top hat', symbol: 'T' },
-  { id: 'beanie', label: 'beanie',  symbol: 'B' },
-  { id: 'crown',  label: 'crown',   symbol: 'C' },
+  { id: 'none',   label: 'No hat',  symbol: 'x' },
+  { id: 'top',    label: 'Top hat', symbol: 'T' },
+  { id: 'beanie', label: 'Beanie',  symbol: 'B' },
+  { id: 'crown',  label: 'Crown',   symbol: 'C' },
 ];
 
 export const MAIN_TRACK: TrackType = 'main';
@@ -131,6 +135,8 @@ export function normalizeUserPrefs(partial: Partial<UserPrefs>): UserPrefs {
     habitName: resolveHabitName(partial.habitName),
     petName: resolvePetName(partial.petName),
     petColor: partial.petColor ?? DEFAULT_PET_COLOR,
+    petHair: ['curls', 'spikes', 'swoop'].includes(partial.petHair ?? '') ? partial.petHair : 'none',
+    petClothes: ['tee', 'vest', 'scarf'].includes(partial.petClothes ?? '') ? partial.petClothes : 'none',
     petHat: partial.petHat ?? 'none',
     habitCadence: partial.habitCadence ?? DEFAULT_HABIT_CADENCE,
   };
@@ -140,9 +146,9 @@ export const DEFAULT_HABIT_CADENCE: HabitCadence = 'daily';
 
 /** Labels for the cadence picker in settings / onboarding. */
 export const CADENCE_OPTIONS: { id: HabitCadence; label: string }[] = [
-  { id: 'daily', label: 'daily' },
-  { id: 'every2days', label: 'every two days' },
-  { id: 'weekly', label: 'weekly' },
+  { id: 'daily', label: 'Daily' },
+  { id: 'every2days', label: 'Every two days' },
+  { id: 'weekly', label: 'Weekly' },
 ];
 
 export const INTENSITY_POINTS: Record<Intensity, number> = {

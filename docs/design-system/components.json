@@ -23,7 +23,7 @@
       "4727:153",
       "4727:223"
     ],
-    "notes": "72px minimum height; wraps and grows for long text. Loading uses fixed saving… copy. Keep one primary action per decision.",
+    "notes": "v0.2.0 · Primary and secondary actions. Match original Figma capitalization; sentence case for supporting flows. Preserve user values. Source minimum height 72, narrow minimum 44; wrap and grow for long labels. Loading uses Saving… and blocks repeat submissions. Use selection-option for choices; action buttons keep their original fills. Release verification: 18 November 2026.",
     "figma": {
       "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
       "nodeId": "2:2",
@@ -33,7 +33,7 @@
       "propertyDefinitions": {
         "label#2:0": {
           "type": "TEXT",
-          "defaultValue": "i did it"
+          "defaultValue": "I did it"
         },
         "appearance": {
           "type": "VARIANT",
@@ -55,10 +55,95 @@
             "loading"
           ]
         }
-      }
+      },
+      "variants": [
+        {
+          "id": "2:3",
+          "name": "appearance=primary, state=default",
+          "key": "4e1cf497ee4e4aadcd8a6eb572312d4ef7a92c62",
+          "width": 320,
+          "height": 72
+        },
+        {
+          "id": "2:5",
+          "name": "appearance=primary, state=hover",
+          "key": "9300a51ddadbf13d524f6a19b94e8e8c61dc8aa1",
+          "width": 320,
+          "height": 72
+        },
+        {
+          "id": "2:7",
+          "name": "appearance=primary, state=pressed",
+          "key": "6dc8b5e688e4a907f411ac921acf40208e14b69a",
+          "width": 320,
+          "height": 72
+        },
+        {
+          "id": "2:9",
+          "name": "appearance=primary, state=focus",
+          "key": "080841cf41a228e997ec2bd656280d6ece144fd0",
+          "width": 320,
+          "height": 72
+        },
+        {
+          "id": "2:11",
+          "name": "appearance=primary, state=disabled",
+          "key": "431eece13fb42ececd302e3f0113e8d8f3a0f18c",
+          "width": 320,
+          "height": 72
+        },
+        {
+          "id": "2:13",
+          "name": "appearance=primary, state=loading",
+          "key": "1d5d4d5f5951efd0a1f56e1231122bb3ff9cb8c3",
+          "width": 320,
+          "height": 72
+        },
+        {
+          "id": "2:15",
+          "name": "appearance=secondary, state=default",
+          "key": "3f0d87ad9a8877c7057ac528c20b6005304bf1ee",
+          "width": 320,
+          "height": 72
+        },
+        {
+          "id": "2:17",
+          "name": "appearance=secondary, state=hover",
+          "key": "c35eaa953e40955e5c5e82c970383cca2219752b",
+          "width": 320,
+          "height": 72
+        },
+        {
+          "id": "2:19",
+          "name": "appearance=secondary, state=pressed",
+          "key": "c02deb2bd6029bac264328b23195251eeb33c709",
+          "width": 320,
+          "height": 72
+        },
+        {
+          "id": "2:21",
+          "name": "appearance=secondary, state=focus",
+          "key": "398db78a3031430862a793fa13d4a89020792a76",
+          "width": 320,
+          "height": 72
+        },
+        {
+          "id": "2:23",
+          "name": "appearance=secondary, state=disabled",
+          "key": "828178225b54891c504a030942ea83f563ee5aa7",
+          "width": 320,
+          "height": 72
+        },
+        {
+          "id": "2:25",
+          "name": "appearance=secondary, state=loading",
+          "key": "d0c88f20ed16d14e9e8cec4ca05ba7c85c7fb7cc",
+          "width": 320,
+          "height": 72
+        }
+      ]
     },
-    "description": "Primary and secondary actions. Source: 4727:154. States are explicit; loading blocks repeat submission. Lowercase label. Minimum height 72; wrap and grow for long labels. Loading uses fixed saving… copy.",
-    "nestedInstanceCount": 0
+    "description": "v0.2.0 · Primary and secondary actions. Match original Figma capitalization; sentence case for supporting flows. Preserve user values. Source minimum height 72, narrow minimum 44; wrap and grow for long labels. Loading uses Saving… and blocks repeat submissions. Use selection-option for choices; action buttons keep their original fills. Release verification: 18 November 2026."
   },
   {
     "name": "text-field",
@@ -90,15 +175,15 @@
       "propertyDefinitions": {
         "label#2:13": {
           "type": "TEXT",
-          "defaultValue": "name"
+          "defaultValue": "Name"
         },
         "value#2:19": {
           "type": "TEXT",
-          "defaultValue": "your name"
+          "defaultValue": "Your name"
         },
         "message#2:25": {
           "type": "TEXT",
-          "defaultValue": "enter a name"
+          "defaultValue": "Enter a name"
         },
         "show-message#2:31": {
           "type": "BOOLEAN",
@@ -115,10 +200,47 @@
             "disabled"
           ]
         }
-      }
+      },
+      "variants": [
+        {
+          "id": "2:28",
+          "name": "state=empty",
+          "key": "277b5f856fdb14052d455afeba60e8d44edeb51b",
+          "width": 382,
+          "height": 108
+        },
+        {
+          "id": "2:33",
+          "name": "state=filled",
+          "key": "5ee80bc837657dad38ac17a1fec1b3a5c03103f8",
+          "width": 382,
+          "height": 108
+        },
+        {
+          "id": "2:38",
+          "name": "state=focus",
+          "key": "51fd13fc0ea6f7191aefc8b806969d157b33069e",
+          "width": 382,
+          "height": 108
+        },
+        {
+          "id": "2:43",
+          "name": "state=error",
+          "key": "eea99273043ac52634892685b5142a2e02451130",
+          "width": 382,
+          "height": 134
+        },
+        {
+          "id": "2:48",
+          "name": "state=disabled",
+          "key": "8f9b34aba399567020e3ea493bd58a5d766e0f1a",
+          "width": 382,
+          "height": 108
+        }
+      ]
     },
-    "description": "Visible label and editable value/message. Error state always shows the error message; show-message controls optional help in other states. Fields grow vertically for long content. Default input minimum height 72.",
-    "nestedInstanceCount": 0
+    "description": "Visible label and editable value/message. Error state always shows the error message; show-message controls optional help in other states. Fields grow vertically for long content. Default input minimum height 72. Release verification: 18 November 2026.",
+    "notes": "Visible label and editable value/message. Error state always shows the error message; show-message controls optional help in other states. Fields grow vertically for long content. Default input minimum height 72. Release verification: 18 November 2026."
   },
   {
     "name": "color-option",
@@ -155,13 +277,43 @@
             "disabled"
           ]
         }
-      }
+      },
+      "variants": [
+        {
+          "id": "2:54",
+          "name": "state=default",
+          "key": "798b70f8fd92e6e5b7cadea4406deec817b208ee",
+          "width": 68,
+          "height": 68
+        },
+        {
+          "id": "2:56",
+          "name": "state=selected",
+          "key": "fe858ed3789b60f94d89bbe063b45535e8c6b500",
+          "width": 68,
+          "height": 68
+        },
+        {
+          "id": "2:58",
+          "name": "state=focus",
+          "key": "032d6a52040530b6ef4ce6222ada9280feecf977",
+          "width": 68,
+          "height": 68
+        },
+        {
+          "id": "2:60",
+          "name": "state=disabled",
+          "key": "8180781a9904f9c071b27f01bd250016636777db",
+          "width": 68,
+          "height": 68
+        }
+      ]
     },
-    "description": "One color per instance. Override the color/pet variable on the swatch. 68px touch target; selected uses a second outline, so selection does not rely on hue.",
-    "nestedInstanceCount": 0
+    "description": "v0.2.0 · Pet colour radio option. Source 68px full colour circle. Selected: 2px black outline and central 10px black dot. Focus: distinct 4px outline; disabled opacity 0.4. Choices stay in one horizontal scrolling row. Bind swatch fill to a semantic pet colour; accessible colour name and checked state are required. Release verification: 18 November 2026.",
+    "notes": "v0.2.0 · Pet colour radio option. Source 68px full colour circle. Selected: 2px black outline and central 10px black dot. Focus: distinct 4px outline; disabled opacity 0.4. Choices stay in one horizontal scrolling row. Bind swatch fill to a semantic pet colour; accessible colour name and checked state are required. Release verification: 18 November 2026."
   },
   {
-    "name": "month-chip",
+    "name": "month-link",
     "axes": {
       "state": [
         "default",
@@ -187,7 +339,7 @@
       "propertyDefinitions": {
         "label#2:37": {
           "type": "TEXT",
-          "defaultValue": "november"
+          "defaultValue": "November"
         },
         "state": {
           "type": "VARIANT",
@@ -199,118 +351,208 @@
             "disabled"
           ]
         }
-      }
-    },
-    "description": "Month selector; selected uses black surface and inverse text. Minimum 60px high. Label property is lowercase.",
-    "nestedInstanceCount": 0
-  },
-  {
-    "name": "pet-artwork",
-    "axes": {
-      "state": [
-        "idle",
-        "double-success",
-        "success",
-        "missed"
+      },
+      "variants": [
+        {
+          "id": "2:63",
+          "name": "state=default",
+          "key": "fb53a30f5e2aafbe7c119cbc5d032b6de531f053",
+          "width": 160,
+          "height": 58
+        },
+        {
+          "id": "2:65",
+          "name": "state=selected",
+          "key": "250c2728923ca01b45bc995277811fda9577443a",
+          "width": 160,
+          "height": 58
+        },
+        {
+          "id": "2:67",
+          "name": "state=focus",
+          "key": "994112c3b7c079e808329a9faca61f20a8f8b7f5",
+          "width": 160,
+          "height": 58
+        },
+        {
+          "id": "2:69",
+          "name": "state=disabled",
+          "key": "b0b9971fb9fad34c24a52f87ce1d08c5c1997ac9",
+          "width": 160,
+          "height": 58
+        }
       ]
     },
-    "props": [],
-    "source": [
-      "4727:164",
-      "4727:184",
-      "4727:268",
-      "4727:240"
+    "description": "v0.2.0 · Transparent outlined link to a month with saved check-ins. Group under This year or the actual older year. No empty or future unlogged months. The app renders this inline in progress.tsx; there is no MonthChip export. 58px source minimum, Aleo body text, 3px outline; focus 4px. Release verification: 18 November 2026.",
+    "notes": "v0.2.0 · Transparent outlined link to a month with saved check-ins. Group under This year or the actual older year. No empty or future unlogged months. The app renders this inline in progress.tsx; there is no MonthChip export. 58px source minimum, Aleo body text, 3px outline; focus 4px. Release verification: 18 November 2026.",
+    "renamedFrom": "month-chip; same Figma ID and key preserved"
+  },
+  {
+    "name": "selection-tile",
+    "axes": {
+      "state": [
+        "default",
+        "selected",
+        "focus",
+        "disabled"
+      ]
+    },
+    "props": [
+      "artwork"
     ],
-    "notes": "Exact source vectors, retain editable geometry. Idle includes source hat vectors.",
+    "source": [
+      "4727:1908",
+      "4727:1910"
+    ],
+    "notes": "v0.2.0 · 68px accessory tile wrapping selection-option. White in all states; 2px selected outline, 4px keyboard focus. The original design supplies no Hair or Clothes art: None is a blank tile, with an accessible None label. Preserve artwork swap for future authored assets. Release verification: 18 November 2026.",
     "figma": {
       "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
-      "nodeId": "5:2",
-      "key": "2bc7c92dff8fb52b93467c06d8c29c6cc4823eb2",
+      "nodeId": "7:34",
+      "key": "6643b58ed36917c0faa37927d81c0f81260e01dd",
       "type": "COMPONENT_SET",
-      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=5-2",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=7-34",
       "propertyDefinitions": {
+        "artwork#7:0": {
+          "type": "INSTANCE_SWAP",
+          "defaultValue": "7:32",
+          "preferredValues": []
+        },
         "state": {
           "type": "VARIANT",
-          "defaultValue": "idle",
+          "defaultValue": "default",
           "variantOptions": [
-            "idle",
-            "double-success",
-            "success",
-            "missed"
+            "default",
+            "selected",
+            "focus",
+            "disabled"
           ]
         }
-      }
+      },
+      "variants": [
+        {
+          "id": "7:35",
+          "name": "state=default",
+          "key": "7f8d1df86a05ad997b77b10cda1fc74f756b3eb0",
+          "width": 68,
+          "height": 68
+        },
+        {
+          "id": "7:38",
+          "name": "state=selected",
+          "key": "622dae927032ac16989fab05c17fd991b8f912f2",
+          "width": 68,
+          "height": 68
+        },
+        {
+          "id": "7:41",
+          "name": "state=focus",
+          "key": "66b6ed9ed09f2d1395d97300121131bbbd3fdd7c",
+          "width": 68,
+          "height": 68
+        },
+        {
+          "id": "7:44",
+          "name": "state=disabled",
+          "key": "0c73c14ff4f8de69eef32f9560e09ec1a0031c83",
+          "width": 68,
+          "height": 68
+        }
+      ]
     },
-    "description": "Original native vector pet poses: idle, success, missed and double-success. Fixed artwork geometry; use proportional scaling. Body colors bind to color/pet/default; missed is intentionally black.",
-    "nestedInstanceCount": 0
+    "description": "v0.2.0 · 68px accessory tile wrapping selection-option. White in all states; 2px selected outline, 4px keyboard focus. The original design supplies no Hair or Clothes art: None is a blank tile, with an accessible None label. Preserve artwork swap for future authored assets. Release verification: 18 November 2026."
   },
   {
-    "name": "pet-decor/success",
+    "name": "option-content/none",
     "source": [],
     "role": "supporting artwork or option dependency",
     "axes": {},
     "props": [],
     "figma": {
       "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
-      "nodeId": "5:7",
-      "key": "4193c22b320421c94fd06b1c4342e5a96853fca5",
+      "nodeId": "7:32",
+      "key": "8525975aab22e6e7a9ea2f6e65d4f9fc61577d5f",
       "type": "COMPONENT",
-      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=5-7",
-      "propertyDefinitions": {}
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=7-32",
+      "propertyDefinitions": {},
+      "variants": []
     },
-    "description": "Original editable vector artwork from Business Visual, redesign page 4727:144. Keep original path geometry.",
-    "nestedInstanceCount": 0
+    "description": "Explicit no-accessory choice. The source does not include hair/clothing artwork; replace through the selection-tile artwork property when real assets are supplied. Release verification: 18 November 2026.",
+    "notes": "Explicit no-accessory choice. The source does not include hair/clothing artwork; replace through the selection-tile artwork property when real assets are supplied. Release verification: 18 November 2026."
   },
   {
-    "name": "pet-decor/missed",
     "source": [],
-    "role": "supporting artwork or option dependency",
-    "axes": {},
-    "props": [],
+    "name": "selection-option",
+    "description": "v0.2.0 · Shared radio choice for cadence and accessory tiles. White surface and black Aleo body text in every state. Selected: 2px outline; unselected: transparent outline; focus: distinct 4px outline. Disabled is non-interactive; keep surface white. 72px source minimum; 44px minimum at narrow widths. Text grows; never use black action fill. Release verification: 18 November 2026.",
+    "notes": "v0.2.0 · Shared radio choice for cadence and accessory tiles. White surface and black Aleo body text in every state. Selected: 2px outline; unselected: transparent outline; focus: distinct 4px outline. Disabled is non-interactive; keep surface white. 72px source minimum; 44px minimum at narrow widths. Text grows; never use black action fill. Release verification: 18 November 2026.",
+    "axes": {
+      "state": [
+        "default",
+        "selected",
+        "focus",
+        "disabled"
+      ]
+    },
+    "props": [
+      "label",
+      "show-label"
+    ],
     "figma": {
       "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
-      "nodeId": "5:8",
-      "key": "ca39fb68e86e141b50ac06e50e5aaccc68830e09",
-      "type": "COMPONENT",
-      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=5-8",
-      "propertyDefinitions": {}
-    },
-    "description": "Original editable vector artwork from Business Visual, redesign page 4727:144. Keep original path geometry.",
-    "nestedInstanceCount": 0
-  },
-  {
-    "name": "pet-decor/double-success",
-    "source": [],
-    "role": "supporting artwork or option dependency",
-    "axes": {},
-    "props": [],
-    "figma": {
-      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
-      "nodeId": "5:9",
-      "key": "31b83acb7fae82d2f3d064a49797181ffc431990",
-      "type": "COMPONENT",
-      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=5-9",
-      "propertyDefinitions": {}
-    },
-    "description": "Original editable vector artwork from Business Visual, redesign page 4727:144. Keep original path geometry.",
-    "nestedInstanceCount": 0
-  },
-  {
-    "name": "you-indicator",
-    "source": [],
-    "role": "supporting artwork or option dependency",
-    "axes": {},
-    "props": [],
-    "figma": {
-      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
-      "nodeId": "5:10",
-      "key": "d88eff561c59f3f859f42e12be4eea2d7a3022b5",
-      "type": "COMPONENT",
-      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=5-10",
-      "propertyDefinitions": {}
-    },
-    "description": "Original editable vector artwork from Business Visual, redesign page 4727:144. Keep original path geometry.",
-    "nestedInstanceCount": 0
+      "nodeId": "26:49",
+      "key": "86a313831221bd9353d3f1ffbdbd031fcf6f8745",
+      "type": "COMPONENT_SET",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=26-49",
+      "propertyDefinitions": {
+        "label#26:0": {
+          "type": "TEXT",
+          "defaultValue": "24h"
+        },
+        "show-label#26:5": {
+          "type": "BOOLEAN",
+          "defaultValue": true
+        },
+        "state": {
+          "type": "VARIANT",
+          "defaultValue": "default",
+          "variantOptions": [
+            "default",
+            "selected",
+            "focus",
+            "disabled"
+          ]
+        }
+      },
+      "variants": [
+        {
+          "id": "26:50",
+          "name": "state=default",
+          "key": "c38df3123cf1ac2c38e9774a5de1fbdbf8ba095d",
+          "width": 119.33300018310547,
+          "height": 72
+        },
+        {
+          "id": "26:52",
+          "name": "state=selected",
+          "key": "66691b747d15acab085d2e09dbbfe5d97cd419f0",
+          "width": 119.33300018310547,
+          "height": 72
+        },
+        {
+          "id": "26:54",
+          "name": "state=focus",
+          "key": "35b0d71488ab0cc7856e6e218bb962da6c149d9b",
+          "width": 119.33300018310547,
+          "height": 72
+        },
+        {
+          "id": "26:56",
+          "name": "state=disabled",
+          "key": "07805e365eb4744f52b1cfa31ad9b404f351c1d1",
+          "width": 119.33300018310547,
+          "height": 72
+        }
+      ]
+    }
   },
   {
     "name": "feedback",
@@ -341,11 +583,11 @@
       "propertyDefinitions": {
         "title#8:0": {
           "type": "TEXT",
-          "defaultValue": "did you manage today?"
+          "defaultValue": "Did you manage today?"
         },
         "goal#8:3": {
           "type": "TEXT",
-          "defaultValue": "goal: make a business"
+          "defaultValue": "Goal: Make a business"
         },
         "show-goal#8:6": {
           "type": "BOOLEAN",
@@ -359,10 +601,26 @@
             "card"
           ]
         }
-      }
+      },
+      "variants": [
+        {
+          "id": "8:3",
+          "name": "surface=plain",
+          "key": "69b24e11a1b5584a921a631e3aac49eae8f9d282",
+          "width": 382,
+          "height": 188
+        },
+        {
+          "id": "8:6",
+          "name": "surface=card",
+          "key": "1c3c4f03df281f3343ed9037fce2aea38b9f30e1",
+          "width": 382,
+          "height": 242
+        }
+      ]
     },
-    "description": "Reusable check-in question or outcome. Title and goal are text properties; show-goal controls context visibility. Plain matches the redesign; card is a reusable contained variation.",
-    "nestedInstanceCount": 0
+    "description": "v0.2.0 · Home feedback with original capitalization and emphasis. Idle uses card; outcomes use plain. Title uses Hepta Slab ExtraBold 42/48, maximum source width306; goal uses Aleo Bold22/28. Preserve goal, wrap, and allow vertical growth. Release verification: 18 November 2026.",
+    "notes": "v0.2.0 · Home feedback with original capitalization and emphasis. Idle uses card; outcomes use plain. Title uses Hepta Slab ExtraBold 42/48, maximum source width306; goal uses Aleo Bold22/28. Preserve goal, wrap, and allow vertical growth. Release verification: 18 November 2026."
   },
   {
     "name": "screen-header",
@@ -389,7 +647,7 @@
       "propertyDefinitions": {
         "title#8:9": {
           "type": "TEXT",
-          "defaultValue": "day 67"
+          "defaultValue": "Day 67"
         },
         "size": {
           "type": "VARIANT",
@@ -399,10 +657,26 @@
             "compact"
           ]
         }
-      }
+      },
+      "variants": [
+        {
+          "id": "8:10",
+          "name": "size=regular",
+          "key": "a7e8ad330e40ef03685838b06bd90d26c502f8de",
+          "width": 382,
+          "height": 65
+        },
+        {
+          "id": "8:12",
+          "name": "size=compact",
+          "key": "e512d07a86131da0fac88e03da8e9490c8aeb2d1",
+          "width": 382,
+          "height": 48
+        }
+      ]
     },
-    "description": "Shared page title. Regular 62/65 at the source 430px canvas; compact 42/48 for narrow screens. Wrap naturally, preserve content and allow vertical growth.",
-    "nestedInstanceCount": 0
+    "description": "v0.2.0 · Shared page title: 62/65 at 430px. Narrow screens scale continuously with min(1,(viewport−48)/382), not by switching to compact. Compact 42/48 is for supporting dialogs. Wrap naturally and grow vertically. Release verification: 18 November 2026.",
+    "notes": "v0.2.0 · Shared page title: 62/65 at 430px. Narrow screens scale continuously with min(1,(viewport−48)/382), not by switching to compact. Compact 42/48 is for supporting dialogs. Wrap naturally and grow vertically. Release verification: 18 November 2026."
   },
   {
     "name": "check-in-actions",
@@ -432,14 +706,30 @@
             "submitting"
           ]
         }
-      }
+      },
+      "variants": [
+        {
+          "id": "8:15",
+          "name": "state=ready",
+          "key": "1c572dd25282ca5ed8fd6d0fd945afb24ee5027c",
+          "width": 382,
+          "height": 72
+        },
+        {
+          "id": "8:20",
+          "name": "state=submitting",
+          "key": "ede050bfe636c0e21a990247eff8ae0ebfc8d478",
+          "width": 382,
+          "height": 72
+        }
+      ]
     },
-    "description": "Daily answer pair built from button instances. Edit negative/positive nested labels. Ready: no + yes. Submitting blocks both actions and exposes saving feedback. Do not permit duplicate submissions.",
-    "nestedInstanceCount": 4,
+    "description": "v0.2.0 · Daily answer pair built from button instances. Original labels: Ja lox and I did it. Edit negative/positive nested labels for the flow. Submitting blocks both actions and shows Saving…; prevent repeat submissions. Release verification: 18 November 2026.",
     "nestedControls": {
       "negative": "exposed secondary button; label property",
       "positive": "exposed primary button; label property"
-    }
+    },
+    "notes": "v0.2.0 · Daily answer pair built from button instances. Original labels: Ja lox and I did it. Edit negative/positive nested labels for the flow. Submitting blocks both actions and shows Saving…; prevent repeat submissions. Release verification: 18 November 2026."
   },
   {
     "name": "calendar-day",
@@ -449,7 +739,8 @@
         "success",
         "missed",
         "double-success",
-        "outside-month"
+        "outside-month",
+        "missing"
       ]
     },
     "props": [
@@ -459,7 +750,7 @@
       "4727:309",
       "4727:345"
     ],
-    "notes": "Read-only date and status cell; source pet-stage instance scaled proportionally. Expose accessible date/status in the app. Unlogged history is not a failed check-in.",
+    "notes": "v0.2.0 · Read-only Monday-first calendar cells. 57×81 on a 54×78 pitch; last column 58px. 3px inside strokes overlap without gaps. Date inset 8px. Missing/future dates stay empty; outcome artwork only represents saved check-ins. Scale whole calendar uniformly; day text minimum 10px. Release verification: 18 November 2026.",
     "figma": {
       "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
       "nodeId": "8:25",
@@ -479,13 +770,57 @@
             "success",
             "missed",
             "double-success",
-            "outside-month"
+            "outside-month",
+            "missing"
           ]
         }
-      }
+      },
+      "variants": [
+        {
+          "id": "8:26",
+          "name": "state=future",
+          "key": "b2e173f1136c39bea76ca369f6e066e33c206d3a",
+          "width": 57,
+          "height": 81
+        },
+        {
+          "id": "8:28",
+          "name": "state=success",
+          "key": "e8aee0056e7e56baacf60a61c6126ced9a11dea3",
+          "width": 57,
+          "height": 81
+        },
+        {
+          "id": "8:65",
+          "name": "state=missed",
+          "key": "e7ef16c3a4fe75e95d7e85fe9092d0feccf7972c",
+          "width": 57,
+          "height": 81
+        },
+        {
+          "id": "8:86",
+          "name": "state=double-success",
+          "key": "ee08526741d9a1e8d22f5b4595aca5c17f3fac24",
+          "width": 57,
+          "height": 81
+        },
+        {
+          "id": "8:107",
+          "name": "state=outside-month",
+          "key": "f73ab78075851e070e3f266be3beeaaa2765d8cc",
+          "width": 57,
+          "height": 81
+        },
+        {
+          "id": "29:2410",
+          "name": "state=missing",
+          "key": "4646d9bc01a7205e57b1fb2bc52e925af29b03cf",
+          "width": 57,
+          "height": 81
+        }
+      ]
     },
-    "description": "Read-only calendar status. Date text and pet pose communicate the outcome without relying on hue alone. Future dates show the date only; outside-month is an empty alignment cell. No click target implied.",
-    "nestedInstanceCount": 9
+    "description": "v0.2.0 · Read-only Monday-first calendar cells. 57×81 on a 54×78 pitch; last column 58px. 3px inside strokes overlap without gaps. Date inset 8px. Missing/future dates stay empty; outcome artwork only represents saved check-ins. Scale whole calendar uniformly; day text minimum 10px. Release verification: 18 November 2026."
   },
   {
     "name": "calendar-month",
@@ -496,7 +831,7 @@
     "source": [
       "4727:307"
     ],
-    "notes": "Compose day instances with seven columns. Correct sample date alignment; do not encode sample history as business logic.",
+    "notes": "v0.2.0 · Calendar only, on page green background. Month-year is the screen title; no outer white card. Real November 2026 example: Sunday 1, Monday 30. Saved sample outcomes are explicit; missing and future days are empty. Update each cell when changing month. Use saved-month links beneath, grouped by year; no logs/coupons or detail controls. Release verification: 18 November 2026.",
     "figma": {
       "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
       "nodeId": "8:305",
@@ -506,56 +841,159 @@
       "propertyDefinitions": {
         "month#8:18": {
           "type": "TEXT",
-          "defaultValue": "november 2026"
+          "defaultValue": "Nov 2026"
         }
-      }
+      },
+      "variants": []
     },
-    "description": "Seven-column, Monday-first month. The example is November 2026: Sunday 1, Monday 30. The month label is editable; update every date/status instance when changing the month. This Figma component contains no date logic.",
-    "nestedInstanceCount": 96
+    "description": "v0.2.0 · Calendar only, on page green background. Month-year is the screen title; no outer white card. Real November 2026 example: Sunday 1, Monday 30. Saved sample outcomes are explicit; missing and future days are empty. Update each cell when changing month. Use saved-month links beneath, grouped by year; no logs/coupons or detail controls. Release verification: 18 November 2026."
   },
   {
-    "name": "selection-tile",
+    "name": "pet-artwork",
     "axes": {
       "state": [
-        "default",
-        "selected",
-        "focus",
-        "disabled"
+        "idle",
+        "double-success",
+        "success",
+        "missed"
       ]
     },
     "props": [
-      "artwork"
+      "show-hat"
     ],
     "source": [
-      "4727:1908",
-      "4727:1910"
+      "4727:164",
+      "4727:184",
+      "4727:268",
+      "4727:240"
     ],
-    "notes": "Artwork slot only; source contains no hair or clothing art.",
+    "notes": "Original native vector poses. Keep path geometry and scale uniformly. show-hat hides the original idle hat for setup only. No new accessory artwork is supplied. Release verification: 18 November 2026.",
     "figma": {
       "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
-      "nodeId": "7:34",
-      "key": "6643b58ed36917c0faa37927d81c0f81260e01dd",
+      "nodeId": "5:2",
+      "key": "2bc7c92dff8fb52b93467c06d8c29c6cc4823eb2",
       "type": "COMPONENT_SET",
-      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=7-34",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=5-2",
       "propertyDefinitions": {
-        "artwork#7:0": {
-          "type": "INSTANCE_SWAP",
-          "defaultValue": "7:32"
+        "show-hat#27:0": {
+          "type": "BOOLEAN",
+          "defaultValue": true
         },
         "state": {
           "type": "VARIANT",
-          "defaultValue": "default",
+          "defaultValue": "idle",
           "variantOptions": [
-            "default",
-            "selected",
-            "focus",
-            "disabled"
+            "idle",
+            "double-success",
+            "success",
+            "missed"
           ]
         }
-      }
+      },
+      "variants": [
+        {
+          "id": "5:3",
+          "name": "state=idle",
+          "key": "9d318592d665123d23c88706eb88a490bad3d82f",
+          "width": 129.54205322265625,
+          "height": 278.17340087890625
+        },
+        {
+          "id": "5:4",
+          "name": "state=success",
+          "key": "174996f735eef186386dcd9d35aa007534cd1843",
+          "width": 175.17507934570312,
+          "height": 264.57806396484375
+        },
+        {
+          "id": "5:5",
+          "name": "state=missed",
+          "key": "97d8b14b4d452dfe5290ebcacff1130cf317d6bf",
+          "width": 157.06829833984375,
+          "height": 267.9713439941406
+        },
+        {
+          "id": "5:6",
+          "name": "state=double-success",
+          "key": "e6346d057fd6be58e2ce901b3e461b5342c98de2",
+          "width": 160.17489624023438,
+          "height": 286.6031188964844
+        }
+      ]
     },
-    "description": "Customization option. Swap artwork through the instance property. Source tiles were empty; none is the only authored accessory choice. 68px target; 3px outline, 20px radius.",
-    "nestedInstanceCount": 4
+    "description": "Original native vector poses. Keep path geometry and scale uniformly. show-hat hides the original idle hat for setup only. No new accessory artwork is supplied. Release verification: 18 November 2026."
+  },
+  {
+    "name": "pet-decor/success",
+    "source": [],
+    "role": "supporting artwork or option dependency",
+    "axes": {},
+    "props": [],
+    "figma": {
+      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+      "nodeId": "5:7",
+      "key": "4193c22b320421c94fd06b1c4342e5a96853fca5",
+      "type": "COMPONENT",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=5-7",
+      "propertyDefinitions": {},
+      "variants": []
+    },
+    "description": "Original editable vector artwork from Business Visual, redesign page 4727:144. Keep original path geometry.",
+    "notes": "Original editable vector artwork from Business Visual, redesign page 4727:144. Keep original path geometry."
+  },
+  {
+    "name": "pet-decor/missed",
+    "source": [],
+    "role": "supporting artwork or option dependency",
+    "axes": {},
+    "props": [],
+    "figma": {
+      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+      "nodeId": "5:8",
+      "key": "ca39fb68e86e141b50ac06e50e5aaccc68830e09",
+      "type": "COMPONENT",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=5-8",
+      "propertyDefinitions": {},
+      "variants": []
+    },
+    "description": "Original editable vector artwork from Business Visual, redesign page 4727:144. Keep original path geometry.",
+    "notes": "Original editable vector artwork from Business Visual, redesign page 4727:144. Keep original path geometry."
+  },
+  {
+    "name": "pet-decor/double-success",
+    "source": [],
+    "role": "supporting artwork or option dependency",
+    "axes": {},
+    "props": [],
+    "figma": {
+      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+      "nodeId": "5:9",
+      "key": "31b83acb7fae82d2f3d064a49797181ffc431990",
+      "type": "COMPONENT",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=5-9",
+      "propertyDefinitions": {},
+      "variants": []
+    },
+    "description": "Original editable vector artwork from Business Visual, redesign page 4727:144. Keep original path geometry.",
+    "notes": "Original editable vector artwork from Business Visual, redesign page 4727:144. Keep original path geometry."
+  },
+  {
+    "name": "you-indicator",
+    "source": [],
+    "role": "supporting artwork or option dependency",
+    "axes": {},
+    "props": [],
+    "figma": {
+      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+      "nodeId": "5:10",
+      "key": "d88eff561c59f3f859f42e12be4eea2d7a3022b5",
+      "type": "COMPONENT",
+      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=5-10",
+      "propertyDefinitions": {},
+      "variants": []
+    },
+    "description": "Original editable vector artwork from Business Visual, redesign page 4727:144. Keep original path geometry.",
+    "notes": "Original editable vector artwork from Business Visual, redesign page 4727:144. Keep original path geometry."
   },
   {
     "name": "pet-stage",
@@ -605,35 +1043,54 @@
             "double-success"
           ]
         }
-      }
+      },
+      "variants": [
+        {
+          "id": "6:70",
+          "name": "state=setup",
+          "key": "d8b3e50bd31728c93c38e640d65affd0491664b3",
+          "width": 382,
+          "height": 438
+        },
+        {
+          "id": "6:89",
+          "name": "state=idle",
+          "key": "405355149319f696791f6fd525c955afbfe8181f",
+          "width": 382,
+          "height": 438
+        },
+        {
+          "id": "6:117",
+          "name": "state=success",
+          "key": "1f78c13bb60112f0e997f80e9d4d229f0c5ff970",
+          "width": 382,
+          "height": 438
+        },
+        {
+          "id": "6:153",
+          "name": "state=missed",
+          "key": "54060b2665faeaf621c092c8463a28cc68a13498",
+          "width": 382,
+          "height": 438
+        },
+        {
+          "id": "6:186",
+          "name": "state=double-success",
+          "key": "14aec89d7de6f7f87293026e67243e5628ad7d28",
+          "width": 382,
+          "height": 438
+        }
+      ]
     },
-    "description": "Responsive 382×438 illustration panel, composed from original pet-artwork and pet-decor instances. Use state, name and show-name. Setup/idle are transparent. Keep pet proportions; adapt page padding at narrow widths.",
-    "nestedInstanceCount": 9,
+    "description": "v0.2.0 · Original 382×438 scene proportions. Scale the entire instance uniformly, never resize width alone. Setup: white bordered card, name at top, no hat; vertical auto-layout grows for long names. Idle is unframed. Success, missed and double-success retain source decoration and circular confetti. Expose name/show-name and nested pet properties. Release verification: 18 November 2026.",
     "nestedControls": {
       "pet": "exposed pet-artwork instance; state selects pose"
     },
-    "notes": "v0.1.1 restores the original ground vector in idle. Ground scales horizontally; instance properties remain compatible.",
+    "notes": "v0.2.0 · Original 382×438 scene proportions. Scale the entire instance uniformly, never resize width alone. Setup: white bordered card, name at top, no hat; vertical auto-layout grows for long names. Idle is unframed. Success, missed and double-success retain source decoration and circular confetti. Expose name/show-name and nested pet properties. Release verification: 18 November 2026.",
     "figGround": {
       "nodeId": "19:347",
       "sourceNodeId": "4727:180",
       "colorVariableId": "VariableID:12:354"
     }
-  },
-  {
-    "name": "option-content/none",
-    "source": [],
-    "role": "supporting artwork or option dependency",
-    "axes": {},
-    "props": [],
-    "figma": {
-      "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
-      "nodeId": "7:32",
-      "key": "8525975aab22e6e7a9ea2f6e65d4f9fc61577d5f",
-      "type": "COMPONENT",
-      "url": "https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=7-32",
-      "propertyDefinitions": {}
-    },
-    "description": "Explicit no-accessory choice. The source does not include hair/clothing artwork; replace through the selection-tile artwork property when real assets are supplied.",
-    "nestedInstanceCount": 0
   }
 ]

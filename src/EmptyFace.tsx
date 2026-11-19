@@ -30,7 +30,7 @@ export default function EmptyFace({
       height={height}
       viewBox={`${EMPTY_FACE_SCENE_VB.x} ${EMPTY_FACE_SCENE_VB.y} ${EMPTY_FACE_SCENE_VB.w} ${EMPTY_FACE_SCENE_VB.h}`}
       overflow="visible"
-      accessibilityLabel="sad pet face"
+      accessibilityLabel="Sad pet face"
     >
       {EMPTY_FACE_PATHS.map((d, i) => (
         <Path

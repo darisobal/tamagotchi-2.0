@@ -1,7 +1,7 @@
 {
-  "version": "0.1.1",
+  "version": "0.2.0",
   "updated": "2026-11-18",
-  "stage": "handed-off-for-implementation",
+  "stage": "design-reconciled-application-review-pending",
   "source": {
     "fileKey": "eU62JH6PqW61UeGlLaGk7T",
     "pageId": "4727:144",
@@ -22,63 +22,99 @@
     "reviewFrames": [
       {
         "id": "10:2",
-        "name": "setup · 430",
+        "name": "Set up · 430",
         "width": 430,
-        "height": 1515
+        "height": 1793
       },
       {
         "id": "10:78",
-        "name": "idle",
+        "name": "Idle · 430",
         "width": 430,
-        "height": 851
+        "height": 953
       },
       {
         "id": "10:110",
-        "name": "success",
+        "name": "Success · 430",
         "width": 430,
-        "height": 851
+        "height": 931
       },
       {
         "id": "10:137",
-        "name": "missed",
+        "name": "Missed · 430",
         "width": 430,
-        "height": 899
+        "height": 931
       },
       {
         "id": "10:164",
-        "name": "double-success",
+        "name": "Double success · 430",
         "width": 430,
-        "height": 899
+        "height": 931
       },
       {
         "id": "10:191",
-        "name": "calendar · 430",
+        "name": "Progress · 430",
         "width": 430,
-        "height": 898
+        "height": 775
       },
       {
         "id": "10:1837",
-        "name": "calendar expanded · 430",
-        "width": 430,
-        "height": 1518
+        "name": "Progress · 350",
+        "width": 350,
+        "height": 619.198974609375
       },
       {
         "id": "10:3351",
-        "name": "daily · 320",
+        "name": "Idle · 320",
         "width": 320,
-        "height": 882
+        "height": 688.5549926757812
       },
       {
         "id": "10:3381",
-        "name": "web · 1024",
+        "name": "Web · 1024",
         "width": 1024,
-        "height": 915
+        "height": 931
+      },
+      {
+        "id": "30:3045",
+        "name": "Set up · 320",
+        "width": 320,
+        "height": 1300.4713134765625
+      },
+      {
+        "id": "30:3124",
+        "name": "Success · 320",
+        "width": 320,
+        "height": 672.8900756835938
+      },
+      {
+        "id": "30:3154",
+        "name": "Missed · 320",
+        "width": 320,
+        "height": 672.8900756835938
+      },
+      {
+        "id": "30:3187",
+        "name": "Double success · 320",
+        "width": 320,
+        "height": 672.8900756835938
+      },
+      {
+        "id": "30:3217",
+        "name": "Progress · 320",
+        "width": 320,
+        "height": 560.5235595703125
+      },
+      {
+        "id": "30:3502",
+        "name": "Long name · 350",
+        "width": 350,
+        "height": 1455.9791259765625
       }
     ],
     "projectId": "34241739",
     "projectUrl": "https://www.figma.com/files/team/997171912960236676/project/34241739",
     "libraryKey": "lk-5c96e9eaac5c9dce238d521f67ef86efb846991dfd72d34eda5e5eb1750162447e071dbd41e1291c466ed6393381ba042810c60842d59ccc71184f513297da08",
-    "publishedVersion": "0.1.1"
+    "publishedVersion": "0.2.0"
   },
   "readiness": {
     "sourceInspected": true,
@@ -90,7 +126,7 @@
     "published": true,
     "crossFileImportVerified": true,
     "developerHandoffSent": true,
-    "implementationStarted": false,
+    "implementationStarted": true,
     "foundationsVerified": true,
     "componentContractsVerified": true,
     "originalSourcePreserved": true,
@@ -98,7 +134,8 @@
     "setupComplete": true
   },
   "pending": [
-    "Application implementation and mobile/web validation in the dedicated implementation chat."
+    "Application agent to verify adoption of v0.2.0 and make disabled SelectionOption surfaces white.",
+    "Android runtime and screen-reader review remain pending."
   ],
   "git": {
     "repo": {
@@ -142,7 +179,12 @@
     ],
     "setupBranch": "codex/tamagotchi-design-system",
     "setupPullRequest": "https://github.com/darisobal/tamagotchi-2.0/pull/6",
-    "setupDocumentationPushed": true
+    "setupDocumentationPushed": true,
+    "inspectionNote": "Original branch/open-PR snapshot below is historical setup evidence. Reconciliation prepared on current codex/tamagotchi-redesign at 5027922; PR #7 remains unmerged.",
+    "reconciliationBranch": "codex/tamagotchi-redesign",
+    "implementationPullRequest": "https://github.com/darisobal/tamagotchi-2.0/pull/7",
+    "reconciliationCommit": "22d5d79",
+    "reconciliationDocumentationPushed": true
   },
   "sourceNotes": [
     "Original page has 7 frames and no components.",
@@ -153,12 +195,15 @@
   "readyForImplementation": true,
   "counts": {
     "variables": 69,
-    "textStyles": 8,
+    "textStyles": 17,
+    "baseTextStyles": 8,
+    "figmaOnlyResponsiveTextStyles": 9,
     "paintStyles": 1,
-    "componentFamilies": 12,
+    "componentFamilies": 13,
     "supportingComponents": 5,
-    "variants": 49,
-    "reviewScreens": 9
+    "variants": 54,
+    "reviewScreens": 15,
+    "connectedScreens": 15
   },
   "validation": {
     "tokens": {
@@ -174,93 +219,558 @@
     "screens": [
       {
         "id": "10:2",
-        "fonts": [
-          "Hepta Slab",
-          "Aleo"
-        ],
-        "wrongFontIds": [],
+        "name": "Set up · 430",
+        "width": 430,
+        "height": 1793,
+        "nodeCount": 70,
+        "types": {
+          "FRAME": 13,
+          "INSTANCE": 21,
+          "TEXT": 17,
+          "GROUP": 3,
+          "ELLIPSE": 7,
+          "VECTOR": 9
+        },
         "rasterIds": [],
-        "unboundTextIds": []
+        "wrongFonts": [],
+        "smallestReading": 14,
+        "stages": [
+          {
+            "id": "30:2217",
+            "width": 382,
+            "height": 438,
+            "properties": {
+              "show-name#6:6": {
+                "type": "BOOLEAN",
+                "value": true
+              },
+              "name#6:0": {
+                "type": "TEXT",
+                "value": "Lena banditka"
+              },
+              "state": {
+                "value": "setup",
+                "type": "VARIANT",
+                "boundVariables": {}
+              }
+            }
+          }
+        ],
+        "obsoleteCopy": []
       },
       {
         "id": "10:78",
-        "fonts": [
-          "Hepta Slab",
-          "Aleo"
-        ],
-        "wrongFontIds": [],
+        "name": "Idle · 430",
+        "width": 430,
+        "height": 953,
+        "nodeCount": 40,
+        "types": {
+          "FRAME": 2,
+          "INSTANCE": 8,
+          "TEXT": 5,
+          "VECTOR": 19,
+          "GROUP": 4,
+          "ELLIPSE": 2
+        },
         "rasterIds": [],
-        "unboundTextIds": []
+        "wrongFonts": [],
+        "smallestReading": 22,
+        "stages": [
+          {
+            "id": "30:2297",
+            "width": 382,
+            "height": 438,
+            "properties": {
+              "show-name#6:6": {
+                "type": "BOOLEAN",
+                "value": false
+              },
+              "name#6:0": {
+                "type": "TEXT",
+                "value": "tama"
+              },
+              "state": {
+                "value": "idle",
+                "type": "VARIANT",
+                "boundVariables": {}
+              }
+            }
+          }
+        ],
+        "obsoleteCopy": []
       },
       {
         "id": "10:110",
-        "fonts": [
-          "Hepta Slab",
-          "Aleo"
-        ],
-        "wrongFontIds": [],
+        "name": "Success · 430",
+        "width": 430,
+        "height": 931,
+        "nodeCount": 45,
+        "types": {
+          "FRAME": 2,
+          "INSTANCE": 6,
+          "TEXT": 4,
+          "ELLIPSE": 12,
+          "VECTOR": 17,
+          "GROUP": 4
+        },
         "rasterIds": [],
-        "unboundTextIds": []
+        "wrongFonts": [],
+        "smallestReading": 22,
+        "stages": [
+          {
+            "id": "30:2329",
+            "width": 382,
+            "height": 438,
+            "properties": {
+              "show-name#6:6": {
+                "type": "BOOLEAN",
+                "value": false
+              },
+              "name#6:0": {
+                "type": "TEXT",
+                "value": "tama"
+              },
+              "state": {
+                "value": "success",
+                "type": "VARIANT",
+                "boundVariables": {}
+              }
+            }
+          }
+        ],
+        "obsoleteCopy": []
       },
       {
         "id": "10:137",
-        "fonts": [
-          "Hepta Slab",
-          "Aleo"
-        ],
-        "wrongFontIds": [],
+        "name": "Missed · 430",
+        "width": 430,
+        "height": 931,
+        "nodeCount": 45,
+        "types": {
+          "FRAME": 2,
+          "INSTANCE": 8,
+          "TEXT": 5,
+          "VECTOR": 24,
+          "GROUP": 4,
+          "ELLIPSE": 2
+        },
         "rasterIds": [],
-        "unboundTextIds": []
+        "wrongFonts": [],
+        "smallestReading": 22,
+        "stages": [
+          {
+            "id": "30:2358",
+            "width": 382,
+            "height": 438,
+            "properties": {
+              "show-name#6:6": {
+                "type": "BOOLEAN",
+                "value": false
+              },
+              "name#6:0": {
+                "type": "TEXT",
+                "value": "tama"
+              },
+              "state": {
+                "value": "missed",
+                "type": "VARIANT",
+                "boundVariables": {}
+              }
+            }
+          }
+        ],
+        "obsoleteCopy": []
       },
       {
         "id": "10:164",
-        "fonts": [
-          "Hepta Slab",
-          "Aleo"
-        ],
-        "wrongFontIds": [],
+        "name": "Double success · 430",
+        "width": 430,
+        "height": 931,
+        "nodeCount": 41,
+        "types": {
+          "FRAME": 2,
+          "INSTANCE": 6,
+          "TEXT": 4,
+          "VECTOR": 23,
+          "GROUP": 4,
+          "ELLIPSE": 2
+        },
         "rasterIds": [],
-        "unboundTextIds": []
+        "wrongFonts": [],
+        "smallestReading": 22,
+        "stages": [
+          {
+            "id": "30:2390",
+            "width": 382,
+            "height": 438,
+            "properties": {
+              "show-name#6:6": {
+                "type": "BOOLEAN",
+                "value": false
+              },
+              "name#6:0": {
+                "type": "TEXT",
+                "value": "tama"
+              },
+              "state": {
+                "value": "double-success",
+                "type": "VARIANT",
+                "boundVariables": {}
+              }
+            }
+          }
+        ],
+        "obsoleteCopy": []
       },
       {
         "id": "10:191",
-        "fonts": [
-          "Hepta Slab",
-          "Aleo"
-        ],
-        "wrongFontIds": [],
+        "name": "Progress · 430",
+        "width": 430,
+        "height": 775,
+        "nodeCount": 267,
+        "types": {
+          "FRAME": 10,
+          "INSTANCE": 59,
+          "TEXT": 40,
+          "ELLIPSE": 40,
+          "VECTOR": 98,
+          "GROUP": 20
+        },
         "rasterIds": [],
-        "unboundTextIds": []
+        "wrongFonts": [],
+        "smallestReading": 22,
+        "calendarMin": 14,
+        "stages": [],
+        "obsoleteCopy": []
       },
       {
         "id": "10:1837",
-        "fonts": [
-          "Hepta Slab",
-          "Aleo"
-        ],
-        "wrongFontIds": [],
+        "name": "Progress · 350",
+        "width": 350,
+        "height": 619.198974609375,
+        "nodeCount": 267,
+        "types": {
+          "FRAME": 10,
+          "INSTANCE": 59,
+          "TEXT": 40,
+          "ELLIPSE": 40,
+          "VECTOR": 98,
+          "GROUP": 20
+        },
         "rasterIds": [],
-        "unboundTextIds": []
+        "wrongFonts": [],
+        "smallestReading": 17.392669677734375,
+        "calendarMin": 11.068062782287598,
+        "stages": [],
+        "obsoleteCopy": []
       },
       {
         "id": "10:3351",
-        "fonts": [
-          "Hepta Slab",
-          "Aleo"
-        ],
-        "wrongFontIds": [],
+        "name": "Idle · 320",
+        "width": 320,
+        "height": 688.5549926757812,
+        "nodeCount": 40,
+        "types": {
+          "FRAME": 2,
+          "INSTANCE": 8,
+          "TEXT": 5,
+          "VECTOR": 19,
+          "GROUP": 4,
+          "ELLIPSE": 2
+        },
         "rasterIds": [],
-        "unboundTextIds": []
+        "wrongFonts": [],
+        "smallestReading": 16.000001907348633,
+        "stages": [
+          {
+            "id": "30:2987",
+            "width": 272,
+            "height": 311.8743591308594,
+            "properties": {
+              "show-name#6:6": {
+                "type": "BOOLEAN",
+                "value": false
+              },
+              "name#6:0": {
+                "type": "TEXT",
+                "value": "tama"
+              },
+              "state": {
+                "value": "idle",
+                "type": "VARIANT",
+                "boundVariables": {}
+              }
+            }
+          }
+        ],
+        "obsoleteCopy": []
       },
       {
         "id": "10:3381",
-        "fonts": [
-          "Hepta Slab",
-          "Aleo"
-        ],
-        "wrongFontIds": [],
+        "name": "Web · 1024",
+        "width": 1024,
+        "height": 931,
+        "nodeCount": 45,
+        "types": {
+          "FRAME": 2,
+          "INSTANCE": 6,
+          "TEXT": 4,
+          "ELLIPSE": 12,
+          "VECTOR": 17,
+          "GROUP": 4
+        },
         "rasterIds": [],
-        "unboundTextIds": []
+        "wrongFonts": [],
+        "smallestReading": 22,
+        "stages": [
+          {
+            "id": "30:3019",
+            "width": 382,
+            "height": 438,
+            "properties": {
+              "show-name#6:6": {
+                "type": "BOOLEAN",
+                "value": false
+              },
+              "name#6:0": {
+                "type": "TEXT",
+                "value": "tama"
+              },
+              "state": {
+                "value": "success",
+                "type": "VARIANT",
+                "boundVariables": {}
+              }
+            }
+          }
+        ],
+        "obsoleteCopy": []
+      },
+      {
+        "id": "30:3045",
+        "name": "Set up · 320",
+        "width": 320,
+        "height": 1300.4713134765625,
+        "nodeCount": 70,
+        "types": {
+          "FRAME": 13,
+          "INSTANCE": 21,
+          "TEXT": 17,
+          "GROUP": 3,
+          "ELLIPSE": 7,
+          "VECTOR": 9
+        },
+        "rasterIds": [],
+        "wrongFonts": [],
+        "smallestReading": 14,
+        "stages": [
+          {
+            "id": "30:3049",
+            "width": 272,
+            "height": 312.93719482421875,
+            "properties": {
+              "show-name#6:6": {
+                "type": "BOOLEAN",
+                "value": true
+              },
+              "name#6:0": {
+                "type": "TEXT",
+                "value": "Lena banditka"
+              },
+              "state": {
+                "value": "setup",
+                "type": "VARIANT",
+                "boundVariables": {}
+              }
+            }
+          }
+        ],
+        "obsoleteCopy": []
+      },
+      {
+        "id": "30:3124",
+        "name": "Success · 320",
+        "width": 320,
+        "height": 672.8900756835938,
+        "nodeCount": 45,
+        "types": {
+          "FRAME": 2,
+          "INSTANCE": 6,
+          "TEXT": 4,
+          "ELLIPSE": 12,
+          "VECTOR": 17,
+          "GROUP": 4
+        },
+        "rasterIds": [],
+        "wrongFonts": [],
+        "smallestReading": 16.000001907348633,
+        "stages": [
+          {
+            "id": "30:3128",
+            "width": 272,
+            "height": 311.8743591308594,
+            "properties": {
+              "show-name#6:6": {
+                "type": "BOOLEAN",
+                "value": false
+              },
+              "name#6:0": {
+                "type": "TEXT",
+                "value": "tama"
+              },
+              "state": {
+                "value": "success",
+                "type": "VARIANT",
+                "boundVariables": {}
+              }
+            }
+          }
+        ],
+        "obsoleteCopy": []
+      },
+      {
+        "id": "30:3154",
+        "name": "Missed · 320",
+        "width": 320,
+        "height": 672.8900756835938,
+        "nodeCount": 45,
+        "types": {
+          "FRAME": 2,
+          "INSTANCE": 8,
+          "TEXT": 5,
+          "VECTOR": 24,
+          "GROUP": 4,
+          "ELLIPSE": 2
+        },
+        "rasterIds": [],
+        "wrongFonts": [],
+        "smallestReading": 16.000001907348633,
+        "stages": [
+          {
+            "id": "30:3158",
+            "width": 272,
+            "height": 311.8743591308594,
+            "properties": {
+              "show-name#6:6": {
+                "type": "BOOLEAN",
+                "value": false
+              },
+              "name#6:0": {
+                "type": "TEXT",
+                "value": "tama"
+              },
+              "state": {
+                "value": "missed",
+                "type": "VARIANT",
+                "boundVariables": {}
+              }
+            }
+          }
+        ],
+        "obsoleteCopy": []
+      },
+      {
+        "id": "30:3187",
+        "name": "Double success · 320",
+        "width": 320,
+        "height": 672.8900756835938,
+        "nodeCount": 41,
+        "types": {
+          "FRAME": 2,
+          "INSTANCE": 6,
+          "TEXT": 4,
+          "VECTOR": 23,
+          "GROUP": 4,
+          "ELLIPSE": 2
+        },
+        "rasterIds": [],
+        "wrongFonts": [],
+        "smallestReading": 16.000001907348633,
+        "stages": [
+          {
+            "id": "30:3191",
+            "width": 272,
+            "height": 311.8743591308594,
+            "properties": {
+              "show-name#6:6": {
+                "type": "BOOLEAN",
+                "value": false
+              },
+              "name#6:0": {
+                "type": "TEXT",
+                "value": "tama"
+              },
+              "state": {
+                "value": "double-success",
+                "type": "VARIANT",
+                "boundVariables": {}
+              }
+            }
+          }
+        ],
+        "obsoleteCopy": []
+      },
+      {
+        "id": "30:3217",
+        "name": "Progress · 320",
+        "width": 320,
+        "height": 560.5235595703125,
+        "nodeCount": 267,
+        "types": {
+          "FRAME": 10,
+          "INSTANCE": 59,
+          "TEXT": 40,
+          "ELLIPSE": 40,
+          "VECTOR": 98,
+          "GROUP": 20
+        },
+        "rasterIds": [],
+        "wrongFonts": [],
+        "smallestReading": 16.000001907348633,
+        "calendarMin": 10.000000953674316,
+        "stages": [],
+        "obsoleteCopy": []
+      },
+      {
+        "id": "30:3502",
+        "name": "Long name · 350",
+        "width": 350,
+        "height": 1455.9791259765625,
+        "nodeCount": 70,
+        "types": {
+          "FRAME": 13,
+          "INSTANCE": 21,
+          "TEXT": 17,
+          "GROUP": 3,
+          "ELLIPSE": 7,
+          "VECTOR": 9
+        },
+        "rasterIds": [],
+        "wrongFonts": [],
+        "smallestReading": 14,
+        "stages": [
+          {
+            "id": "30:3506",
+            "width": 302,
+            "height": 369.1361389160156,
+            "properties": {
+              "show-name#6:6": {
+                "type": "BOOLEAN",
+                "value": true
+              },
+              "name#6:0": {
+                "type": "TEXT",
+                "value": "Lena the unstoppable adventurer"
+              },
+              "state": {
+                "value": "setup",
+                "type": "VARIANT",
+                "boundVariables": {}
+              }
+            }
+          }
+        ],
+        "obsoleteCopy": []
       }
     ],
     "controlMinimumHeights": [
@@ -278,28 +788,35 @@
       72
     ],
     "calendarExamples": [
-      "October 2026: Thursday 1, Saturday 31",
-      "November 2026: Sunday 1, Monday 30"
+      "November 2026: Sunday 1, Monday 30; saved sample outcomes only; other past dates explicitly missing."
     ],
-    "runtimeTests": "Not run; application code was not changed.",
+    "runtimeTests": "Application validation is recorded separately in adoption.json.",
     "mainComponentBindings": {
-      "scope": "Main component definitions and component display boards, excluding nested instance expansions",
-      "solidPaints": 261,
-      "boundPaints": 261,
-      "texts": 56,
-      "styledTexts": 56,
-      "failures": []
+      "solid": 297,
+      "bound": 297,
+      "texts": 61,
+      "styled": 61,
+      "failures": [],
+      "fallbackCorrectionsVerified": [
+        "3:3653",
+        "3:3654",
+        "3:3671",
+        "3:3672",
+        "3:3707",
+        "3:3708"
+      ],
+      "scope": "Main component definitions, excluding virtual instance expansions. All solid paints are bound; all text layers use styles. Six stale coral fallback values were corrected and read back."
     },
     "errorMessage": {
       "visible": true,
       "optionalVisibilityPropertyDetached": true
     },
-    "crossFileEvidence": "consumer-verification.json"
+    "crossFileEvidence": "reconciliation-verification.json"
   },
   "limitations": [
-    "No hair/clothing assets were supplied; selection-tile exposes an artwork swap and the explicit none option.",
-    "No opened navigation menu or destinations were specified. Existing setup/home/progress routes remain authoritative.",
-    "No Code Connect mappings yet: redesigned application components do not exist. Map only after implementation."
+    "No supplied hair/clothing art: only the accessible None choice.",
+    "Existing setup/home/progress routes remain authoritative; no invented menu destinations.",
+    "Code Connect is unavailable on the connected Professional plan; local mappings and the MCP library workflow remain usable."
   ],
   "consumer": {
     "fileKey": "eU62JH6PqW61UeGlLaGk7T",
@@ -308,35 +825,108 @@
     "exampleRootId": "4745:465",
     "frames": [
       {
-        "id": "4745:467",
-        "name": "daily · 430",
+        "id": "4756:1165",
+        "name": "Set up · 430",
         "width": 430,
-        "height": 937
+        "height": 1793
       },
       {
-        "id": "4745:515",
-        "name": "daily · 320",
-        "width": 320,
-        "height": 948
+        "id": "4745:467",
+        "name": "Idle · 430",
+        "width": 430,
+        "height": 953
+      },
+      {
+        "id": "4756:1278",
+        "name": "Success · 430",
+        "width": 430,
+        "height": 931
+      },
+      {
+        "id": "4756:1307",
+        "name": "Missed · 430",
+        "width": 430,
+        "height": 931
+      },
+      {
+        "id": "4756:1339",
+        "name": "Double success · 430",
+        "width": 430,
+        "height": 931
       },
       {
         "id": "4745:545",
-        "name": "calendar · 430",
+        "name": "Progress · 430",
         "width": 430,
-        "height": 733
+        "height": 775
+      },
+      {
+        "id": "4756:3014",
+        "name": "Progress · 350",
+        "width": 350,
+        "height": 619.198974609375
+      },
+      {
+        "id": "4745:515",
+        "name": "Idle · 320",
+        "width": 320,
+        "height": 688.5549926757812
       },
       {
         "id": "4745:2189",
-        "name": "web · 1024",
+        "name": "Web · 1024",
         "width": 1024,
-        "height": 937
+        "height": 931
+      },
+      {
+        "id": "4756:3832",
+        "name": "Set up · 320",
+        "width": 320,
+        "height": 1300.4713134765625
+      },
+      {
+        "id": "4756:3910",
+        "name": "Success · 320",
+        "width": 320,
+        "height": 672.8900756835938
+      },
+      {
+        "id": "4756:3939",
+        "name": "Missed · 320",
+        "width": 320,
+        "height": 672.8900756835938
+      },
+      {
+        "id": "4756:3971",
+        "name": "Double success · 320",
+        "width": 320,
+        "height": 672.8900756835938
+      },
+      {
+        "id": "4756:4000",
+        "name": "Progress · 320",
+        "width": 320,
+        "height": 560.5235595703125
+      },
+      {
+        "id": "4756:4759",
+        "name": "Long name · 350",
+        "width": 350,
+        "height": 1455.9791259765625
       }
-    ]
+    ],
+    "remoteInstanceCount": 302
   },
   "handoff": {
     "chatTitle": "Implement Tamagotchi design system",
     "dispatched": "2026-11-18",
-    "libraryVersion": "0.1.1",
-    "scope": "Shared mobile/web application implementation; setup complete."
-  }
+    "libraryVersion": "0.2.0",
+    "scope": "Verify application adoption of published v0.2.0; correct disabled selection surface and complete remaining platform/accessibility checks.",
+    "reconciliationVersion": "0.2.0",
+    "reconciliationDispatchPending": false,
+    "reconciliationScope": "Published Figma library and connected examples; app disabled-selection correction and final adoption review remain with the implementation chat.",
+    "initialLibraryVersion": "0.1.1",
+    "reconciliationDispatched": "2026-11-18"
+  },
+  "applicationAdoption": "adoption.json"
 }

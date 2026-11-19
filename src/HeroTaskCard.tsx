@@ -1,5 +1,6 @@
+import { ResponsiveText as Text } from './design-system/ResponsiveText';
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Pressable, Platform } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Pressable, Platform } from 'react-native';
 import { Spacing, FontSize, Slab, Radius, Border } from './theme';
 
 export type HeroTaskCardProps = {
@@ -58,7 +59,7 @@ export default function HeroTaskCard({
           onPress={onHabitNamePress}
           disabled={!onHabitNamePress}
           accessibilityRole={onHabitNamePress ? 'button' : undefined}
-          accessibilityLabel={onHabitNamePress ? 'edit habit name' : undefined}
+          accessibilityLabel={onHabitNamePress ? 'Edit habit name' : undefined}
           style={({ pressed }) => [pressed && onHabitNamePress ? styles.titlePressed : null]}
         >
           <Text style={[styles.title, { color: accentColor }]} selectable={false}>

@@ -1,608 +1,83 @@
-import React, { useCallback, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  SafeAreaView,
-  RefreshControl,
-  Pressable,
-  useWindowDimensions,
-} from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withSequence,
-  withTiming,
-  withDelay,
-  Easing,
-  cancelAnimation,
-  interpolate,
-} from 'react-native-reanimated';
+import { ResponsiveText as Text, useDesignScale } from '../../src/design-system/ResponsiveText';
+import React, { useCallback, useRef, useState } from 'react';
+import { Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from '../../src/authContext';
 import { useAppState } from '../../src/context';
 import { DEFAULT_HABIT_NAME, MAIN_TRACK } from '../../src/types';
-import { Spacing, FontSize, Slab, Radius, Border, Type, Colors } from '../../src/theme';
-import { getStateTheme } from '../../src/stateTheme';
+import { successStageForDay } from '../../src/homeFeedback';
+import { planDayNumber } from '../../src/calendar';
 import { useFloatingTabBarExtraPadding } from '../../src/floatingTabBarPadding';
+import { Page } from '../../src/design-system/Page';
+import { Button, CheckInActions, Feedback, ScreenHeader } from '../../src/design-system/Controls';
+import { PetStage, PetStageState } from '../../src/design-system/PetStage';
+import { DesignType, Palette } from '../../src/design-system/tokens';
 import PixelPet from '../../src/PixelPet';
-import LineArtPet from '../../src/LineArtPet';
-import PetEggShell, {
-  PET_HOME_DEAD_DISPLAY_HEIGHT,
-  PET_HOME_DEAD_LEFT_INSET,
-  PET_HOME_DISPLAY_HEIGHT,
-  PET_HOME_EGG_HEIGHT,
-  PET_HOME_EGG_LEFT_INSET,
-  PET_HOME_EGG_WIDTH,
-  petEggShellStyles,
-} from '../../src/PetEggShell';
-import PetLives from '../../src/PetLives';
-import HeroTaskCard from '../../src/HeroTaskCard';
 import RestartPaywall from '../../src/RestartPaywall';
-import CheckInConfirmModal from '../../src/CheckInConfirmModal';
-import {
-  CheckInConfirmCopy,
-  pickCheckInConfirmCopy,
-} from '../../src/checkInConfirmCopy';
-import { HEART_VIEWBOX } from '../../assets/pet/heart-paths';
-import { formatLifeTimer } from '../../src/logic';
-import CouponRewardOverlay from '../../src/CouponRewardOverlay';
-import { findCouponForReveal } from '../../src/coupons';
-
-const EGG_FLIP_MS = 480;
-
-/** Pad above the egg (room for lying-down pose). */
-const HERO_PET_STAGE_PAD_TOP = 40;
-/** Pad below the egg — half of the previous 40 so egg→card gap is 24 with marginBottom. */
-const HERO_PET_STAGE_PAD_BOTTOM = 16;
-const HERO_PET_STAGE_HEIGHT =
-  HERO_PET_STAGE_PAD_TOP + PET_HOME_EGG_HEIGHT + HERO_PET_STAGE_PAD_BOTTOM;
-
-/** Home life hearts — size matches Figma; used to align the egg under them. */
-const HERO_HEART_SIZE = 51;
-const HERO_HEART_HEIGHT = Math.round(
-  (HERO_HEART_SIZE * HEART_VIEWBOX.h) / HEART_VIEWBOX.w,
-);
-/**
- * Pull the pet stage up so the egg top sits in the same band as the hearts
- * (hearts stay in flow; they layer above the egg via zIndex).
- */
-const HERO_EGG_LIFT = HERO_HEART_HEIGHT + HERO_PET_STAGE_PAD_TOP - Spacing.sm;
 
 export default function HomeScreen() {
-  const { prefs, computedHabits, tracks, mood, lives, refresh, doCheckIn, checkIns, collectCoupon, couponRevealCheckInId, updatePrefs, syncNotice } =
-    useAppState();
+  const scale = useDesignScale();
+  const { prefs, mood, refresh, doCheckIn, checkIns, updatePrefs, syncNotice } = useAppState();
   const { user, isConfigured } = useAuth();
-  const [checkInError, setCheckInError] = React.useState<string | null>(null);
-  const [refreshing, setRefreshing] = React.useState(false);
-  const [restartPaywallVisible, setRestartPaywallVisible] = React.useState(false);
-  const [confirmVisible, setConfirmVisible] = React.useState(false);
-  const [confirmCopy, setConfirmCopy] = React.useState<CheckInConfirmCopy | null>(null);
-  const [eggFlipped, setEggFlipped] = React.useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const submitting = useRef(false);
+  const pageRef = useRef<ScrollView>(null);
+  const [restartVisible, setRestartVisible] = useState(false);
+  const [answer, setAnswer] = useState<'question' | 'missed' | 'success'>('question');
+  const notYet = answer === 'missed';
+  const celebrating = answer === 'success';
+  const bottomPadding = useFloatingTabBarExtraPadding();
+  const habitName = (prefs.habitName || DEFAULT_HABIT_NAME).trim();
+  const petName = prefs.petName.trim();
+  const stage: PetStageState = notYet || mood === 'dead' || mood === 'sad' ? 'missed'
+    : celebrating ? successStageForDay(checkIns) : 'idle';
+  const title = mood === 'dead' ? 'Time to start again.'
+    : notYet ? 'Nu ty i LOX!\nSHAME\non you!'
+    : celebrating ? (stage === 'double-success' ? 'DOUBLE\nSuccess!\nKeep going!' : 'You’re real\ngangsta!\nWooooooop!')
+    : prefs.habitCadence === 'daily' ? 'Did you manage today?' : 'Did you manage your goal?';
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await refresh();
-    setRefreshing(false);
+    try { await refresh(); } catch { setError('Could not refresh. Try again.'); }
+    finally { setRefreshing(false); }
   }, [refresh]);
-
-  const lastMainCheckIn = checkIns.find((c) => c.trackType === MAIN_TRACK);
-  const pendingCoupon = findCouponForReveal(checkIns, couponRevealCheckInId);
-  const theme = getStateTheme(mood, {
-    lastCheckInWasPaidRestart: Boolean(lastMainCheckIn?.isPaidRestart),
-  });
-  const tabBarExtraPad = useFloatingTabBarExtraPadding();
-  const window = useWindowDimensions();
-  const [viewportHeight, setViewportHeight] = React.useState(window.height);
-  const [greetingHeight, setGreetingHeight] = React.useState(100);
-  const [cardHeight, setCardHeight] = React.useState(300);
-  // Reserve the real card height and navigation before sizing the illustration.
-  // Keep scrolling available for long names and enlarged accessibility text.
-  const availablePetHeight = viewportHeight - Spacing.lg - greetingHeight -
-    Spacing.xs - HERO_HEART_HEIGHT - cardHeight - tabBarExtraPad - Spacing.sm;
-  const petScale = Math.max(0.4, Math.min(
-    1,
-    window.width / 393,
-    availablePetHeight / (HERO_PET_STAGE_HEIGHT - HERO_EGG_LIFT),
-  ));
-
-  // Single-habit app: card uses the setup name; track status is separate.
-  const habit = computedHabits[0] ?? null;
-  const habitName = (prefs.habitName || DEFAULT_HABIT_NAME).trim();
-  const petName = (prefs.petName || 'champ').trim();
-  const petColor = prefs.petColor || theme.pet;
-  const streakDays = tracks.find((t) => t.trackType === MAIN_TRACK)?.streak ?? 0;
-  const showTrackedCard = mood === 'happy';
-
-  const onHeroCheckIn = useCallback(() => {
-    if (mood === 'dead') {
-      setRestartPaywallVisible(true);
-      return;
-    }
-    setConfirmCopy(pickCheckInConfirmCopy());
-    setConfirmVisible(true);
-  }, [mood]);
-
-  const onConfirmCheckIn = useCallback(() => {
-    setConfirmVisible(false);
-    void doCheckIn(MAIN_TRACK, 'medium', null).catch(error => setCheckInError(error.message));
+  const submit = useCallback(async () => {
+    if (submitting.current) return;
+    submitting.current = true;
+    setBusy(true); setError(null);
+    try { await doCheckIn(MAIN_TRACK, 'medium', null); setAnswer('success'); }
+    catch (e) { setError(e instanceof Error ? e.message : 'Could not save your check-in. Try again.'); }
+    finally { submitting.current = false; setBusy(false); }
   }, [doCheckIn]);
+  const beginCheckIn = () => {
+    if (submitting.current) return;
+    setError(null);
+    if (mood === 'dead') setRestartVisible(true);
+    else void submit();
+  };
 
-  const onCancelConfirm = useCallback(() => {
-    setConfirmVisible(false);
-  }, []);
-
-  const onRestartUnlocked = useCallback(async () => {
-    setRestartPaywallVisible(false);
-    await doCheckIn(MAIN_TRACK, 'medium', null);
-  }, [doCheckIn]);
-
-  const toggleEggFlip = useCallback(() => {
-    setEggFlipped((prev) => !prev);
-  }, []);
-
-  const onEditHabitName = useCallback(() => {
-    router.navigate('/(tabs)/settings?focusHabit=1');
-  }, []);
-
-  return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: theme.bg }]}>
-      <ScrollView
-        style={styles.scroll}
-        onLayout={(event) => setViewportHeight(event.nativeEvent.layout.height)}
-        contentContainerStyle={[styles.content, { paddingBottom: Spacing.xxl + tabBarExtraPad }]}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.ink} />
-        }
-      >
-        <Text onLayout={(event) => setGreetingHeight(event.nativeEvent.layout.height)} style={[styles.greeting, { color: theme.ink }]}>
-          {theme.greeting(petName)}
-        </Text>
-
-        <View style={styles.heroPetBlock}>
-          <View style={styles.livesLayer}>
-            <PetLives
-              lives={lives}
-              color={petColor}
-              size={HERO_HEART_SIZE}
-              gap={8}
-              onPress={toggleEggFlip}
-            />
-          </View>
-          <PetStage
-            scale={petScale}
-            petType={prefs.petType}
-            mood={mood}
-            customSprite={prefs.customSprite}
-            petColor={petColor}
-            petHat={prefs.petHat ?? 'none'}
-            petName={petName}
-            flipped={eggFlipped}
-            timerActive={Boolean(habit?.nextDeadlineAt)}
-            timeRemainingMs={habit?.timeRemainingMs ?? 0}
-            onPress={toggleEggFlip}
-          />
-        </View>
-
-        {(checkInError || syncNotice) && <View style={{ gap: Spacing.sm, marginBottom: Spacing.lg }}>
-          {checkInError && <Text accessibilityRole="alert">{checkInError}</Text>}
-          {syncNotice && <Text accessibilityLiveRegion="polite">{syncNotice}</Text>}
-        </View>}
-        {habit ? (
-          <View onLayout={(event) => setCardHeight(event.nativeEvent.layout.height)}>
-          <HeroTaskCard
-            habitName={habitName}
-            motto={theme.motto(habitName)}
-            accentColor={petColor}
-            borderColor={theme.cardBorder}
-            backgroundColor={theme.cardBg}
-            mottoColor={theme.mottoInk}
-            buttonColor={theme.cardInk}
-            checkInLabel={mood === 'dead' ? theme.checkInLabel : 'i did it'}
-            showCrossOut={theme.showCrossOut}
-            streakDays={showTrackedCard ? streakDays : null}
-            onCheckIn={onHeroCheckIn}
-            onHabitNamePress={onEditHabitName}
-          />
-          </View>
-        ) : (
-          <View
-            style={[
-              styles.emptyCard,
-              { borderColor: theme.cardBorder, backgroundColor: theme.cardBg },
-            ]}
-          >
-            <Text style={[styles.emptyCardText, { color: theme.cardInk }]}>
-              name your habit in setup
-            </Text>
-          </View>
-        )}
-        {!user && isConfigured && checkIns.length > 0 && !prefs.accountPromptDismissed && !pendingCoupon && <View style={[styles.emptyCard, { borderColor: theme.ink, gap: Spacing.md }]}>
-          <Text style={Type.screenDescription}>a little progress worth keeping.</Text>
-          <Text style={{ fontFamily: Slab.regular, fontSize: FontSize.md }}>create an account to save your progress across devices. you can keep playing here without one.</Text>
-          <Pressable accessibilityRole="button" style={{ padding: Spacing.md, backgroundColor: Colors.ink, borderRadius: Radius.md }} onPress={() => router.push('/auth')}><Text style={{ color: Colors.white, fontFamily: Slab.bold }}>save my progress</Text></Pressable>
-          <Pressable accessibilityRole="button" style={{ padding: Spacing.md }} onPress={() => void updatePrefs({ accountPromptDismissed: true })}><Text style={{ fontFamily: Slab.bold }}>later</Text></Pressable>
-        </View>}
-      </ScrollView>
-
-      <RestartPaywall
-        visible={restartPaywallVisible}
-        onClose={() => setRestartPaywallVisible(false)}
-        onUnlocked={onRestartUnlocked}
-      />
-
-      <CheckInConfirmModal
-        visible={confirmVisible}
-        copy={confirmCopy}
-        backgroundColor={theme.bg}
-        faceColor={petColor}
-        onConfirm={onConfirmCheckIn}
-        onCancel={onCancelConfirm}
-      />
-
-      <CouponRewardOverlay
-        visible={Boolean(pendingCoupon)}
-        pendingCheckIn={pendingCoupon}
-        checkIns={checkIns}
-        onCollected={collectCoupon}
-      />
-    </SafeAreaView>
-  );
-}
-
-/** Two rectangular colon dots that blink once per second — digital-clock feel. */
-function BlinkingColon({ color }: { color: string }) {
-  const opacity = useSharedValue(1);
-
-  useEffect(() => {
-    // Hard on/off every 500ms (classic digital colon tick).
-    opacity.value = withRepeat(
-      withSequence(
-        withTiming(1, { duration: 0 }),
-        withDelay(500, withTiming(0, { duration: 0 })),
-        withDelay(500, withTiming(1, { duration: 0 })),
-      ),
-      -1,
-      false,
-    );
-    return () => cancelAnimation(opacity);
-  }, [opacity]);
-
-  const blinkStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
-
-  return (
-    <Animated.View style={[styles.timerColon, blinkStyle]}>
-      <View style={[styles.timerColonDot, { backgroundColor: color }]} />
-      <View style={[styles.timerColonDot, { backgroundColor: color }]} />
-    </Animated.View>
-  );
-}
-
-function LifeTimer({
-  timeRemainingMs,
-  color,
-}: {
-  timeRemainingMs: number;
-  color: string;
-}) {
-  const formatted = formatLifeTimer(timeRemainingMs);
-  const [hours, minutes] = formatted.split(':');
-
-  return (
-    <View style={styles.eggLifeTimerRow} accessibilityLabel={`${Number(hours)} hours and ${Number(minutes)} minutes until the next heart is lost`}>
-      <Text style={[styles.eggLifeTimer, hours.length > 2 && styles.eggLifeTimerLong, { color }]}>{hours}</Text>
-      <BlinkingColon color={color} />
-      <Text style={[styles.eggLifeTimer, hours.length > 2 && styles.eggLifeTimerLong, { color }]}>{minutes}</Text>
-    </View>
-  );
-}
-
-const PIXEL_PET_SIZE = 7;
-
-function PetStage({
-  scale,
-  petType,
-  mood,
-  customSprite,
-  petColor,
-  petHat,
-  petName,
-  flipped,
-  timeRemainingMs,
-  timerActive,
-  onPress,
-}: {
-  scale: number;
-  petType: ReturnType<typeof useAppState>['prefs']['petType'];
-  mood: ReturnType<typeof useAppState>['mood'];
-  customSprite: string | null | undefined;
-  petColor: string;
-  petHat: ReturnType<typeof useAppState>['prefs']['petHat'];
-  petName: string;
-  flipped: boolean;
-  timeRemainingMs: number;
-  timerActive: boolean;
-  onPress: () => void;
-}) {
-  const useSelfiePixels = petType === 'selfie' && Boolean(customSprite);
-  const isDead = mood === 'dead';
-  const isSleeping = mood === 'sleeping';
-  const flipProgress = useSharedValue(flipped ? 1 : 0);
-
-  useEffect(() => {
-    flipProgress.value = withTiming(flipped ? 1 : 0, {
-      duration: EGG_FLIP_MS,
-      easing: Easing.inOut(Easing.cubic),
-    });
-  }, [flipped, flipProgress]);
-
-  const frontFaceStyle = useAnimatedStyle(() => {
-    const rotateY = interpolate(flipProgress.value, [0, 1], [0, 180]);
-    return {
-      transform: [{ perspective: 1200 }, { rotateY: `${rotateY}deg` }],
-      // backfaceVisibility is unreliable on RN web for SVG children — hide past midpoint.
-      opacity: interpolate(flipProgress.value, [0, 0.5, 0.5, 1], [1, 1, 0, 0]),
-      zIndex: flipProgress.value < 0.5 ? 2 : 0,
-    };
-  });
-
-  const backFaceStyle = useAnimatedStyle(() => {
-    const rotateY = interpolate(flipProgress.value, [0, 1], [180, 360]);
-    return {
-      transform: [{ perspective: 1200 }, { rotateY: `${rotateY}deg` }],
-      opacity: interpolate(flipProgress.value, [0, 0.5, 0.5, 1], [0, 0, 1, 1]),
-      zIndex: flipProgress.value >= 0.5 ? 2 : 0,
-    };
-  });
-
-  const eggShellStyle = [
-    petEggShellStyles.centered,
-    {
-      top: HERO_PET_STAGE_PAD_TOP,
-      marginTop: 0,
-      marginLeft: -PET_HOME_EGG_WIDTH / 2 + PET_HOME_EGG_LEFT_INSET,
-    },
-  ];
-
-  return (
-    <View style={[styles.petStage, { height: HERO_PET_STAGE_HEIGHT * scale, marginTop: -HERO_EGG_LIFT * scale }]}>
-      <Pressable
-        onPress={onPress}
-        accessibilityRole="button"
-        accessibilityLabel={flipped ? 'hide lives info' : 'show lives info'}
-        style={[styles.petStageCompose, {
-          height: HERO_PET_STAGE_HEIGHT,
-          transform: [{ scale }],
-        }]}
-      >
-        <Animated.View style={[styles.eggFace, frontFaceStyle]}>
-          <PetEggShell width={PET_HOME_EGG_WIDTH} style={eggShellStyle} />
-          <View
-            style={[
-              styles.petForeground,
-              // Dead pose is wider than the egg — pin its left (head/hat) to the egg's
-              // left edge so only the feet clip on the right.
-              isDead && styles.petForegroundDead,
-            ]}
-          >
-            {useSelfiePixels ? (
-              <View style={styles.pixelPetWrap}>
-                <PixelPet
-                  petType={petType}
-                  mood={mood}
-                  customSprite={customSprite ?? null}
-                  color={petColor}
-                  pixelSize={PIXEL_PET_SIZE}
-                />
-              </View>
-            ) : (
-              <LineArtPet
-                mood={mood}
-                strokeColor={petColor}
-                displayHeight={
-                  isDead ? PET_HOME_DEAD_DISPLAY_HEIGHT : PET_HOME_DISPLAY_HEIGHT
-                }
-                hat={petHat}
-              />
-            )}
-          </View>
-        </Animated.View>
-
-        <Animated.View style={[styles.eggFace, backFaceStyle]}>
-          <PetEggShell width={PET_HOME_EGG_WIDTH} style={eggShellStyle} />
-          <View style={[styles.eggMessageWrap, isDead && styles.eggMessageWrapDead]}>
-            {isDead ? (
-              <Text style={styles.eggDeadMessage}>
-                {'you are your pet\'s\nworst nightmare.'}
-              </Text>
-            ) : isSleeping && !timerActive ? (
-              <>
-                <Text style={styles.eggLifeLabel}>still dreaming...</Text>
-                <Text style={[styles.eggSleepHint, { color: petColor }]}>
-                  check in to wake up
-                </Text>
-                <Text style={styles.eggLifeFooter}>
-                  {`${petName} has all three hearts — for now`}
-                </Text>
-              </>
-            ) : (
-              <>
-                <Text style={styles.eggLifeLabel}>to lose a life:</Text>
-                <LifeTimer timeRemainingMs={timeRemainingMs} color={petColor} />
-                <Text style={styles.eggLifeFooter}>
-                  {`miss three intervals, and ${petName} is gone`}
-                </Text>
-              </>
-            )}
-          </View>
-        </Animated.View>
+  return <>
+    <Page ref={pageRef} bottomPadding={bottomPadding + 24} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Palette.black} />}>
+      <ScreenHeader title={`Day ${planDayNumber(prefs.planStartedAt, checkIns)}`} />
+      {!notYet && !celebrating && prefs.petType === 'selfie' && prefs.customSprite ? <View style={styles.selfie}><PixelPet petType="selfie" mood={mood} customSprite={prefs.customSprite} color={prefs.petColor} pixelSize={7} /></View>
+        : <PetStage hair={prefs.petHair} clothes={prefs.petClothes} state={stage} color={prefs.petColor} name={petName} />}
+      <Pressable style={{ marginTop: (stage === 'idle' ? -70 : 12) * scale, marginBottom: ((notYet || celebrating) ? 20 : -12) * scale }} onPress={() => router.navigate('/(tabs)/settings?focusHabit=1')} accessibilityRole="button" accessibilityLabel={`Edit goal: ${habitName}`}>
+        <Feedback surface={notYet || celebrating ? 'plain' : 'card'} title={title} goal={`Goal: ${habitName}`} />
       </Pressable>
-    </View>
-  );
+      {error ? <Text accessibilityRole="alert" style={DesignType.supporting}>{error}</Text> : null}
+      {syncNotice ? <Text accessibilityLiveRegion="polite" style={DesignType.calendar}>{syncNotice}</Text> : null}
+      {celebrating ? <Button label="Continue" onPress={() => { setAnswer('question'); pageRef.current?.scrollTo({ y: 0, animated: false }); }} />
+        : mood === 'dead' ? <Button label="Start again" onPress={beginCheckIn} state={busy ? 'loading' : 'default'} />
+        : <CheckInActions negative="Ja lox" positive="I did it" onNegative={() => { if (!submitting.current) { setError(null); setAnswer('missed'); } }} onPositive={beginCheckIn} state={busy ? 'submitting' : 'ready'} />}
+      {!user && isConfigured && checkIns.length > 0 && !prefs.accountPromptDismissed && <View style={styles.account}>
+        <Text style={DesignType.supporting}>Save your progress across devices.</Text>
+        <Button label="Save my progress" onPress={() => router.push('/auth')} />
+        <Button label="Later" appearance="secondary" onPress={() => void updatePrefs({ accountPromptDismissed: true })} />
+      </View>}
+    </Page>
+    <RestartPaywall visible={restartVisible} onClose={() => setRestartVisible(false)} onUnlocked={async () => { setRestartVisible(false); await submit(); }} />
+  </>;
 }
-
-const styles = StyleSheet.create({
-  safe: { flex: 1 },
-  scroll: { flex: 1 },
-  content: {
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.lg,
-  },
-
-  greeting: {
-    ...Type.screenTitle,
-    /**
-     * Descenders (e.g. “g” in “ugh”) need extra room so they aren’t clipped
-     * above the hearts — keep padding beyond the shared screen-title metrics.
-     */
-    lineHeight: Math.round(FontSize.display * 1.35),
-    paddingBottom: Spacing.sm,
-    marginBottom: Spacing.xs,
-    overflow: 'visible',
-  },
-
-  emptyCard: {
-    borderWidth: Border.hero,
-    borderRadius: Radius.lg,
-    paddingTop: Spacing.lg + Spacing.xs,
-    paddingBottom: Spacing.lg,
-    paddingHorizontal: Spacing.lg + Spacing.xs,
-    marginBottom: Spacing.lg,
-  },
-  emptyCardText: {
-    fontFamily: Slab.extraBold,
-    fontSize: FontSize.xl,
-  },
-
-  heroPetBlock: {
-    position: 'relative',
-    overflow: 'visible',
-  },
-  /** Hearts stay in their current spot; paint above the raised egg. */
-  livesLayer: {
-    position: 'relative',
-    zIndex: 2,
-  },
-  petStage: {
-    height: HERO_PET_STAGE_HEIGHT,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: -HERO_EGG_LIFT,
-    marginBottom: Spacing.sm,
-    overflow: 'visible',
-    zIndex: 0,
-  },
-  petStageCompose: {
-    width: '100%',
-    position: 'absolute',
-    alignItems: 'center',
-    justifyContent: 'center',
-    // Match egg band so the in-flow pet stays centered on the egg (asymmetric pads).
-    paddingTop: HERO_PET_STAGE_PAD_TOP,
-    paddingBottom: HERO_PET_STAGE_PAD_BOTTOM,
-    overflow: 'visible',
-  },
-  eggFace: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: HERO_PET_STAGE_PAD_TOP,
-    paddingBottom: HERO_PET_STAGE_PAD_BOTTOM,
-  },
-  eggMessageWrap: {
-    position: 'absolute',
-    top: HERO_PET_STAGE_PAD_TOP,
-    left: '50%',
-    width: PET_HOME_EGG_WIDTH,
-    height: PET_HOME_EGG_HEIGHT,
-    marginLeft: -PET_HOME_EGG_WIDTH / 2 + PET_HOME_EGG_LEFT_INSET,
-    paddingHorizontal: Spacing.xl + Spacing.md,
-    paddingVertical: Spacing.xxl + Spacing.lg,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1,
-  },
-  eggMessageWrapDead: {
-    justifyContent: 'center',
-  },
-  eggLifeLabel: {
-    fontFamily: Slab.bold,
-    fontSize: FontSize.sm,
-    lineHeight: FontSize.sm + 4,
-    color: Colors.ink,
-    textAlign: 'center',
-    marginBottom: Spacing.xs,
-  },
-  eggLifeTimerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  eggLifeTimer: {
-    fontFamily: Slab.black,
-    fontSize: 56,
-    lineHeight: 60,
-    letterSpacing: -2,
-    textAlign: 'center',
-  },
-  eggLifeTimerLong: { fontSize: 44 },
-  timerColon: {
-    width: 12,
-    height: 56,
-    marginHorizontal: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 10,
-  },
-  timerColonDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 1,
-  },
-  eggLifeFooter: {
-    fontFamily: Slab.bold,
-    fontSize: FontSize.sm,
-    lineHeight: FontSize.sm + 4,
-    color: Colors.ink,
-    textAlign: 'center',
-    paddingHorizontal: Spacing.sm,
-    marginTop: Spacing.sm,
-  },
-  eggDeadMessage: {
-    fontFamily: Slab.bold,
-    fontSize: FontSize.xl,
-    lineHeight: FontSize.xl + 10,
-    color: Colors.ink,
-    textAlign: 'center',
-  },
-  eggSleepHint: {
-    fontFamily: Slab.black,
-    fontSize: FontSize.xl,
-    lineHeight: FontSize.xl + 8,
-    textAlign: 'center',
-    marginBottom: Spacing.sm,
-  },
-  petForeground: {
-    zIndex: 1,
-    overflow: 'visible',
-    // Keep upright pet aligned with the egg's horizontal offset.
-    marginLeft: PET_HOME_EGG_LEFT_INSET,
-  },
-  pixelPetWrap: {
-    position: 'relative',
-    overflow: 'visible',
-  },
-  petForegroundDead: {
-    position: 'absolute',
-    left: '50%',
-    // Pin near the egg's left edge (+ insets) so the hat stays visible; feet overflow right.
-    marginLeft:
-      -PET_HOME_EGG_WIDTH / 2 + PET_HOME_EGG_LEFT_INSET + PET_HOME_DEAD_LEFT_INSET,
-    // Center on the egg (not the asymmetric stage).
-    top: HERO_PET_STAGE_PAD_TOP + PET_HOME_EGG_HEIGHT / 2,
-    marginTop: -PET_HOME_DEAD_DISPLAY_HEIGHT / 2,
-  },
-});
+const styles = StyleSheet.create({ selfie: { height: 438, alignItems: 'center', justifyContent: 'center' }, account: { gap: 16 } });

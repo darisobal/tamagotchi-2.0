@@ -1,20 +1,19 @@
+import { ResponsiveText as Text } from '../src/design-system/ResponsiveText';
+import { Page } from '../src/design-system/Page';
+import { Button, ScreenHeader, TextField } from '../src/design-system/Controls';
 import React, { useState } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
-  TextInput,
   SafeAreaView,
-  KeyboardAvoidingView,
-  Platform,
   ActivityIndicator,
-  ScrollView,
-} from 'react-native';
+  } from 'react-native';
 import { router, Redirect } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
 import { useAuth } from '../src/authContext';
-import { Colors, Spacing, FontSize, Slab, Radius, Border, Type } from '../src/theme';
+import { Colors, Spacing, Radius, Border, Type } from '../src/theme';
+import { DesignType } from '../src/design-system/tokens';
 
 type AuthMode = 'sign_in' | 'forgot';
 
@@ -85,7 +84,7 @@ export default function AuthScreen() {
   const handleResendConfirmation = async () => {
     clearMessages();
     if (!email.trim()) {
-      setError('enter your email first.');
+      setError('Enter your email first.');
       return;
     }
     setBusy(true);
@@ -95,13 +94,13 @@ export default function AuthScreen() {
       setError(err);
       return;
     }
-    setResendNotice('confirmation email sent again. check your inbox.');
+    setResendNotice('Confirmation email sent again. Check your inbox.');
   };
 
   const handleForgotPassword = async () => {
     clearMessages();
     if (!email.trim()) {
-      setError('enter your email.');
+      setError('Enter your email.');
       return;
     }
     setBusy(true);
@@ -125,12 +124,7 @@ export default function AuthScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.container}>
+    <Page bottomPadding={48}>
           {mode === 'forgot' ? (
             <>
               <TouchableOpacity
@@ -139,7 +133,7 @@ export default function AuthScreen() {
                 disabled={busy}
                 hitSlop={12}
                 accessibilityRole="button"
-                accessibilityLabel="back to sign in"
+                accessibilityLabel="Back to sign in"
                 activeOpacity={0.7}
               >
                 <Svg width={18} height={18} viewBox="0 0 18 18">
@@ -153,32 +147,30 @@ export default function AuthScreen() {
                   />
                 </Svg>
               </TouchableOpacity>
-              <Text style={styles.title}>forgot password</Text>
+              <ScreenHeader title="Forgot password" />
               <Text style={styles.subtitle}>
-                enter your email and we will send a reset link
+                Enter your email and we will send a reset link
               </Text>
             </>
           ) : (
             <>
-              <Text style={styles.title}>welcome</Text>
-              <Text style={styles.subtitle}>your habit has a heartbeat</Text>
+              <ScreenHeader title="Welcome" />
+              <Text style={styles.subtitle}>Your habit has a heartbeat</Text>
             </>
           )}
 
           {isLocalOnly ? (
             <Text style={styles.hint}>
               {mode === 'forgot'
-                ? 'password reset needs supabase. add expo_public_supabase_* keys.'
-                : 'local mode: data stays on this device until you add supabase keys.'}
+                ? 'Password reset is unavailable in local mode.'
+                : 'Local mode: data stays on this device.'}
             </Text>
           ) : null}
 
-          <Text style={styles.label}>email</Text>
-          <TextInput
-            style={styles.input}
+          <TextField label="Email" multiline={false} editable={!busy}
             value={email}
             onChangeText={setEmail}
-            placeholder="you@example.com"
+            placeholder="You@example.com"
             placeholderTextColor={Colors.textMuted}
             autoCapitalize="none"
             autoCorrect={false}
@@ -188,12 +180,10 @@ export default function AuthScreen() {
 
           {mode === 'sign_in' ? (
             <>
-              <Text style={styles.label}>password</Text>
-              <TextInput
-                style={styles.input}
+              <TextField label="Password" multiline={false} editable={!busy}
                 value={password}
                 onChangeText={setPassword}
-                placeholder="at least 6 characters"
+                placeholder="At least 6 characters"
                 placeholderTextColor={Colors.textMuted}
                 secureTextEntry
                 autoCapitalize="none"
@@ -207,59 +197,36 @@ export default function AuthScreen() {
                   disabled={busy}
                   activeOpacity={0.85}
                 >
-                  <Text style={styles.linkBtnText}>forgot password?</Text>
+                  <Text style={styles.linkBtnText}>Forgot password?</Text>
                 </TouchableOpacity>
               ) : null}
             </>
           ) : null}
 
-          {error ? <Text style={styles.error}>{error}</Text> : null}
+          {error ? <Text accessibilityRole="alert" style={styles.error}>{error}</Text> : null}
           {confirmationSent ? (
             <Text style={styles.success}>
-              check your email to confirm your account, then open the link to continue.
+              Check your email to confirm your account, then open the link to continue.
             </Text>
           ) : null}
           {resendNotice ? <Text style={styles.success}>{resendNotice}</Text> : null}
           {resetSent ? (
             <Text style={styles.success}>
-              reset link sent. check your email and open the link to choose a new password.
+              Reset link sent. Check your email and open the link to choose a new password.
             </Text>
           ) : null}
 
-          <TouchableOpacity
-            style={styles.primaryBtn}
-            onPress={mode === 'forgot' ? handleForgotPassword : handleContinue}
-            disabled={busy}
-            activeOpacity={0.85}
-          >
-            {busy ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text style={styles.primaryBtnText}>
-                {mode === 'forgot' ? 'send reset link' : 'go'}
-              </Text>
-            )}
-          </TouchableOpacity>
+          <Button label={mode === 'forgot' ? 'Send reset link' : 'Go'} state={busy ? 'loading' : 'default'} loadingLabel={mode === 'forgot' ? 'Sending…' : 'Connecting…'} onPress={mode === 'forgot' ? handleForgotPassword : handleContinue} />
 
           {mode === 'sign_in' && confirmationSent && isConfigured ? (
-            <TouchableOpacity
-              style={styles.secondaryBtn}
-              onPress={handleResendConfirmation}
-              disabled={busy}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.secondaryBtnText}>resend confirmation email</Text>
-            </TouchableOpacity>
+            <Button label="Resend confirmation email" appearance="secondary" disabled={busy} onPress={handleResendConfirmation} />
           ) : null}
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+    </Page>
   );
 }
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.stateTodoBg },
-  flex: { flex: 1 },
   container: {
     flexGrow: 1,
     paddingHorizontal: Spacing.lg,
@@ -271,8 +238,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backBtn: {
-    width: 36,
-    height: 36,
+    width: 44,
+    height: 44,
     marginBottom: Spacing.md,
     borderWidth: Border.base,
     borderColor: Colors.ink,
@@ -281,88 +248,35 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: Colors.card,
   },
-  title: {
-    ...Type.screenTitle,
-    color: Colors.ink,
-  },
   subtitle: {
     ...Type.screenDescription,
-    marginBottom: Spacing.lg,
   },
   hint: {
-    fontSize: FontSize.sm,
-    fontFamily: Slab.regular,
+    ...DesignType.calendar,
     color: Colors.textSecondary,
     marginBottom: Spacing.md,
-  },
-  label: {
-    fontSize: FontSize.lg,
-    fontFamily: Slab.black,
-    color: Colors.ink,
-    marginBottom: Spacing.sm,
-    marginTop: Spacing.sm,
-  },
-  input: {
-    backgroundColor: Colors.card,
-    padding: Spacing.md,
-    fontSize: FontSize.md,
-    fontFamily: Slab.regular,
-    color: Colors.ink,
-    borderWidth: Border.thick,
-    borderColor: Colors.ink,
-    borderRadius: Radius.md,
   },
   linkBtn: {
     alignSelf: 'flex-start',
     marginTop: Spacing.sm,
     paddingVertical: Spacing.xs,
+    minHeight: 44,
+    justifyContent: 'center',
   },
   linkBtnText: {
-    fontSize: FontSize.sm,
-    fontFamily: Slab.bold,
+    ...DesignType.calendar,
     color: Colors.ink,
     textDecorationLine: 'underline',
   },
   error: {
     marginTop: Spacing.md,
-    fontSize: FontSize.sm,
-    fontFamily: Slab.bold,
+    ...DesignType.calendar,
     color: '#B00020',
   },
   success: {
     marginTop: Spacing.md,
-    fontSize: FontSize.sm,
-    fontFamily: Slab.bold,
+    ...DesignType.calendar,
     color: Colors.ink,
   },
-  primaryBtn: {
-    marginTop: Spacing.xl,
-    paddingVertical: Spacing.md + 4,
-    alignItems: 'center',
-    backgroundColor: Colors.ink,
-    borderWidth: Border.thick,
-    borderColor: Colors.ink,
-    borderRadius: Radius.md,
-    minHeight: 56,
-    justifyContent: 'center',
-  },
-  primaryBtnText: {
-    color: '#FFFFFF',
-    fontSize: FontSize.xl,
-    fontFamily: Slab.black,
-  },
-  secondaryBtn: {
-    marginTop: Spacing.md,
-    paddingVertical: Spacing.md,
-    alignItems: 'center',
-    backgroundColor: Colors.card,
-    borderWidth: Border.base,
-    borderColor: Colors.ink,
-    borderRadius: Radius.md,
-  },
-  secondaryBtnText: {
-    color: Colors.ink,
-    fontSize: FontSize.md,
-    fontFamily: Slab.bold,
-  },
+
 });
