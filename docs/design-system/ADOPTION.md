@@ -100,3 +100,53 @@ Validation: 94 tests / 13 suites pass, including proportional feedback and reada
 ### v0.2.0 selection follow-up — 18 November 2026
 
 SelectionOption now keeps its white background when disabled, matching the published library. SelectionTile inherits this shared behavior. Web inspection confirmed all five selected/unselected/disabled/tile examples remain white, disabled semantics remain present, and keyboard focus reaches the enabled option. The temporary verification route was removed. Dedicated native disabled-state, Android and screen-reader runtime review remain pending; adoption is not marked complete.
+
+### Direct home check-in — 18 November 2026
+
+Home always displays the question card and answer buttons for living pets, including after a saved check-in and on reopening. Pet artwork continues to reflect stored mood/outcomes. “I did it” saves directly with the existing duplicate-submission guard, loading and error behavior. “Ja lox” leaves history unchanged and shows encouragement without replacing the question. Removed the confirmation modal, randomized confirmation copy and its obsolete tests, plus the Continue/celebration-dismissal state. Dead-pet restart behavior remains separate. Published Figma examples have not yet been updated for this interaction revision.
+
+### Negative-answer state — 18 November 2026
+
+“Ja lox” now selects the existing missed PetStage (coral-red background, black pet with white outlines and tears), shows “Nu ty i LOX! / SHAME / on you!” as plain feedback, and keeps both answers available. This temporary answer state does not write a completed check-in or alter hearts. A successful direct check-in clears it; a failed save preserves it. Reopening starts with the home question. Verified on web and iPhone simulator. This supersedes the encouragement-only negative-answer behavior above.
+
+### Successful-answer feedback — 18 November 2026
+
+A successful direct check-in now selects an in-session celebration: the first success shows the white success pet card and “You’re real / gangsta! / Wooooooop!” with the goal and a Menu button. Existing repeated-success progression remains double success. Menu returns to the question; reload starts on the question even when persisted mood is happy. Home uses one answer state (question/missed/success), with no separate confirmation screen. Verified the first-success and Menu flow with a fresh browser test profile.
+
+### Continue returns home — 18 November 2026
+
+The celebration action is now Continue (supersedes Menu). It clears the in-session answer and restores the normal standing/idle pet and question with both answer buttons. Saved happy mood no longer leaves a celebration card on the question screen. Saved check-in history and repeated-success counts are preserved. Verified Continue → idle pet/actions on the iPhone simulator.
+
+### Same-day double success — 18 November 2026
+
+Home success feedback now counts saved check-ins on the local calendar day, independently of the streak. The first uses the white success card; the second and every subsequent success that day use the existing lavender double-success scene and three-line title “DOUBLE / Success! / Keep going!”. Continue returns to idle Home and retains history. The next day starts at the first-success tier. All 98 tests pass, including daily reset and repeated successes. Shared web/native implementation; Figma examples remain pending.
+
+### Two-step onboarding — 18 November 2026
+
+Removed the Meet pet step, pet-name field, hearts preview and associated price lookup. Onboarding now contains Name your habit and How often?; Let’s start commits the plan from the second step and opens Home. Existing pet names remain intact and can be edited in Setup. Legacy drafts at step three resume at step two. Shared implementation serves web and native. All 98 tests and the web export pass; existing unrelated type-check errors remain.
+
+### Home spacing — 18 November 2026
+
+Halved the idle Home gap from the pet ground line to the question card (approximately 112 to 56 source pixels), preserving artwork size and other outcome spacing. Shared Home uses a scaled -70px top margin to account for the authored scene’s trailing whitespace. Web visual check and production export passed.
+
+### Hair and clothes — 18 November 2026
+
+Added original vector hairstyles (curls, spikes, side swoop) and clothes (striped T-shirt, waistcoat, scarf) using the pet’s black outlines and existing palette. Shared SelectionTile supports artwork children; white surfaces and selected outlines remain unchanged. Choices preview immediately, save with preferences on web/native, and render in Home outcome poses. Native storage adds nullable columns with None defaults for legacy profiles. All 99 tests pass, including accessory persistence. Figma components have not yet been reconciled for these new assets.
+
+Accessory visual verification: all three pairs inspected on web, selection and live shirt preview confirmed in iPhone Simulator after full reload. Saved web choices rendered in idle, missed and double-success poses.
+
+### Missed-state animation — 18 November 2026
+
+The original blue-drop SVG loops downward over 4.2 seconds with a subtle sideways wobble. The original loose-leg path begins at the body, hops outward over one second and rests at its authored endpoint before repeating. Artwork paths, card dimensions and colours are unchanged. Reduced-motion preferences and compact calendar scenes retain the static original. Shared React Native Animated implementation uses the native driver on mobile and stops loops on unmount. Visually checked on web and iPhone; 99 tests pass.
+
+### Success flip and loose-leg correction — 18 November 2026
+
+First-success pet loops from upright to handstand, kicks its original leg strokes at their attachment points, and flips back. Confetti floats, sways and scales uniformly; reduced-motion and calendar previews remain static. Missed-state loose leg now starts rotated 100 degrees about its own centre at the same vertical level as the other leg, holds for 800ms, then hops and rotates to its authored detached endpoint. Temporary visual-review route removed before release. All 99 tests pass; existing unrelated type errors remain.
+
+### Home idle motion — 18 November 2026
+
+The shared idle pet moves gently ±6 artwork pixels, taking 3 seconds per direction after a short centered entrance. Ground and You arrow remain stationary. Setup and calendar pets stay static; reduced-motion preferences disable the loop. Web movement was verified in the rendered view, the shared mobile Home rendered in Simulator, and the production export passed. Published as Sites version 14.
+
+### Double-success decoration motion — 18 November 2026
+
+Original d0ef1 vectors are split losslessly into rainbow and three heart layers. Rainbow breathes over 4.2 seconds; hearts pulse, bob up to 6 artwork pixels and tilt 3–5 degrees on staggered 2.3–3 second loops. Shared native/web Animated implementation; reduced motion and calendar/compact scenes retain the static original. Web transforms and iPhone Simulator rendering verified, production export passed. Type checking reports only the seven existing legacy SVG/widget errors. Sites version 15; Figma motion reconciliation remains pending.

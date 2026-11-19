@@ -7,9 +7,9 @@
   "complete": false,
   "sharedMobileWebComponents": true,
   "tests": {
-    "suitesPassed": 13,
-    "testsPassed": 96,
-    "evidence": "Implementation chat last consistency run on 2026-11-18; final-consistency-tests.txt was inspected during reconciliation. Tests were not rerun for documentation-only changes."
+    "suitesPassed": 12,
+    "testsPassed": 93,
+    "evidence": "18 November 2026 direct home flow: 93 tests pass; removed three obsolete randomized confirmation-copy tests."
   },
   "productionExports": {
     "web": "passed",
@@ -97,5 +97,17 @@
     "background": "White in all selection states, matching published v0.2.0",
     "web": "Verified selected, unselected, disabled-selected, disabled-unselected and tile; disabled semantics preserved; keyboard focus reaches enabled option",
     "native": "Shared code path; dedicated disabled-state runtime review pending"
+  },
+  "directHomeCheckIn": {
+    "question": "Always visible for living pets, including saved-success states and reopening",
+    "confirmationScreen": "Removed along with unused copy and tests",
+    "verified": [
+      "Web: question remains after reload with saved success",
+      "Web: negative answer keeps question and actions",
+      "iPhone simulator: one tap saves and changes pet from success to double success without confirmation"
+    ],
+    "figma": "Interaction examples pending update",
+    "negativeAnswer": "Ja lox shows the red missed pet card and plain reference message; both actions remain; successful save clears the temporary state.",
+    "successAnswer": "Successful save shows celebration with Continue. Continue returns to the top of Home with idle/standing pet and question; saved history is preserved. Reload starts with the question. Verified web and iPhone simulator."
   }
 }

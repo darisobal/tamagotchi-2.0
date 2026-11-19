@@ -166,6 +166,9 @@ class NativeStorage implements Storage {
     try {
       await this.db.execAsync(`ALTER TABLE user_prefs ADD COLUMN petName TEXT`);
     } catch {}
+    for (const column of ['petHair', 'petClothes']) {
+      try { await this.db.execAsync(`ALTER TABLE user_prefs ADD COLUMN ${column} TEXT`); } catch {}
+    }
     let firstOnboardingMigration = false;
     try { await this.db.execAsync('ALTER TABLE user_prefs ADD COLUMN onboardingVersion INTEGER'); firstOnboardingMigration = true; } catch {}
     for (const column of ['planStartedAt', 'onboardingDraft', 'accountPromptDismissed']) {
@@ -300,6 +303,8 @@ class NativeStorage implements Storage {
       petName: string | null;
       petColor: string | null;
       petHat: string | null;
+      petHair: UserPrefs['petHair'];
+      petClothes: UserPrefs['petClothes'];
       habitCadence: string | null;
     }>(`SELECT * FROM user_prefs WHERE id = 1`);
     const prefs = normalizeUserPrefs({
@@ -312,6 +317,8 @@ class NativeStorage implements Storage {
       habitName: row!.habitName ?? '',
       petName: row!.petName ?? undefined,
       petColor: row!.petColor ?? undefined,
+      petHair: row!.petHair,
+      petClothes: row!.petClothes,
       petHat: row!.petHat as PetHat,
       habitCadence: row!.habitCadence as HabitCadence,
     });
@@ -330,7 +337,7 @@ class NativeStorage implements Storage {
   async updateUserPrefs(prefs: Partial<UserPrefs>) {
     const db = await this.getDb();
     const columns = ['petType', 'onboardingDone', 'customSprite', 'habitName', 'petName',
-      'petColor', 'petHat', 'habitCadence', 'planStartedAt', 'onboardingDraft', 'accountPromptDismissed'] as const;
+      'petColor', 'petHat', 'petHair', 'petClothes', 'habitCadence', 'planStartedAt', 'onboardingDraft', 'accountPromptDismissed'] as const;
     const updates = columns.filter(column => prefs[column] !== undefined);
     if (!updates.length) return;
     const values = updates.map(column => {

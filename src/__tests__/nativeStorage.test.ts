@@ -70,3 +70,13 @@ test('a failed native import rolls back instead of erasing account history', asy
   expect((await db.getUserPrefs()).habitName).toBe('keep me');
   expect(await db.getAllCheckIns()).toHaveLength(1);
 });
+
+test('accessory choices survive native storage reopening and can be removed', async () => {
+  let storage = reloadNative().getStorageForUser('accessory-test');
+  expect(await storage.getUserPrefs()).toMatchObject({ petHair: 'none', petClothes: 'none' });
+  await storage.updateUserPrefs({ petHair: 'curls', petClothes: 'tee' });
+  storage = reloadNative().getStorageForUser('accessory-test');
+  expect(await storage.getUserPrefs()).toMatchObject({ petHair: 'curls', petClothes: 'tee' });
+  await storage.updateUserPrefs({ petHair: 'none', petClothes: 'none' });
+  expect(await storage.getUserPrefs()).toMatchObject({ petHair: 'none', petClothes: 'none' });
+});

@@ -11,7 +11,8 @@
     "export:web": "expo export -p web",
     "test": "jest",
     "setup:supabase": "node scripts/setup-supabase.mjs",
-    "enable:email-confirmation": "node scripts/enable-email-confirmation.mjs"
+    "enable:email-confirmation": "node scripts/enable-email-confirmation.mjs",
+    "build": "expo export -p web && node scripts/prepare-sites-assets.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/aleo": "^0.4.2",

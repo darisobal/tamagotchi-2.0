@@ -53,7 +53,12 @@ export interface TrackState {
 
 export type PetHat = 'none' | 'top' | 'beanie' | 'crown';
 
+export type PetHair = 'none' | 'curls' | 'spikes' | 'swoop';
+export type PetClothes = 'none' | 'tee' | 'vest' | 'scarf';
+
 export interface UserPrefs {
+  petHair?: PetHair;
+  petClothes?: PetClothes;
   /** Independent timer anchor; never a logged achievement. */
   planStartedAt?: string | null;
   onboardingDraft?: { step: number; habitName: string; habitCadence: HabitCadence; petName: string } | null;
@@ -130,6 +135,8 @@ export function normalizeUserPrefs(partial: Partial<UserPrefs>): UserPrefs {
     habitName: resolveHabitName(partial.habitName),
     petName: resolvePetName(partial.petName),
     petColor: partial.petColor ?? DEFAULT_PET_COLOR,
+    petHair: ['curls', 'spikes', 'swoop'].includes(partial.petHair ?? '') ? partial.petHair : 'none',
+    petClothes: ['tee', 'vest', 'scarf'].includes(partial.petClothes ?? '') ? partial.petClothes : 'none',
     petHat: partial.petHat ?? 'none',
     habitCadence: partial.habitCadence ?? DEFAULT_HABIT_CADENCE,
   };

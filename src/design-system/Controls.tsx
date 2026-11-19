@@ -79,21 +79,22 @@ export function CheckInActions({ onNegative, onPositive, state = 'ready', negati
   </View>;
 }
 type SelectionOptionProps = Omit<PressableProps, 'children' | 'style'> & {
-  label: string; selected: boolean; tile?: boolean; hideLabel?: boolean; style?: PressableProps['style'];
+  children?: React.ReactNode; label: string; selected: boolean; tile?: boolean; hideLabel?: boolean; style?: PressableProps['style'];
 };
 /** Shared choice control: white surface, black text, outline only when selected/focused. */
-export function SelectionOption({ label, selected, tile = false, hideLabel = false, disabled, style, ...props }: SelectionOptionProps) {
+export function SelectionOption({ children, label, selected, tile = false, hideLabel = false, disabled, style, ...props }: SelectionOptionProps) {
   const styles = useControlStyles();
   const scale = useDesignScale();
   const [focused, setFocused] = useState(false);
   return <Pressable {...props} accessibilityRole="radio" accessibilityLabel={props.accessibilityLabel ?? label} aria-checked={selected} accessibilityState={{ ...props.accessibilityState, checked: selected, disabled: Boolean(disabled) }}
     onFocus={e => { setFocused(true); props.onFocus?.(e); }} onBlur={e => { setFocused(false); props.onBlur?.(e); }} disabled={disabled}
     style={press => [styles.button, tile && styles.tile, { backgroundColor: Palette.white, borderWidth: (focused ? Geometry.focus : 2) * scale, borderColor: selected || focused ? Palette.black : 'transparent' }, typeof style === 'function' ? style(press) : style]}>
+    {children}
     {!hideLabel && <Text style={[DesignType.body, styles.buttonText, { color: Palette.black }]}>{label}</Text>}
   </Pressable>;
 }
-export function SelectionTile({ label = 'None', ...props }: { label?: string; selected: boolean; onPress?: () => void; disabled?: boolean }) {
-  return <SelectionOption {...props} label={label} tile hideLabel={label === 'None'} />;
+export function SelectionTile({ label = 'None', ...props }: { children?: React.ReactNode; label?: string; selected: boolean; onPress?: () => void; disabled?: boolean }) {
+  return <SelectionOption {...props} label={label} tile hideLabel={label === 'None' || Boolean(props.children)} />;
 }
 
 const baseStyles = StyleSheet.create({

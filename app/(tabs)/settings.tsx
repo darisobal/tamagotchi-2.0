@@ -11,6 +11,8 @@ import { Page } from '../../src/design-system/Page';
 import { Button, ScreenHeader, SelectionOption, SelectionTile, TextField } from '../../src/design-system/Controls';
 import { ColorOption } from '../../src/design-system/ColorOption';
 import { PetStage } from '../../src/design-system/PetStage';
+import { AccessoryIcon, HAIR_OPTIONS, CLOTHES_OPTIONS } from '../../src/design-system/PetAccessories';
+import { PetHair, PetClothes } from '../../src/types';
 import { DesignType } from '../../src/design-system/tokens';
 
 export default function SettingsScreen() {
@@ -23,11 +25,13 @@ export default function SettingsScreen() {
   const [habit, setHabit] = useState(prefs.habitName);
   const [name, setName] = useState(prefs.petName);
   const [color, setColor] = useState(prefs.petColor);
+  const [hair, setHair] = useState<PetHair>(prefs.petHair ?? 'none');
+  const [clothes, setClothes] = useState<PetClothes>(prefs.petClothes ?? 'none');
   const [cadence, setCadence] = useState<HabitCadence>(prefs.habitCadence);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const saving = useRef(false);
-  useEffect(() => { setHabit(prefs.habitName); setName(prefs.petName); setColor(prefs.petColor); setCadence(prefs.habitCadence); }, [prefs.habitName, prefs.petName, prefs.petColor, prefs.habitCadence]);
+  useEffect(() => { setHair(prefs.petHair ?? 'none'); setClothes(prefs.petClothes ?? 'none'); setHabit(prefs.habitName); setName(prefs.petName); setColor(prefs.petColor); setCadence(prefs.habitCadence); }, [prefs.petHair, prefs.petClothes, prefs.habitName, prefs.petName, prefs.petColor, prefs.habitCadence]);
   useFocusEffect(useCallback(() => {
     if (focusHabit !== '1') return;
     const timer = setTimeout(() => { habitInput.current?.focus(); router.setParams({ focusHabit: undefined }); }, 150);
@@ -37,22 +41,30 @@ export default function SettingsScreen() {
     if (saving.current) return;
     if (!name.trim() || !habit.trim()) { setError(!name.trim() ? 'Enter a name' : 'Enter a habit'); return; }
     saving.current = true; setBusy(true); setError('');
-    try { await updatePrefs({ petName: name.trim(), habitName: habit.trim(), petColor: color, habitCadence: cadence }); router.navigate('/(tabs)'); }
+    try { await updatePrefs({ petName: name.trim(), habitName: habit.trim(), petColor: color, petHair: hair, petClothes: clothes, habitCadence: cadence }); router.navigate('/(tabs)'); }
     catch { setError('Could not save. Try again.'); }
     finally { saving.current = false; setBusy(false); }
   };
   const colors = PET_COLOR_OPTIONS.some(option => option.color.toLowerCase() === color.toLowerCase()) ? PET_COLOR_OPTIONS : [{ id: 'saved', color, label: 'Saved' }, ...PET_COLOR_OPTIONS];
   return <Page bottomPadding={bottomPadding + 24}>
     <ScreenHeader title="Set up" />
-    <PetStage state="setup" name={name} showName color={color} />
+    <PetStage hair={hair} clothes={clothes} state="setup" name={name} showName color={color} />
     <View style={{ gap: 36 * scale, marginTop: 12 * scale }}>
     <TextField label="Name" value={name} onChangeText={setName} maxLength={30} editable={!busy} error={error === 'Enter a name' ? error : undefined} />
     <View style={{ gap: 16 * scale }}>
       <Text style={DesignType.label}>Colour</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginRight: -24 }} contentContainerStyle={{ gap: 12 * scale, paddingRight: 24 }}><View accessibilityRole="radiogroup" accessibilityLabel="Pet colour" style={{ flexDirection: 'row', gap: 12 * scale }}>{colors.map(option => <ColorOption key={option.id} {...option} selected={color === option.color} disabled={busy} onPress={() => setColor(option.color)} />)}</View></ScrollView>
     </View>
-    <View style={{ gap: 16 * scale, alignItems: 'flex-start' }}><Text style={DesignType.label}>Hair</Text><SelectionTile label="None" selected /></View>
-    <View style={{ gap: 16 * scale, alignItems: 'flex-start' }}><Text style={DesignType.label}>Clothes</Text><SelectionTile label="None" selected /></View>
+    <View style={{ gap: 16 * scale }}><Text style={DesignType.label}>Hair</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}><View accessibilityRole="radiogroup" accessibilityLabel="Hair" style={{ flexDirection: 'row', gap: 12 * scale }}>
+        {HAIR_OPTIONS.map(option => <SelectionTile key={option.id} label={option.label} selected={hair === option.id} disabled={busy} onPress={() => setHair(option.id)}>{option.id !== 'none' && <AccessoryIcon hair={option.id} size={48 * scale} />}</SelectionTile>)}
+      </View></ScrollView>
+    </View>
+    <View style={{ gap: 16 * scale }}><Text style={DesignType.label}>Clothes</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}><View accessibilityRole="radiogroup" accessibilityLabel="Clothes" style={{ flexDirection: 'row', gap: 12 * scale }}>
+        {CLOTHES_OPTIONS.map(option => <SelectionTile key={option.id} label={option.label} selected={clothes === option.id} disabled={busy} onPress={() => setClothes(option.id)}>{option.id !== 'none' && <AccessoryIcon clothes={option.id} size={48 * scale} />}</SelectionTile>)}
+      </View></ScrollView>
+    </View>
     <TextField ref={habitInput} label="Habit" value={habit} onChangeText={setHabit} maxLength={HABIT_NAME_MAX} editable={!busy} error={error === 'Enter a habit' ? error : undefined} />
     <View style={{ gap: 16 * scale }}>
       <Text style={DesignType.label}>Check in every</Text>

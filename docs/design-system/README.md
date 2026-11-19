@@ -32,7 +32,7 @@ At the 430px source viewport, content is 382px wide with 24px margins. Use Hepta
 
 Scale original 382×438 pet scenes uniformly. Setup has a white bordered card, name above the pet and no hat; long names grow the card without stretching the artwork. Idle is unframed. Preserve the original vectors, circular confetti, poses and decorations.
 
-Setup order is Name → Colour → Hair → Clothes → Habit → **Check in every**. Show **24h / 48h / Weekly** directly in one row. Colour choices stay on one horizontally scrollable row. Hair and Clothes currently have only the accessible None option; no accessory artwork was supplied. Fields are white, source height 72px, radius 20px and grow for long values.
+Setup order is Name → Colour → Hair → Clothes → Habit → **Check in every**. Show **24h / 48h / Weekly** directly in one row. Colour choices stay on one horizontally scrollable row. Hair and Clothes now offer None plus original vector accessories: curls, spikes, side swoop; striped T-shirt, waistcoat, scarf. Picker thumbnails and pet overlays share PetAccessories paths. Selected hair replaces the default hat. This application extension is pending Figma library reconciliation. Fields are white, source height 72px, radius 20px and grow for long values.
 
 Use `SelectionOption` for choices and `SelectionTile` as its accessory wrapper. Every selection state keeps a white surface and black Aleo text. Selected gets a 2px outline, unselected an invisible outline, and keyboard focus a distinct outline. Action buttons such as Save keep their action styling. The remaining grey disabled-selection implementation mismatch is recorded in adoption.json.
 

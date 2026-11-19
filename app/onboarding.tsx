@@ -8,10 +8,7 @@ import { CADENCE_OPTIONS, HabitCadence, HABIT_NAME_MAX } from '../src/types';
 import { Colors, Spacing } from '../src/theme';
 import { Page } from '../src/design-system/Page';
 import { Button, ScreenHeader, TextField, SelectionOption } from '../src/design-system/Controls';
-import { PetArtwork } from '../src/design-system/Artwork';
 import { DesignType } from '../src/design-system/tokens';
-import PetLives from '../src/PetLives';
-import { getRestartStoreAvailability, RESTART_PRICE_LABEL } from '../src/purchases';
 
 export default function OnboardingScreen() {
   const { loading, prefs, updatePrefs, startHabitPlan } = useAppState();
@@ -26,12 +23,10 @@ export default function OnboardingScreen() {
 
 function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof useAppState>, 'prefs' | 'updatePrefs' | 'startHabitPlan'>) {
   const saved = prefs.onboardingDraft;
-  const [step, setStep] = useState(saved?.step ?? 0);
+  const [step, setStep] = useState(Math.min(saved?.step ?? 0, 1));
   const [habit, setHabit] = useState(saved?.habitName ?? '');
   const [cadence, setCadence] = useState<HabitCadence>(saved?.habitCadence ?? 'daily');
-  const [pet, setPet] = useState(saved?.petName ?? 'noodle');
-  const [price, setPrice] = useState(RESTART_PRICE_LABEL);
-  const [mock, setMock] = useState(false);
+  const pet = saved?.petName?.trim() || prefs.petName.trim() || 'noodle';
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const input = useRef<TextInput>(null);
@@ -48,11 +43,6 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
   }, [step, habit, cadence, pet, updatePrefs]);
 
   useEffect(() => {
-    let active = true;
-    void getRestartStoreAvailability().then(value => { if (active) { setPrice(value.displayPrice); setMock(value.useMockCheckout); } });
-    return () => { active = false; };
-  }, []);
-  useEffect(() => {
     scroll.current?.scrollTo({ y: 0, animated: false });
     if (step !== 1) input.current?.focus();
     const back = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -64,11 +54,10 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
 
   const next = async () => {
     if (busy) return;
-    const message = step === 0 && !habit.trim() ? 'Give your habit a name before continuing.'
-      : step === 2 && !pet.trim() ? 'Give your pet a name before continuing.' : '';
+    const message = step === 0 && !habit.trim() ? 'Give your habit a name before continuing.' : '';
     if (message) { setError(message); AccessibilityInfo.announceForAccessibility(message); input.current?.focus(); return; }
     setError('');
-    if (step < 2) { setStep(step + 1); return; }
+    if (step < 1) { setStep(step + 1); return; }
     setBusy(true);
     try {
       await saving.current;
@@ -81,11 +70,11 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
 
   return <Page ref={scroll} bottomPadding={48}>
     <View style={styles.top}>
-      <Text style={DesignType.calendar}>{step + 1} of 3</Text>
+      <Text style={DesignType.calendar}>{step + 1} of 2</Text>
       {step > 0 && <Pressable accessibilityRole="button" disabled={busy} style={styles.link} onPress={() => { setError(''); setStep(step - 1); }}><Text style={DesignType.calendar}>Back</Text></Pressable>}
     </View>
-    <ScreenHeader title={['Name your habit', 'How often?', pet.trim() ? `Meet ${pet.trim()}.` : 'Name your pet'][step]} />
-    {step !== 2 && <Text style={DesignType.supporting}>{['Pick one small thing. Your pet will show your progress.', 'Each check-in restarts the interval.'][step]}</Text>}
+    <ScreenHeader title={['Name your habit', 'How often?'][step]} />
+    <Text style={DesignType.supporting}>{['Pick one small thing. Your pet will show your progress.', 'Each check-in restarts the interval.'][step]}</Text>
     {step === 0 && <>
       <TextField ref={input} label="Habit" autoFocus accessibilityHint="Choose a concrete, achievable action" value={habit} onChangeText={setHabit} maxLength={HABIT_NAME_MAX} placeholder="E.g. read 10 pages" returnKeyType="next" onSubmitEditing={() => void next()} />
       <View style={styles.habitSuggestions}>{['meditate', 'run', 'read 10 pages'].map(value => <Pressable key={value} accessibilityRole="button" accessibilityHint="Fills your habit field so you can edit it" style={styles.tagTarget} onPress={() => { setHabit(value); setError(''); input.current?.focus(); }}><Text style={[DesignType.calendar, { textDecorationLine: 'underline' }]}>{value}</Text></Pressable>)}</View>
@@ -93,13 +82,8 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
     {step === 1 && <View accessibilityRole="radiogroup" accessibilityLabel="Check-in interval" style={{ gap: 12 }}>
       {CADENCE_OPTIONS.map(option => <SelectionOption key={option.id} label={{ daily: 'Every 24 hours', every2days: 'Every 48 hours', weekly: 'Every 7 days' }[option.id]} selected={cadence === option.id} accessibilityRole="radio" accessibilityState={{ checked: cadence === option.id }} onPress={() => setCadence(option.id)} />)}
     </View>}
-    {step === 2 && <>
-      <View accessible accessibilityRole="image" accessibilityLabel={`${pet.trim() || 'Your pet'}, with three hearts`} style={styles.pet}><PetArtwork color={prefs.petColor} /><PetLives lives={3} color={prefs.petColor} size={24} /></View>
-      <TextField ref={input} label="Name" value={pet} onChangeText={setPet} maxLength={40} returnKeyType="done" onSubmitEditing={() => void next()} />
-      <Text style={DesignType.supporting}>Check-ins refill three hearts. Each missed interval costs one. Lose all three and your pet dies. Restarting costs {price}{mock ? ' (test checkout here)' : ''}. “Let’s start” starts the clock.</Text>
-    </>}
     {error ? <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={DesignType.supporting}>{error}</Text> : null}
-    <Button label={step === 2 ? 'Let’s start' : 'Next'} state={busy ? 'loading' : 'default'} onPress={() => void next()} />
+    <Button label={step === 1 ? 'Let’s start' : 'Next'} state={busy ? 'loading' : 'default'} onPress={() => void next()} />
   </Page>;
 }
 
@@ -108,6 +92,5 @@ const styles = StyleSheet.create({
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   habitSuggestions: { flexDirection: 'row', flexWrap: 'wrap', columnGap: Spacing.sm, marginTop: -Spacing.sm },
   tagTarget: { minHeight: 44, justifyContent: 'center', maxWidth: '100%' },
-  pet: { alignItems: 'center', gap: Spacing.sm, paddingVertical: Spacing.sm },
   link: { paddingVertical: Spacing.sm, minHeight: 44, justifyContent: 'center' },
 });
