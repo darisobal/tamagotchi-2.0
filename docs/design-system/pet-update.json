@@ -1,0 +1,123 @@
+{
+  "version": "0.2.1",
+  "date": "2026-11-23",
+  "status": "published-and-implemented-locally",
+  "source": {
+    "fileKey": "eU62JH6PqW61UeGlLaGk7T",
+    "screenId": "4792:1901",
+    "petId": "4792:1906",
+    "hatId": "4792:1909"
+  },
+  "library": {
+    "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+    "pageId": "1:67",
+    "artworkSetId": "5:2",
+    "idleId": "5:3",
+    "stageSetId": "6:69",
+    "newPartIds": [
+      "54:349",
+      "54:350",
+      "54:351",
+      "54:352",
+      "54:353",
+      "54:354",
+      "54:355",
+      "54:356",
+      "54:357",
+      "54:358",
+      "54:359",
+      "54:360",
+      "54:361"
+    ],
+    "publishedFamilies": [
+      "pet-artwork",
+      "pet-stage",
+      "calendar-day",
+      "calendar-month"
+    ]
+  },
+  "contract": [
+    "Use the reference smiling, spread-foot pose for setup and everyday idle.",
+    "Keep native vector paths, brush profiles and uniform proportions.",
+    "Hat is optional and off by default; application logic controls any post-signup use.",
+    "Preserve the success, missed and double-success poses."
+  ],
+  "applicationChatId": "01a1ee0d-7786-7fe0-bd56-a35f61b598fb",
+  "checks": {
+    "libraryUpdated": true,
+    "visualReviewPassed": true,
+    "published": true,
+    "consumerUpdated": true,
+    "applicationUpdated": true
+  },
+  "validation": {
+    "nativeParts": 13,
+    "ellipses": 2,
+    "vectors": 11,
+    "imageFills": 0,
+    "boundPaints": 13,
+    "hatDefault": false,
+    "hatBindings": 8,
+    "reviewed": [
+      "6:70",
+      "6:89",
+      "10:3351"
+    ],
+    "geometry": "Original source vector paths, transforms, BLOCKBUSTER brush profiles and eye taper preserved."
+  },
+  "consumer": {
+    "fileKey": "eU62JH6PqW61UeGlLaGk7T",
+    "pageId": "4744:461",
+    "updatedExistingIdleInstances": [
+      "I4758:4031;6:71",
+      "I4758:4127;6:90",
+      "I4758:5232;6:90",
+      "I4758:5293;6:71",
+      "I4758:5745;6:71"
+    ],
+    "allRemote": true,
+    "hatValues": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "normalBounds": [
+      175.17457580566406,
+      266.3598327636719
+    ],
+    "narrowBounds": [
+      124.73164367675781,
+      189.65936279296875
+    ],
+    "longNameBounds": [
+      138.48880004882812,
+      210.57766723632812
+    ]
+  },
+  "application": {
+    "status": "implemented-locally",
+    "deployed": false,
+    "sourceAssets": "assets/intro; provenance in artwork-provenance.json petPatch",
+    "changedComponents": [
+      "PetArtwork",
+      "PetStage",
+      "PetAccessories",
+      "FailurePet",
+      "WelcomeIntro"
+    ],
+    "testsPassed": 115,
+    "webExport": "passed",
+    "iosBundle": "passed",
+    "visualReview": [
+      "web setup with and without accessories",
+      "iPhone setup with long name"
+    ],
+    "typecheck": "Seven existing unrelated errors remain; no new errors reported.",
+    "androidRuntime": "not rerun for this patch",
+    "screenshot": "validation/pet-v021-ios.png",
+    "evidenceChat": "01a1ee0d-7786-7fe0-bd56-a35f61b598fb",
+    "note": "Application edits share the existing uncommitted intro work and remain local. This record does not claim deployment."
+  }
+}

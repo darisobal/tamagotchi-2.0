@@ -65,7 +65,7 @@ scripts/       # setup helpers
 - Pet logic in `src/logic.ts`; theme in `src/theme.ts`
 - Prefer small, focused diffs; match existing patterns in surrounding code
 - Do not commit secrets (`.env`); see `.env.example` for required vars
-- **Lowercase copy:** all user-facing text (labels, buttons, errors, alerts) is lowercase — no title case or uppercase styling
+- **Copy capitalization:** match the original Figma designs, including sentence case and intentional emphasis (for example, `Day`, `Goal`, and `DOUBLE Success!`). Use sentence case for supporting flows without a Figma reference. Preserve user-entered names, habits, locale-formatted dates and external messages; never force them to lowercase.
 - **Screen titles:** use `Type.screenTitle` (`Slab.black`) for page headlines — home greeting, setup, history, auth, check-in — so weight/size stay consistent
 - **Screen descriptions:** use `Type.screenDescription` (`Slab.bold`, `FontSize.lg`) for the supporting line under a title (auth tagline, setup blurb, history count, check-in prompt)
 

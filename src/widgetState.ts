@@ -14,10 +14,10 @@ export const WIDGET_SCENE_BG: Record<WidgetPetScene, string> = {
 };
 
 export const WIDGET_SCENE_LABEL: Record<WidgetPetScene, string> = {
-  well: 'well',
-  neutral: 'neutral',
-  sad: 'sad',
-  fail: 'fail',
+  well: 'Well',
+  neutral: 'Neutral',
+  sad: 'Sad',
+  fail: 'Fail',
 };
 
 export function sceneToWidgetScene(scene: StateScene): WidgetPetScene {

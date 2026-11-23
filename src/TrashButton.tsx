@@ -12,7 +12,7 @@ type TrashButtonProps = {
 
 export default function TrashButton({
   onPress,
-  accessibilityLabel = 'delete',
+  accessibilityLabel = 'Delete',
   style,
   size = 24,
 }: TrashButtonProps) {

@@ -1,5 +1,6 @@
+import { ResponsiveText as Text } from './design-system/ResponsiveText';
 import React from 'react';
-import { Text, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
+import { StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
 import { Border, Colors, Radius, Slab } from './theme';
 
 type CloseButtonProps = {
@@ -15,7 +16,7 @@ type CloseButtonProps = {
  */
 export default function CloseButton({
   onPress,
-  accessibilityLabel = 'close',
+  accessibilityLabel = 'Close',
   style,
   size = 36,
 }: CloseButtonProps) {
@@ -28,7 +29,7 @@ export default function CloseButton({
       accessibilityLabel={accessibilityLabel}
       activeOpacity={0.7}
     >
-      <Text style={styles.icon}>x</Text>
+      <Text style={styles.icon}>X</Text>
     </TouchableOpacity>
   );
 }

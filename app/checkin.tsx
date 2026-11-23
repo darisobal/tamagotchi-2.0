@@ -1,12 +1,10 @@
+import { ResponsiveText as Text } from '../src/design-system/ResponsiveText';
+import { Page } from '../src/design-system/Page';
+import { Button, ScreenHeader, TextField } from '../src/design-system/Controls';
 import React, { useEffect, useState } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
-  TouchableOpacity,
-  TextInput,
-  SafeAreaView,
-  KeyboardAvoidingView,
   Platform,
   Alert,
 } from 'react-native';
@@ -14,7 +12,7 @@ import { router, Redirect } from 'expo-router';
 import { useAuth } from '../src/authContext';
 import { useAppState } from '../src/context';
 import { MAIN_TRACK, DEFAULT_HABIT_NAME } from '../src/types';
-import { Colors, Spacing, FontSize, Slab, Radius, Border, Type } from '../src/theme';
+import { Colors, Spacing, Type } from '../src/theme';
 import CloseButton from '../src/CloseButton';
 import { hasPendingPaidRestart } from '../src/purchases';
 import RestartPaywall from '../src/RestartPaywall';
@@ -58,6 +56,7 @@ export default function CheckInScreen() {
   }, [mood, doCheckIn, loading, prefs.onboardingDone, authLoading, user, passwordRecoveryPending]);
 
   const handleSave = async () => {
+    if (saving) return;
     if (mood === 'dead' && !unlocked) {
       setPaywallVisible(true);
       return;
@@ -68,13 +67,13 @@ export default function CheckInScreen() {
       router.back();
     } catch (err) {
       const message =
-        err instanceof Error ? err.message.toLowerCase() : 'could not save check-in';
+        err instanceof Error ? err.message : 'Could not save check-in';
       if (Platform.OS === 'web' && typeof window !== 'undefined') {
         window.alert(message);
       } else {
-        Alert.alert('oops', message);
+        Alert.alert('Oops', message);
       }
-      if (message.includes('payment')) {
+      if (message.toLowerCase().includes('payment')) {
         setUnlocked(false);
         setPaywallVisible(true);
       }
@@ -91,11 +90,11 @@ export default function CheckInScreen() {
       router.back();
     } catch (err) {
       const message =
-        err instanceof Error ? err.message.toLowerCase() : 'could not restart';
+        err instanceof Error ? err.message : 'Could not restart';
       if (Platform.OS === 'web' && typeof window !== 'undefined') {
         window.alert(message);
       } else {
-        Alert.alert('oops', message);
+        Alert.alert('Oops', message);
       }
     }
   };
@@ -107,28 +106,22 @@ export default function CheckInScreen() {
   if (!prefs.onboardingDone) return <Redirect href="/onboarding" />;
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        <View style={styles.container}>
+    <>
+      <Page bottomPadding={48}>
           <View style={styles.header}>
-            <CloseButton onPress={() => router.back()} accessibilityLabel="close" />
+            <CloseButton onPress={() => router.back()} accessibilityLabel="Close" />
           </View>
 
-          <Text style={styles.trackTitle}>{habitName}</Text>
+          <ScreenHeader title={habitName} />
 
           {mood === 'dead' && (
             <Text style={styles.prompt}>
-              paid restart unlocked — what will you do first?
+              Paid restart unlocked — what will you do first?
             </Text>
           )}
 
-          <Text style={styles.label}>note (optional)</Text>
-          <TextInput
-            style={styles.noteInput}
-            placeholder="what did you work on?"
+          <TextField label="Note (optional)" editable={!saving}
+            placeholder="What did you work on?"
             placeholderTextColor={Colors.textMuted}
             value={note}
             onChangeText={setNote}
@@ -138,18 +131,8 @@ export default function CheckInScreen() {
 
           <View style={styles.spacer} />
 
-          <TouchableOpacity
-            style={styles.saveBtn}
-            onPress={handleSave}
-            activeOpacity={0.8}
-            disabled={saving || (mood === 'dead' && !unlocked)}
-          >
-            <Text style={styles.saveBtnText}>
-              {saving ? 'saving...' : mood === 'dead' ? 'restart?' : 'done!'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
+          <Button label={mood === 'dead' ? 'Restart?' : 'Done!'} state={saving ? 'loading' : 'default'} disabled={mood === 'dead' && !unlocked} onPress={handleSave} />
+      </Page>
 
       <RestartPaywall
         visible={paywallVisible}
@@ -159,64 +142,19 @@ export default function CheckInScreen() {
         }}
         onUnlocked={onRestartUnlocked}
       />
-    </SafeAreaView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.stateGoodBg },
-  flex: { flex: 1 },
-  container: {
-    flex: 1,
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.xl,
-  },
   header: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     marginBottom: Spacing.md,
   },
-  trackTitle: {
-    ...Type.screenTitle,
-    color: Colors.ink,
-  },
   prompt: {
     ...Type.screenDescription,
     marginBottom: Spacing.xl,
   },
-  label: {
-    fontSize: FontSize.lg,
-    fontFamily: Slab.black,
-    color: Colors.ink,
-    marginBottom: Spacing.sm,
-    marginTop: Spacing.sm,
-  },
-  noteInput: {
-    backgroundColor: Colors.card,
-    padding: Spacing.md,
-    fontSize: FontSize.md,
-    fontFamily: Slab.regular,
-    color: Colors.ink,
-    borderWidth: Border.thick,
-    borderColor: Colors.ink,
-    borderRadius: Radius.md,
-    minHeight: 96,
-    textAlignVertical: 'top',
-  },
   spacer: { flex: 1 },
-  saveBtn: {
-    paddingVertical: Spacing.md + 4,
-    alignItems: 'center',
-    backgroundColor: Colors.ink,
-    borderWidth: Border.thick,
-    borderColor: Colors.ink,
-    borderRadius: Radius.md,
-  },
-  saveBtnText: {
-    color: '#FFFFFF',
-    fontSize: FontSize.xl,
-    fontFamily: Slab.black,
-    letterSpacing: 0.5,
-  },
 });

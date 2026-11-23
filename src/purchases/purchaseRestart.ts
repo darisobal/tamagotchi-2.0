@@ -84,7 +84,7 @@ export async function purchaseRestartViaStore(): Promise<PurchaseRestartResult> 
     });
     const product = products?.[0];
     if (!product) {
-      return { ok: false, needsMock: true, error: 'restart product not found in store' };
+      return { ok: false, needsMock: true, error: 'Restart product not found in store' };
     }
 
     const displayPrice =
@@ -111,7 +111,7 @@ export async function purchaseRestartViaStore(): Promise<PurchaseRestartResult> 
         } catch (err) {
           finish({
             ok: false,
-            error: err instanceof Error ? err.message.toLowerCase() : 'could not finish purchase',
+            error: err instanceof Error ? err.message : 'Could not finish purchase',
           });
         }
       });
@@ -128,7 +128,7 @@ export async function purchaseRestartViaStore(): Promise<PurchaseRestartResult> 
         }
         finish({
           ok: false,
-          error: (error.message || 'purchase failed').toLowerCase(),
+          error: error.message || 'Purchase failed',
         });
       });
 
@@ -144,7 +144,7 @@ export async function purchaseRestartViaStore(): Promise<PurchaseRestartResult> 
           finish({
             ok: false,
             needsMock: true,
-            error: err instanceof Error ? err.message.toLowerCase() : 'store unavailable',
+            error: err instanceof Error ? err.message : 'Store unavailable',
           });
         });
     });
@@ -152,7 +152,7 @@ export async function purchaseRestartViaStore(): Promise<PurchaseRestartResult> 
     return {
       ok: false,
       needsMock: true,
-      error: err instanceof Error ? err.message.toLowerCase() : 'store unavailable',
+      error: err instanceof Error ? err.message : 'Store unavailable',
     };
   }
 }
@@ -190,13 +190,13 @@ export async function purchaseRestartViaMock(input: {
   await new Promise((r) => setTimeout(r, 600));
 
   if (!isValidMockCardNumber(input.cardNumber)) {
-    return { ok: false, error: 'use the test card 4242 4242 4242 4242' };
+    return { ok: false, error: 'Use the test card 4242 4242 4242 4242' };
   }
   if (!isValidMockExpiry(input.expiry)) {
-    return { ok: false, error: 'enter a valid future expiry (mm/yy)' };
+    return { ok: false, error: 'Enter a valid future expiry (MM/YY)' };
   }
   if (!isValidMockCvc(input.cvc)) {
-    return { ok: false, error: 'enter a valid cvc' };
+    return { ok: false, error: 'Enter a valid CVC' };
   }
 
   return { ok: true, method: 'mock', displayPrice: RESTART_PRICE_LABEL };

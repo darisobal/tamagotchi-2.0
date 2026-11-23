@@ -22,6 +22,7 @@ export interface Storage {
   getAllCheckIns(): Promise<CheckIn[]>;
   getCheckInsForTrack(trackType: TrackType): Promise<CheckIn[]>;
   insertCheckIn(checkIn: CheckIn): Promise<void>;
+  saveCheckIn(checkIn: CheckIn, state: TrackState): Promise<void>;
   markCouponCollected(id: string): Promise<void>;
   deleteCheckIn(id: string): Promise<CheckIn | null>;
   getTrackState(trackType: TrackType): Promise<TrackState>;
@@ -166,6 +167,10 @@ class NativeStorage implements Storage {
     try {
       await this.db.execAsync(`ALTER TABLE user_prefs ADD COLUMN petName TEXT`);
     } catch {}
+    for (const column of ['petHair', 'petClothes']) {
+      try { await this.db.execAsync(`ALTER TABLE user_prefs ADD COLUMN ${column} TEXT`); } catch {}
+    }
+    try { await this.db.execAsync('ALTER TABLE track_state ADD COLUMN habitClock TEXT'); } catch {}
     let firstOnboardingMigration = false;
     try { await this.db.execAsync('ALTER TABLE user_prefs ADD COLUMN onboardingVersion INTEGER'); firstOnboardingMigration = true; } catch {}
     for (const column of ['planStartedAt', 'onboardingDraft', 'accountPromptDismissed']) {
@@ -225,6 +230,14 @@ class NativeStorage implements Storage {
     );
   }
 
+  async saveCheckIn(checkIn: CheckIn, state: TrackState) {
+    const db = await this.getDb();
+    await db.withTransactionAsync(async () => {
+      await this.insertCheckIn(checkIn);
+      await this.updateTrackState(state);
+    });
+  }
+
   async markCouponCollected(id: string) {
     const db = await this.getDb();
     await db.runAsync(`UPDATE check_ins SET couponCollected = 1 WHERE id = ?`, id);
@@ -246,6 +259,7 @@ class NativeStorage implements Storage {
     return normalizeTrackState({
       ...row!,
       celebrationPaidStart: Boolean(row?.celebrationPaidStart),
+      habitClock: typeof row?.habitClock === 'string' ? JSON.parse(row.habitClock) : row?.habitClock,
     });
   }
 
@@ -267,6 +281,7 @@ class NativeStorage implements Storage {
         normalizeTrackState({
           ...row,
           celebrationPaidStart: Boolean(row.celebrationPaidStart),
+          habitClock: typeof row.habitClock === 'string' ? JSON.parse(row.habitClock) : row.habitClock,
         }),
       );
     }
@@ -276,13 +291,14 @@ class NativeStorage implements Storage {
   async updateTrackState(state: TrackState) {
     const db = await this.getDb();
     await db.runAsync(
-      `UPDATE track_state SET level = ?, lastCheckInAt = ?, streak = ?, lastCompletedDay = ?, celebrationCount = ?, celebrationPaidStart = ? WHERE trackType = ?`,
+      `UPDATE track_state SET level = ?, lastCheckInAt = ?, streak = ?, lastCompletedDay = ?, celebrationCount = ?, celebrationPaidStart = ?, habitClock = ? WHERE trackType = ?`,
       state.level,
       state.lastCheckInAt,
       state.streak,
       state.lastCompletedDay,
       state.celebrationCount,
       state.celebrationPaidStart ? 1 : 0,
+      state.habitClock ? JSON.stringify(state.habitClock) : null,
       state.trackType,
     );
   }
@@ -300,6 +316,8 @@ class NativeStorage implements Storage {
       petName: string | null;
       petColor: string | null;
       petHat: string | null;
+      petHair: UserPrefs['petHair'];
+      petClothes: UserPrefs['petClothes'];
       habitCadence: string | null;
     }>(`SELECT * FROM user_prefs WHERE id = 1`);
     const prefs = normalizeUserPrefs({
@@ -312,6 +330,8 @@ class NativeStorage implements Storage {
       habitName: row!.habitName ?? '',
       petName: row!.petName ?? undefined,
       petColor: row!.petColor ?? undefined,
+      petHair: row!.petHair,
+      petClothes: row!.petClothes,
       petHat: row!.petHat as PetHat,
       habitCadence: row!.habitCadence as HabitCadence,
     });
@@ -330,7 +350,7 @@ class NativeStorage implements Storage {
   async updateUserPrefs(prefs: Partial<UserPrefs>) {
     const db = await this.getDb();
     const columns = ['petType', 'onboardingDone', 'customSprite', 'habitName', 'petName',
-      'petColor', 'petHat', 'habitCadence', 'planStartedAt', 'onboardingDraft', 'accountPromptDismissed'] as const;
+      'petColor', 'petHat', 'petHair', 'petClothes', 'habitCadence', 'planStartedAt', 'onboardingDraft', 'accountPromptDismissed'] as const;
     const updates = columns.filter(column => prefs[column] !== undefined);
     if (!updates.length) return;
     const values = updates.map(column => {

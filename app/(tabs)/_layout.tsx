@@ -1,5 +1,6 @@
+import { ResponsiveText as Text } from '../../src/design-system/ResponsiveText';
 import { Redirect, Tabs } from 'expo-router';
-import { View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
 import { CommonActions } from '@react-navigation/native';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -28,7 +29,7 @@ function BottomTextTabBar(props: BottomTabBarProps) {
       style={[
         styles.root,
         {
-          backgroundColor: screenBg,
+          backgroundColor: '#ECFFE4',
           paddingBottom: Math.max(insets.bottom, 8),
         },
       ]}
@@ -47,7 +48,7 @@ function BottomTextTabBar(props: BottomTabBarProps) {
             <Pressable
               key={route.key}
               accessibilityRole="tab"
-              accessibilityState={{ selected: focused }}
+              accessibilityState={{ selected: focused }} aria-selected={focused}
               onPress={() => {
                 const event = navigation.emit({
                   type: 'tabPress',
@@ -71,7 +72,6 @@ function BottomTextTabBar(props: BottomTabBarProps) {
             >
               <Text
                 style={[styles.tabLabel, !focused && styles.tabLabelInactive]}
-                numberOfLines={1}
               >
                 {label}
               </Text>
@@ -100,12 +100,15 @@ const styles = StyleSheet.create({
   tabRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
+    width: '100%',
+    maxWidth: 430,
+    alignSelf: 'center',
     paddingTop: TAB_BAR_TOP_PAD,
   },
   tabCell: {
     flex: 1,
     alignItems: 'center',
-    minHeight: TAB_BAR_LABEL_LINE + TAB_BAR_INDICATOR_GAP + TAB_BAR_INDICATOR,
+    minHeight: 44,
   },
   tabCellPressed: {
     opacity: 0.75,
@@ -166,9 +169,9 @@ export default function TabLayout() {
         tabBarInactiveTintColor: Colors.ink,
       }}
     >
-      <Tabs.Screen name="settings" options={{ title: 'setup' }} />
-      <Tabs.Screen name="index" options={{ title: 'home' }} />
-      <Tabs.Screen name="progress" options={{ title: 'progress' }} />
+      <Tabs.Screen name="settings" options={{ title: 'Setup' }} />
+      <Tabs.Screen name="index" options={{ title: 'Home' }} />
+      <Tabs.Screen name="progress" options={{ title: 'Progress' }} />
     </Tabs>
   );
 }

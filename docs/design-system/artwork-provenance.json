@@ -1,0 +1,186 @@
+{
+  "libraryVersion": "0.1.1",
+  "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
+  "assets": {
+    "8517d.svg": {
+      "contextNode": "10:78",
+      "exportName": "imgGroup540",
+      "sha256": "d3d31e695dc6a43c22db8000d08f75b066bc02a0cb11d88eb025537b1000bf04"
+    },
+    "6dd10.svg": {
+      "contextNode": "10:164",
+      "exportName": "imgGroup533",
+      "sha256": "2b9476b63427998ed7e8f05203a2ed2b1df9789655d0f22d269c57d7df353c4d"
+    },
+    "9953f.svg": {
+      "contextNode": "10:2",
+      "exportName": "imgGroup522",
+      "sha256": "891651fe5c7bd957d0ecbf2f6558c1fe873a8103d9938c1ef9f775b362c9b3e0"
+    },
+    "9217e.svg": {
+      "contextNode": "10:164",
+      "exportName": "imgVector118",
+      "sha256": "3e741c912a6a19bd165a669a831b8443a277e3c8b0beeaf5ad0b14051e105255"
+    },
+    "7725d.svg": {
+      "contextNode": "10:164",
+      "exportName": "imgVector119",
+      "sha256": "4060fa40a6c2af80533ca3453dba2e401bdc8a7ae947727b670b92286b2d66f1"
+    },
+    "f3a85.svg": {
+      "contextNode": "10:78",
+      "exportName": "imgGround",
+      "sha256": "884636f5c7dc332ab3fbb352e834c35074605d0b08e8f0946ccacbbe50e0b013"
+    },
+    "4b2ec.svg": {
+      "contextNode": "2:53",
+      "exportName": "imgStateDefault",
+      "sha256": "ac3b65645f31558a4be907921b9214cdc3b53cbaa7a1ff807c3fed25c9c8f17d"
+    },
+    "6e23e.svg": {
+      "contextNode": "2:53",
+      "exportName": "imgStateSelected",
+      "sha256": "07c23490458d7703fa21026fb6fd5598d1e9a7783db99848be4f14039a9778c0"
+    },
+    "87014.svg": {
+      "contextNode": "10:110",
+      "exportName": "imgGroup522",
+      "sha256": "56cae16c403760409964f614ef1d3e1163f81e1cfc19e10040a0dad4fc8b1c01"
+    },
+    "42fc0.svg": {
+      "contextNode": "10:110",
+      "exportName": "imgVector121",
+      "sha256": "4662d5dd3d0df3058f159928e1a0988ea8c99eb25882ce05b93399706f8de3d7"
+    },
+    "cebc2.svg": {
+      "contextNode": "10:164",
+      "exportName": "imgVector122",
+      "sha256": "2235c9fdd367ce969ed3580e5c0925aa5ed3dfbfb8b221c183eac4516cd69794"
+    },
+    "0c112.svg": {
+      "contextNode": "10:110",
+      "exportName": "imgPetDecorSuccess",
+      "sha256": "530e84f57286f9cd84bcf3be71aa95a7620a5e3f8bebf4e858fc064dc7e34403"
+    },
+    "901f3.svg": {
+      "contextNode": "10:137",
+      "exportName": "imgGroup533",
+      "sha256": "2b9476b63427998ed7e8f05203a2ed2b1df9789655d0f22d269c57d7df353c4d"
+    },
+    "8dcbc.svg": {
+      "contextNode": "10:137",
+      "exportName": "imgGroup522",
+      "sha256": "a3269cf8bb8d25d814bd5e6921986b8cf6f3f3c4be3c7fbc4e2ee35e9a76faa2"
+    },
+    "33d31.svg": {
+      "contextNode": "10:137",
+      "exportName": "imgVector118",
+      "sha256": "7e6096759b9bbaac086612ea5682888a94a55ee4fed3293ba48c2333ab9d394e"
+    },
+    "e92e0.svg": {
+      "contextNode": "10:137",
+      "exportName": "imgVector119",
+      "sha256": "c6eb3d1da70736696dbd59c97b097ba8d8868c3ee9ca3698e78dfe2072a78458"
+    },
+    "7a3e3.svg": {
+      "contextNode": "10:137",
+      "exportName": "imgPetDecorMissed",
+      "sha256": "653acd038c26a2eda1e50776ac9257242ca97983f9b33fb57142dd1e21d3e2e9"
+    },
+    "88ec3.svg": {
+      "contextNode": "10:164",
+      "exportName": "imgGroup522",
+      "sha256": "f3463f86965d2bbf693623e8bc5392334b9181dc99842aa0ea994fc53714f489"
+    },
+    "1ac98.svg": {
+      "contextNode": "10:164",
+      "exportName": "imgVector121",
+      "sha256": "4662d5dd3d0df3058f159928e1a0988ea8c99eb25882ce05b93399706f8de3d7"
+    },
+    "d0ef1.svg": {
+      "contextNode": "10:164",
+      "exportName": "imgPetDecorDoubleSuccess",
+      "sha256": "892d19240dd7916533c60a46c675d9acdb2e98f78f816de0d392b9d273a1edf8"
+    },
+    "9b0bb.svg": {
+      "contextNode": "2:53",
+      "exportName": "imgStateFocus",
+      "sha256": "01025b129fe5abd80f07e161929251acac503396c5b6e6c89dfa644a70c193ea"
+    },
+    "5ba24.svg": {
+      "contextNode": "2:53",
+      "exportName": "imgStateDisabled",
+      "sha256": "ea45ff2258e0a8883816b47935fe2305e54fa472e00d230f9d103af83adfdac0"
+    }
+  },
+  "petPatch": {
+    "libraryVersion": "0.2.1",
+    "date": "2026-11-23",
+    "sourceFile": "eU62JH6PqW61UeGlLaGk7T",
+    "sourceNode": "4792:1906",
+    "libraryNode": "5:3",
+    "note": "Exact source exports reused for the new setup/idle pose. Hat asset remains optional and is excluded from base artwork. Older asset records retain their original release provenance.",
+    "assets": {
+      "assets/intro/63838.svg": {
+        "sourceNode": "4792:1908",
+        "sha256": "4e97b3d967c2b7c93a336059aec0316c0c3dac41b8a7c07378c0615807775b5b",
+        "optionalHat": false
+      },
+      "assets/intro/d1b4d.svg": {
+        "sourceNode": "4792:1912",
+        "sha256": "9e877aa5b5c1f99ac7e9e42a78641c6cbb959e250890860a7ba08d246f251df6",
+        "optionalHat": false
+      },
+      "assets/intro/96249.svg": {
+        "sourceNode": "4792:1915",
+        "sha256": "ae6f5d9db0cfcac5cbe8b20f7a9f8fa4e02e6e5dc3642e05f441afab0552ae7d",
+        "optionalHat": false
+      },
+      "assets/intro/11154.svg": {
+        "sourceNode": "4792:1916",
+        "sha256": "57791e75c36503ddc15cd9759a663dc27c0d1684f955753badadae9643b813d9",
+        "optionalHat": false
+      },
+      "assets/intro/4aad0.svg": {
+        "sourceNode": "4792:1917",
+        "sha256": "2471a1197b227200c6006e5d99258ed4724edb01148770e33e292e8f50ace73b",
+        "optionalHat": false
+      },
+      "assets/intro/85446.svg": {
+        "sourceNode": "4792:1918",
+        "sha256": "f2d3cda93c529034bd534e0764d6d845b7e6f02bb8e6d865d31b815d8e36a2e6",
+        "optionalHat": false
+      },
+      "assets/intro/9a1ed.svg": {
+        "sourceNode": "4792:1919",
+        "sha256": "429e504564ed51b0c3468a1578313a9636cdd328ab10a2610bf320015db3e937",
+        "optionalHat": false
+      },
+      "assets/intro/c264f.svg": {
+        "sourceNode": "4792:1920",
+        "sha256": "79449b69ce82b9f7bd3080e341c5a1bde4c8ff8d20bb368466751a432ca8f5b1",
+        "optionalHat": false
+      },
+      "assets/intro/d2e1a.svg": {
+        "sourceNode": "4792:1921",
+        "sha256": "c5b0f6b7c4f71046ecc4cea2c9fd8d6c70e948e948ab8a2e184d6965ad408cdd",
+        "optionalHat": false
+      },
+      "assets/intro/c22a0.svg": {
+        "sourceNode": "4792:1922",
+        "sha256": "4662d5dd3d0df3058f159928e1a0988ea8c99eb25882ce05b93399706f8de3d7",
+        "optionalHat": false
+      },
+      "assets/intro/ea4ab.svg": {
+        "sourceNode": "4792:1923",
+        "sha256": "2235c9fdd367ce969ed3580e5c0925aa5ed3dfbfb8b221c183eac4516cd69794",
+        "optionalHat": false
+      },
+      "assets/intro/1b344.svg": {
+        "sourceNode": "4792:1909",
+        "sha256": "a34999a99e473f2d3b43da944c0833cec71ebbba5ce1d40003d91596a82a81f9",
+        "optionalHat": true
+      }
+    }
+  }
+}

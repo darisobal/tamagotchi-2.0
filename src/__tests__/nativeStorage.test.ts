@@ -70,3 +70,25 @@ test('a failed native import rolls back instead of erasing account history', asy
   expect((await db.getUserPrefs()).habitName).toBe('keep me');
   expect(await db.getAllCheckIns()).toHaveLength(1);
 });
+
+test('accessory choices survive native storage reopening and can be removed', async () => {
+  let storage = reloadNative().getStorageForUser('accessory-test');
+  expect(await storage.getUserPrefs()).toMatchObject({ petHair: 'none', petClothes: 'none' });
+  await storage.updateUserPrefs({ petHair: 'curls', petClothes: 'tee' });
+  storage = reloadNative().getStorageForUser('accessory-test');
+  expect(await storage.getUserPrefs()).toMatchObject({ petHair: 'curls', petClothes: 'tee' });
+  await storage.updateUserPrefs({ petHair: 'none', petClothes: 'none' });
+  expect(await storage.getUserPrefs()).toMatchObject({ petHair: 'none', petClothes: 'none' });
+});
+
+test('habit clock, failure history and check-in are saved together in native storage', async () => {
+  const storage = require('../database').getStorageForUser('clock-native');
+  const track = await storage.getTrackState('main');
+  const habitClock = { deadlineAt: 1900000000000, periodMs: 86400000, failures: 2, lastFailureDay: '2030-03-17', rewardedDay: null, history: [{ at: 1899999900000, day: '2030-03-17', level: 2 }] };
+  await storage.saveCheckIn({ id: 'clock-checkin', trackType: 'main', intensity: 'medium', note: null, timestamp: '2030-03-18T10:00:00Z' }, { ...track, habitClock });
+  expect((await storage.getTrackState('main')).habitClock).toEqual(habitClock);
+  const snapshot = { prefs: await storage.getUserPrefs(), tracks: await storage.getAllTrackStates(), checkIns: await storage.getAllCheckIns() };
+  await storage.importSnapshot(snapshot);
+  expect((await storage.getTrackState('main')).habitClock).toEqual(habitClock);
+  expect((await storage.getAllCheckIns()).map((c: any) => c.id)).toContain('clock-checkin');
+});

@@ -1,0 +1,13 @@
+---
+description: Match copy capitalization to the Figma designs
+alwaysApply: true
+---
+
+# Design copy
+
+Match the original Figma designs, including sentence case and intentional emphasis such as `Day`, `Goal`, and `DOUBLE Success!`.
+
+- Use sentence case for supporting flows without a Figma reference.
+- Preserve user-entered names and habits, locale-formatted dates, acronyms and external messages.
+- Do not apply blanket lowercase or uppercase transformations to UI text.
+- Keep machine identifiers, routes, comparison normalization and stored values separate from display copy.

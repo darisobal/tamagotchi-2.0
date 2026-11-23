@@ -1,14 +1,14 @@
+import { ResponsiveText as Text } from '../src/design-system/ResponsiveText';
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, AccessibilityInfo, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, BackHandler } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ActivityIndicator, AccessibilityInfo, Pressable, ScrollView, StyleSheet, TextInput, View, BackHandler } from 'react-native';
 import { Redirect, router } from 'expo-router';
 import { useAppState } from '../src/context';
 import { useAuth } from '../src/authContext';
 import { CADENCE_OPTIONS, HabitCadence, HABIT_NAME_MAX } from '../src/types';
-import { Colors, Spacing, Radius, Border, Slab, FontSize, Type } from '../src/theme';
-import LineArtPet from '../src/LineArtPet';
-import PetLives from '../src/PetLives';
-import { getRestartStoreAvailability, RESTART_PRICE_LABEL } from '../src/purchases';
+import { Colors, Spacing } from '../src/theme';
+import { Page } from '../src/design-system/Page';
+import { Button, ScreenHeader, TextField, SelectionOption } from '../src/design-system/Controls';
+import { DesignType } from '../src/design-system/tokens';
 
 export default function OnboardingScreen() {
   const { loading, prefs, updatePrefs, startHabitPlan } = useAppState();
@@ -23,12 +23,10 @@ export default function OnboardingScreen() {
 
 function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof useAppState>, 'prefs' | 'updatePrefs' | 'startHabitPlan'>) {
   const saved = prefs.onboardingDraft;
-  const [step, setStep] = useState(saved?.step ?? 0);
+  const [step, setStep] = useState(Math.min(saved?.step ?? 0, 1));
   const [habit, setHabit] = useState(saved?.habitName ?? '');
   const [cadence, setCadence] = useState<HabitCadence>(saved?.habitCadence ?? 'daily');
-  const [pet, setPet] = useState(saved?.petName ?? 'noodle');
-  const [price, setPrice] = useState(RESTART_PRICE_LABEL);
-  const [mock, setMock] = useState(false);
+  const pet = saved?.petName?.trim() || prefs.petName.trim() || 'noodle';
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const input = useRef<TextInput>(null);
@@ -41,14 +39,9 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
     // Serialize saves; navigation and final commit flush the latest draft.
     saving.current = saving.current.catch(() => {}).then(() => updatePrefs({
       onboardingDraft: { step, habitName: habit, habitCadence: cadence, petName: pet },
-    })).catch(() => setError('could not save your draft. please try again.'));
+    })).catch(() => setError('Could not save your draft. Please try again.'));
   }, [step, habit, cadence, pet, updatePrefs]);
 
-  useEffect(() => {
-    let active = true;
-    void getRestartStoreAvailability().then(value => { if (active) { setPrice(value.displayPrice); setMock(value.useMockCheckout); } });
-    return () => { active = false; };
-  }, []);
   useEffect(() => {
     scroll.current?.scrollTo({ y: 0, animated: false });
     if (step !== 1) input.current?.focus();
@@ -61,74 +54,43 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
 
   const next = async () => {
     if (busy) return;
-    const message = step === 0 && !habit.trim() ? 'give your habit a name before continuing.'
-      : step === 2 && !pet.trim() ? 'give your pet a name before continuing.' : '';
+    const message = step === 0 && !habit.trim() ? 'Give your habit a name before continuing.' : '';
     if (message) { setError(message); AccessibilityInfo.announceForAccessibility(message); input.current?.focus(); return; }
     setError('');
-    if (step < 2) { setStep(step + 1); return; }
+    if (step < 1) { setStep(step + 1); return; }
     setBusy(true);
     try {
       await saving.current;
       finished.current = true;
       await startHabitPlan(habit, cadence, pet);
       router.replace('/(tabs)');
-    } catch { finished.current = false; setError('could not start your plan. please try again.'); }
+    } catch { finished.current = false; setError('Could not start your plan. Please try again.'); }
     finally { setBusy(false); }
   };
 
-  return <SafeAreaView style={styles.safe}>
-    <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView ref={scroll} keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
-        <View style={styles.top}>
-          <Text style={styles.hint}>{step + 1} of 3</Text>
-          {step > 0 && <Pressable accessibilityRole="button" disabled={busy} style={styles.link} onPress={() => { setError(''); setStep(step - 1); }}><Text style={styles.linkText}>back</Text></Pressable>}
-        </View>
-        <Text accessibilityRole="header" style={Type.screenTitle}>{['name your habit', 'how often?', pet.trim() ? `meet ${pet.trim().toLowerCase()}.` : 'name your pet'][step]}</Text>
-        {step !== 2 && <Text style={Type.screenDescription}>{['pick one small thing. your pet will show your progress.', 'each check-in restarts the interval.'][step]}</Text>}
-        {step === 0 && <>
-          <TextInput ref={input} autoFocus showSoftInputOnFocus accessibilityLabel="your habit" accessibilityHint="choose a concrete, achievable action" style={[styles.input, styles.habitInput]} value={habit} onChangeText={setHabit} maxLength={HABIT_NAME_MAX} placeholder="e.g. read 10 pages" placeholderTextColor={Colors.textMuted} returnKeyType="next" onSubmitEditing={() => void next()} />
-          <View style={styles.habitSuggestions}>{['meditate', 'run', 'read 10 pages'].map(value => <Pressable key={value} accessibilityRole="button" accessibilityHint="fills your habit field so you can edit it" style={styles.tagTarget} onPress={() => { setHabit(value); setError(''); input.current?.focus(); }}><View style={styles.tag}><Text style={styles.tagText}>{value}</Text></View></Pressable>)}</View>
-        </>}
-        {step === 1 && <>
-          <View accessibilityRole="radiogroup" accessibilityLabel="check-in interval" style={styles.suggestions}>
-            {CADENCE_OPTIONS.map(option => <Pressable key={option.id} accessibilityRole="radio" aria-checked={cadence === option.id} accessibilityState={{ checked: cadence === option.id }} style={({ pressed }) => [styles.option, cadence === option.id && styles.selected, pressed && styles.optionPressed]} onPress={() => setCadence(option.id)}>
-              <Text style={[styles.optionText, cadence === option.id && styles.selectedText]}>{{ daily: 'every 24 hours', every2days: 'every 48 hours', weekly: 'every 7 days' }[option.id]}</Text>
-            </Pressable>)}
-          </View>
-        </>}
-        {step === 2 && <>
-          <View accessible accessibilityLabel={`${pet.trim() || 'your pet'}, with three hearts`} style={styles.pet}><LineArtPet mood="okay" strokeColor={prefs.petColor} displayHeight={130} hat={prefs.petHat} /><PetLives lives={3} color={prefs.petColor} size={24} /></View>
-          <TextInput ref={input} accessibilityLabel="pet name" style={styles.input} value={pet} onChangeText={setPet} maxLength={40} returnKeyType="done" onSubmitEditing={() => void next()} />
-          <Text style={Type.screenDescription}>check-ins refill three hearts. each missed interval costs one. lose all three and your pet dies. restarting costs {price.toLowerCase()}{mock ? ' (test checkout here)' : ''}. “let’s start” starts the clock.</Text>
-        </>}
-        {error ? <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.error}>{error}</Text> : null}
-        <Pressable accessibilityRole="button" accessibilityState={{ disabled: busy }} disabled={busy} style={styles.primary} onPress={() => void next()}><Text style={styles.primaryText}>{busy ? 'saving...' : step === 2 ? 'let’s start' : 'next'}</Text></Pressable>
-      </ScrollView>
-    </KeyboardAvoidingView>
-  </SafeAreaView>;
+  return <Page ref={scroll} bottomPadding={48}>
+    <View style={styles.top}>
+      <Text style={DesignType.calendar}>{step + 1} of 2</Text>
+      {step > 0 && <Pressable accessibilityRole="button" disabled={busy} style={styles.link} onPress={() => { setError(''); setStep(step - 1); }}><Text style={DesignType.calendar}>Back</Text></Pressable>}
+    </View>
+    <ScreenHeader title={['Name your habit', 'How often?'][step]} />
+    <Text style={DesignType.supporting}>{['Pick one small thing. Your pet will show your progress.', 'Each check-in adds this much time.'][step]}</Text>
+    {step === 0 && <>
+      <TextField ref={input} label="Habit" autoFocus accessibilityHint="Choose a concrete, achievable action" value={habit} onChangeText={setHabit} maxLength={HABIT_NAME_MAX} placeholder="E.g. read 10 pages" returnKeyType="next" onSubmitEditing={() => void next()} />
+      <View style={styles.habitSuggestions}>{['meditate', 'run', 'read 10 pages'].map(value => <Pressable key={value} accessibilityRole="button" accessibilityHint="Fills your habit field so you can edit it" style={styles.tagTarget} onPress={() => { setHabit(value); setError(''); input.current?.focus(); }}><Text style={[DesignType.calendar, { textDecorationLine: 'underline' }]}>{value}</Text></Pressable>)}</View>
+    </>}
+    {step === 1 && <View accessibilityRole="radiogroup" accessibilityLabel="Check-in interval" style={{ gap: 12 }}>
+      {CADENCE_OPTIONS.map(option => <SelectionOption key={option.id} label={{ daily: 'Every 24 hours', every2days: 'Every 48 hours', weekly: 'Every 7 days' }[option.id]} selected={cadence === option.id} accessibilityRole="radio" accessibilityState={{ checked: cadence === option.id }} onPress={() => setCadence(option.id)} />)}
+    </View>}
+    {error ? <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={DesignType.supporting}>{error}</Text> : null}
+    <Button label={step === 1 ? 'Let’s start' : 'Next'} state={busy ? 'loading' : 'default'} onPress={() => void next()} />
+  </Page>;
 }
+
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.stateTodoBg }, flex: { flex: 1 },
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.bg },
-  content: { padding: Spacing.lg, paddingBottom: Spacing.xxl, gap: Spacing.md, width: '100%', maxWidth: 680, alignSelf: 'center' },
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  hint: { fontFamily: Slab.regular, fontSize: FontSize.sm, color: Colors.textSecondary, lineHeight: 22 },
-  input: { backgroundColor: Colors.card, borderColor: Colors.ink, borderWidth: Border.thick, borderRadius: Radius.md, padding: Spacing.md, minHeight: 56, fontFamily: Slab.regular, fontSize: FontSize.md, color: Colors.ink },
-  habitInput: { marginTop: 20 },
   habitSuggestions: { flexDirection: 'row', flexWrap: 'wrap', columnGap: Spacing.sm, marginTop: -Spacing.sm },
   tagTarget: { minHeight: 44, justifyContent: 'center', maxWidth: '100%' },
-  tag: { paddingHorizontal: 12, paddingVertical: 6, borderWidth: Border.thin, borderColor: 'rgba(0, 0, 0, 0.18)', borderRadius: Radius.full, backgroundColor: 'rgba(0, 0, 0, 0.035)' },
-  tagText: { fontFamily: Slab.regular, fontSize: FontSize.xs, color: Colors.textSecondary },
-  suggestions: { gap: Spacing.sm, marginTop: 20 },
-  option: { padding: Spacing.md, minHeight: 48, borderWidth: Border.base, borderColor: Colors.ink, borderRadius: Radius.md, backgroundColor: Colors.card },
-  optionText: { fontFamily: Slab.bold, fontSize: FontSize.md, color: Colors.ink },
-  selected: { backgroundColor: Colors.ink },
-  selectedText: { color: Colors.white },
-  optionPressed: { opacity: 0.7 },
-  pet: { alignItems: 'center', gap: Spacing.sm, paddingVertical: Spacing.sm },
-  error: { fontFamily: Slab.bold, fontSize: FontSize.md, color: '#B00020' },
-  primary: { marginTop: Spacing.sm, backgroundColor: Colors.ink, borderRadius: Radius.md, minHeight: 56, padding: Spacing.md, alignItems: 'center' },
-  primaryText: { fontFamily: Slab.black, fontSize: FontSize.xl, color: Colors.white, textAlign: 'center' },
   link: { paddingVertical: Spacing.sm, minHeight: 44, justifyContent: 'center' },
-  linkText: { fontFamily: Slab.bold, fontSize: FontSize.sm, color: Colors.ink, textDecorationLine: 'underline' },
 });

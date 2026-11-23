@@ -1,5 +1,23 @@
 # Design system changes
 
+## 0.2.1 — 2026-11-23
+
+Updated the existing pet-artwork idle variant in place from Business Visual `4792:1906`, preserving its component ID/key, exact native paths, transforms and textured brush profiles. Setup and idle now share the wider smiling pose. All four poses expose the existing optional hat property with default false; application logic after signup must explicitly enable it. Other outcome drawings remain unchanged.
+
+Published pet-artwork, pet-stage and their calendar dependencies. Accepted the update in Business Visual and verified all five existing setup/idle instances at normal, narrow and long-name sizes: remote connections preserved, new proportions and no visible hat. The user’s reference screen remains untouched.
+
+The implementation chat updated the shared app, removed the intro’s baked-in hat, separated the progressive-failure hat, and adjusted accessory placement. Web and iPhone setup were inspected; 115 tests, web export and iOS bundle passed. Seven existing type errors remain, and Android runtime was not rerun. App changes remain local alongside existing intro work; this patch does not claim deployment. See [pet-update.json](pet-update.json).
+
+## 0.2.0 — 2026-11-18
+
+Reconciled Darya’s approved application changes in the published Figma library and connected designs. Original capitalization replaces normalized lowercase; pet scenes retain 382×438 proportions, setup places the name above a hatless pet, and long names grow safely. Setup now exposes Check in every with 24h / 48h / Weekly. Added the shared white SelectionOption family, wrapped SelectionTile around it, corrected colour circles/dots, and retained explicit focus/disabled states.
+
+Rebuilt the calendar as transparent shared outlined cells with a month-year title, real Monday-first dates, an explicit missing state and saved-month links. Renamed month-chip to month-link without changing its ID/key. Removed coupon/detail UI from current examples and documented the approved preserved-data boundary.
+
+The library retains 69 variables and eight base typography styles, with nine Figma-only responsive styles. It now has 13 component families, 54 variants and five supporting assets. Reviewed 15 library screens and 15 connected screens at 320/350/430px plus 1024px web. All 302 consumer instances remain remote; the seven original reference frames remain intact.
+
+Verified 297 bound solid paints and 61 styled text layers in main definitions. Corrected stale white field and coral artwork fallback colours without changing token bindings or vector geometry. Accepted an existing calendar update with its override preserved; resolved stale builder imports through current remote IDs. See reconciliation-verification.json for evidence. Application adoption remains pending the shared disabled-selection correction and remaining device/accessibility checks; the latest implementation run reported 96 passing tests. No app source, merge, deployment or account upgrade was part of this reconciliation.
+
 ## 0.1.1 — 2026-11-18
 
 Published a compatible correction restoring the original ground vector (`4727:180`) inside `pet-stage`'s idle variant. The path remains editable and its stroke is bound to `color/art/ink`. Figma published the updated pet-stage and its calendar dependencies; no component properties or token contracts changed.
@@ -25,3 +43,8 @@ Extensions beyond the source: hover/focus/pressed/disabled/loading/error states,
 Moved the file from Business Drafts into Team project and published all 69 variables, nine styles and 17 component assets. The subsequent patch release records the completed cross-file import and update test.
 
 The public app repository was inspected: `darisobal/tamagotchi-2.0`, main at `738299e` at the recorded inspection. Open PRs #1 and #3 were left untouched. The small design registry stays with the app; the visual library is maintained separately in Figma.
+
+## Historical application correction — before v0.2.0
+
+- Preserve the original 382 × 438 card proportions across all states and calendar previews.
+- Supersede the lowercase-only application rule with original Figma capitalization at the user's request. Published library version remains 0.1.1.

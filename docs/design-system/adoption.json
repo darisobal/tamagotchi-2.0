@@ -1,0 +1,120 @@
+{
+  "libraryVersion": "0.2.0",
+  "date": "2026-11-18",
+  "branch": "codex/tamagotchi-redesign",
+  "setupCommit": "9aa1e65",
+  "status": "v0.2.0-adopted-runtime-review-partial",
+  "complete": false,
+  "sharedMobileWebComponents": true,
+  "tests": {
+    "suitesPassed": 12,
+    "testsPassed": 93,
+    "evidence": "18 November 2026 direct home flow: 93 tests pass; removed three obsolete randomized confirmation-copy tests."
+  },
+  "productionExports": {
+    "web": "passed",
+    "ios": "passed",
+    "android": "passed"
+  },
+  "typecheck": {
+    "passed": false,
+    "baselineErrors": 9,
+    "remainingBaselineErrors": 7,
+    "newErrors": 0
+  },
+  "webVisualWidths": [
+    320,
+    430,
+    1024
+  ],
+  "nativeRuntimeReview": "iPhone 16 Plus / iOS 18.6 checked: setup card and controls, colour/interval selection, long text and earlier onboarding/check-in/history checks; user confirmed manual scrolling works on 2026-11-18. Android and screen-reader review pending",
+  "codeConnect": "unpublished; unavailable on connected Professional plan; optional to the working MCP setup",
+  "liveCloudAndStoreTransactions": "not exercised",
+  "details": "ADOPTION.md",
+  "componentCorrespondence": "application-components.json",
+  "artworkProvenance": "artwork-provenance.json",
+  "merged": false,
+  "deployed": false,
+  "pullRequest": "https://github.com/darisobal/tamagotchi-2.0/pull/7",
+  "cardProportionsReview": {
+    "states": [
+      "setup",
+      "idle",
+      "success",
+      "missed",
+      "double-success"
+    ],
+    "webWidths": [
+      320,
+      430
+    ],
+    "wideSuccessWidth": 1024,
+    "ios": "all five states visually checked",
+    "sourceCanvas": [
+      382,
+      438
+    ],
+    "uniformScaling": true
+  },
+  "capitalization": "Original Figma casing and supporting-flow sentence case are now reconciled in published v0.2.0.",
+  "nativeScrolling": {
+    "status": "confirmed by user",
+    "date": "2026-11-18",
+    "method": "Manual click-and-hold upward drag in Simulator",
+    "evidence": "validation/ios-scroll-confirmed.png"
+  },
+  "responsiveTypography": {
+    "sourceWidth": 430,
+    "verifiedWebWidths": [
+      320,
+      350,
+      430
+    ],
+    "minimumReadingFont": 16,
+    "minimumControlTarget": 44,
+    "nativeFontScaling": "preserved",
+    "minimumCalendarFont": 10
+  },
+  "targetLibraryVersion": "0.2.1",
+  "designReconciledVersion": "0.2.1",
+  "productionExportEvidence": "Historical implementation exports, not rerun during Figma reconciliation.",
+  "approvedFlowChanges": [
+    "Setup: Name, Colour, Hair, Clothes, Habit, Check in every; 24h / 48h / Weekly in one row.",
+    "Calendar has a month-year title and shared outlined cells on the page gradient.",
+    "Only saved-month links grouped by year; no Logs/Coupons tabs or check-in detail/delete UI.",
+    "Coupon earning and reward overlay removed; existing persisted data retained.",
+    "Home hearts/detail expansion removed; game and restart logic retained."
+  ],
+  "remainingDesignMismatches": [
+    {
+      "component": "SelectionOption",
+      "source": "src/design-system/Controls.tsx",
+      "issue": "Disabled background uses gray-disabled; approved shared selection surface remains white in every state."
+    }
+  ],
+  "reconciliationEvidence": "reconciliation-verification.json",
+  "selectionDisabledReview": {
+    "background": "White in all selection states, matching published v0.2.0",
+    "web": "Verified selected, unselected, disabled-selected, disabled-unselected and tile; disabled semantics preserved; keyboard focus reaches enabled option",
+    "native": "Shared code path; dedicated disabled-state runtime review pending"
+  },
+  "directHomeCheckIn": {
+    "question": "Always visible for living pets, including saved-success states and reopening",
+    "confirmationScreen": "Removed along with unused copy and tests",
+    "verified": [
+      "Web: question remains after reload with saved success",
+      "Web: negative answer keeps question and actions",
+      "iPhone simulator: one tap saves and changes pet from success to double success without confirmation"
+    ],
+    "figma": "Interaction examples pending update",
+    "negativeAnswer": "Ja lox shows the red missed pet card and plain reference message; both actions remain; successful save clears the temporary state.",
+    "successAnswer": "Successful save shows celebration with Continue. Continue returns to the top of Home with idle/standing pet and question; saved history is preserved. Reload starts with the question. Verified web and iPhone simulator."
+  },
+  "petPatch": {
+    "libraryVersion": "0.2.1",
+    "date": "2026-11-23",
+    "status": "implemented-locally",
+    "deployed": false,
+    "evidence": "pet-update.json"
+  }
+}

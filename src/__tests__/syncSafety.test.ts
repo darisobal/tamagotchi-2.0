@@ -16,7 +16,7 @@ const snapshot = { prefs: normalizeUserPrefs({}), tracks: [], checkIns: [] };
 beforeEach(() => jest.clearAllMocks());
 test('network failure is not an empty cloud account', async () => {
   mockSingle.mockResolvedValue({ error: { message: 'offline' }, data: null });
-  await expect(pullUserSnapshot('user')).rejects.toThrow('could not load');
+  await expect(pullUserSnapshot('user')).rejects.toThrow('Could not load');
   mockSingle.mockResolvedValue({ error: null, data: null });
   await expect(pullUserSnapshot('user')).resolves.toBeNull();
 });
