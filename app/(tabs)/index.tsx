@@ -1,3 +1,4 @@
+import { advanceClock, localDay, formatHabitTimer } from '../../src/habitClock';
 import { ResponsiveText as Text, useDesignScale } from '../../src/design-system/ResponsiveText';
 import React, { useCallback, useRef, useState } from 'react';
 import { Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
@@ -17,7 +18,7 @@ import RestartPaywall from '../../src/RestartPaywall';
 
 export default function HomeScreen() {
   const scale = useDesignScale();
-  const { prefs, mood, refresh, doCheckIn, checkIns, updatePrefs, syncNotice } = useAppState();
+  const { prefs, mood, refresh, doCheckIn, doFail, tracks, now, checkIns, updatePrefs, syncNotice } = useAppState();
   const { user, isConfigured } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -25,18 +26,21 @@ export default function HomeScreen() {
   const submitting = useRef(false);
   const pageRef = useRef<ScrollView>(null);
   const [restartVisible, setRestartVisible] = useState(false);
-  const [answer, setAnswer] = useState<'question' | 'missed' | 'success'>('question');
-  const notYet = answer === 'missed';
-  const celebrating = answer === 'success';
+  const clock = tracks[0]?.habitClock ? advanceClock(tracks[0].habitClock, now) : null;
+  const today = localDay(now);
+  const celebrating = clock?.rewardedDay === today && mood !== 'dead';
+  const notYet = !celebrating && clock?.lastFailureDay === today;
+  const failures = clock?.failures ?? 0;
+  const timer = formatHabitTimer(mood === 'dead' ? 0 : Math.max(0, (clock?.deadlineAt ?? now) - now));
   const bottomPadding = useFloatingTabBarExtraPadding();
   const habitName = (prefs.habitName || DEFAULT_HABIT_NAME).trim();
   const petName = prefs.petName.trim();
-  const stage: PetStageState = notYet || mood === 'dead' || mood === 'sad' ? 'missed'
+  const stage: PetStageState = !celebrating && failures > 0 ? 'missed'
     : celebrating ? successStageForDay(checkIns) : 'idle';
   const title = mood === 'dead' ? 'Time to start again.'
     : notYet ? 'Nu ty i LOX!\nSHAME\non you!'
     : celebrating ? (stage === 'double-success' ? 'DOUBLE\nSuccess!\nKeep going!' : 'You’re real\ngangsta!\nWooooooop!')
-    : prefs.habitCadence === 'daily' ? 'Did you manage today?' : 'Did you manage your goal?';
+    : 'Did you manage today?';
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -47,10 +51,17 @@ export default function HomeScreen() {
     if (submitting.current) return;
     submitting.current = true;
     setBusy(true); setError(null);
-    try { await doCheckIn(MAIN_TRACK, 'medium', null); setAnswer('success'); }
+    try { await doCheckIn(MAIN_TRACK, 'medium', null); pageRef.current?.scrollTo({ y: 0, animated: false }); }
     catch (e) { setError(e instanceof Error ? e.message : 'Could not save your check-in. Try again.'); }
     finally { submitting.current = false; setBusy(false); }
   }, [doCheckIn]);
+  const fail = async () => {
+    if (submitting.current) return;
+    submitting.current = true; setBusy(true); setError(null);
+    try { await doFail(); pageRef.current?.scrollTo({ y: 0, animated: false }); }
+    catch { setError('Could not save this result. Try again.'); }
+    finally { submitting.current = false; setBusy(false); }
+  };
   const beginCheckIn = () => {
     if (submitting.current) return;
     setError(null);
@@ -61,16 +72,17 @@ export default function HomeScreen() {
   return <>
     <Page ref={pageRef} bottomPadding={bottomPadding + 24} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Palette.black} />}>
       <ScreenHeader title={`Day ${planDayNumber(prefs.planStartedAt, checkIns)}`} />
-      {!notYet && !celebrating && prefs.petType === 'selfie' && prefs.customSprite ? <View style={styles.selfie}><PixelPet petType="selfie" mood={mood} customSprite={prefs.customSprite} color={prefs.petColor} pixelSize={7} /></View>
-        : <PetStage hair={prefs.petHair} clothes={prefs.petClothes} state={stage} color={prefs.petColor} name={petName} />}
+      {failures === 0 && !celebrating && prefs.petType === 'selfie' && prefs.customSprite ? <View style={styles.selfie}><PixelPet petType="selfie" mood={mood} customSprite={prefs.customSprite} color={prefs.petColor} pixelSize={7} /></View>
+        : <PetStage failures={failures} timer={timer} hair={prefs.petHair} clothes={prefs.petClothes} state={stage} color={prefs.petColor} name={petName} />}
+      {stage !== 'idle' && mood !== 'dead' ? <Text style={[DesignType.calendar, { textAlign: 'center', fontSize: 16, lineHeight: 22 }]}>{timer}</Text> : null}
       <Pressable style={{ marginTop: (stage === 'idle' ? -70 : 12) * scale, marginBottom: ((notYet || celebrating) ? 20 : -12) * scale }} onPress={() => router.navigate('/(tabs)/settings?focusHabit=1')} accessibilityRole="button" accessibilityLabel={`Edit goal: ${habitName}`}>
         <Feedback surface={notYet || celebrating ? 'plain' : 'card'} title={title} goal={`Goal: ${habitName}`} />
       </Pressable>
       {error ? <Text accessibilityRole="alert" style={DesignType.supporting}>{error}</Text> : null}
       {syncNotice ? <Text accessibilityLiveRegion="polite" style={DesignType.calendar}>{syncNotice}</Text> : null}
-      {celebrating ? <Button label="Continue" onPress={() => { setAnswer('question'); pageRef.current?.scrollTo({ y: 0, animated: false }); }} />
+      {celebrating ? null
         : mood === 'dead' ? <Button label="Start again" onPress={beginCheckIn} state={busy ? 'loading' : 'default'} />
-        : <CheckInActions negative="Ja lox" positive="I did it" onNegative={() => { if (!submitting.current) { setError(null); setAnswer('missed'); } }} onPositive={beginCheckIn} state={busy ? 'submitting' : 'ready'} />}
+        : <CheckInActions negative="Ja lox" positive="I did it" onNegative={() => void fail()} onPositive={beginCheckIn} state={busy ? 'submitting' : 'ready'} />}
       {!user && isConfigured && checkIns.length > 0 && !prefs.accountPromptDismissed && <View style={styles.account}>
         <Text style={DesignType.supporting}>Save your progress across devices.</Text>
         <Button label="Save my progress" onPress={() => router.push('/auth')} />

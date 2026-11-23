@@ -40,6 +40,7 @@ export interface CheckIn {
 }
 
 export interface TrackState {
+  habitClock?: import('./habitClock').HabitClock;
   trackType: TrackType;
   level: number; // 0–100
   lastCheckInAt: string | null; // ISO string
@@ -199,6 +200,7 @@ export const HABIT_CADENCE_MS: Record<HabitCadence, number> = {
 export function normalizeTrackState(partial: Partial<TrackState> & { trackType: TrackType }): TrackState {
   return {
     trackType: partial.trackType,
+    habitClock: partial.habitClock,
     level: partial.level ?? 50,
     lastCheckInAt: partial.lastCheckInAt ?? null,
     streak: partial.streak ?? 0,

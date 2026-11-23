@@ -97,7 +97,7 @@ export default function RestartPaywall({ visible, onClose, onUnlocked }: Props) 
     <Page>
       <View style={{ alignItems: 'flex-end' }}><CloseButton onPress={onClose} accessibilityLabel="Close" /></View>
       <ScreenHeader title="Restart?" size="compact" />
-      <Text style={DesignType.supporting}>Restart with three hearts.</Text>
+      <Text style={DesignType.supporting}>Restart with every part restored.</Text>
       {loading ? <ActivityIndicator accessibilityLabel="Loading price" color={Palette.black} /> : <>
         {useMock && <>
           <Text style={DesignType.calendar}>Test mode — use card {MOCK_TEST_CARD.number}. No charge.</Text>

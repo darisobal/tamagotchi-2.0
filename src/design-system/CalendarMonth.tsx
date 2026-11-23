@@ -1,3 +1,4 @@
+import { FailureRecord } from '../habitClock';
 import { ResponsiveText as Text, useDesignScale } from './ResponsiveText';
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -6,16 +7,16 @@ import { CheckIn } from '../types';
 import { DesignType, Palette } from './tokens';
 import { PetStage } from './PetStage';
 
-export function CalendarDay({ day, date, state = 'missing', paid = false, lastColumn = false }: { day: number; date: string; state?: CalendarStatus; paid?: boolean; lastColumn?: boolean }) {
+export function CalendarDay({ day, date, state = 'missing', paid = false, failures, lastColumn = false }: { day: number; date: string; state?: CalendarStatus; failures?: number; paid?: boolean; lastColumn?: boolean }) {
   const scale = useDesignScale();
-  const status = state === 'missing' ? 'No check-in recorded' : state === 'future' ? 'Future date' : state === 'double-success' ? 'Multiple check-ins' : state === 'success' ? 'Check-in completed' : 'Missed check-in';
+  const status = state === 'missing' ? 'No check-in recorded' : state === 'future' ? 'Future date' : state === 'double-success' ? 'Multiple check-ins' : state === 'success' ? 'Check-in completed' : `Missed check-in, ${failures === 5 ? 'pet died' : `${failures ?? 1} missing ${!failures || failures === 1 ? 'part' : 'parts'}`}`;
   const dateLabel = new Date(`${date}T12:00:00`).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
   return <View accessible accessibilityLabel={`${dateLabel}, ${status}${paid ? ', paid restart' : ''}`} style={[styles.day, { width: (lastColumn ? 58 : 57) * scale, height: 81 * scale, borderWidth: 3 * scale, borderRadius: 20 * scale, backgroundColor: state === 'double-success' ? Palette.lavender : state === 'missed' ? Palette.coral : 'transparent' }]}>
     <Text designMinimumSize={10} style={[DesignType.calendar, styles.number, { left: 5 * scale, top: 5 * scale }]}>{day}</Text>
-    {state === 'success' || state === 'double-success' || state === 'missed' ? <View style={styles.art}><PetStage state={state} width={382 / 7 * scale} compact calendar /></View> : null}
+    {state === 'success' || state === 'double-success' || state === 'missed' ? <View style={styles.art}><PetStage failures={failures} state={state} width={382 / 7 * scale} compact calendar /></View> : null}
   </View>;
 }
-export function CalendarMonth({ year, month, entriesByDay }: { year: number; month: number; entriesByDay: Record<string, CheckIn[]> }) {
+export function CalendarMonth({ year, month, entriesByDay, failuresByDay = {} }: { year: number; month: number; entriesByDay: Record<string, CheckIn[]>; failuresByDay?: Record<string, FailureRecord> }) {
   const scale = useDesignScale();
   const grid = useMemo(() => buildMonthGrid(year, month), [year, month]);
   const title = new Date(year, month, 1).toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
@@ -24,7 +25,7 @@ export function CalendarMonth({ year, month, entriesByDay }: { year: number; mon
     <View style={styles.row}>{['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((label, index) => <Text key={index} designMinimumSize={10} style={[DesignType.calendar, styles.weekday, { marginTop: 16 * scale, marginBottom: 15 * scale }]}>{label}</Text>)}</View>
     {Array.from({ length: grid.length / 7 }, (_, row) => <View key={row} style={[styles.row, { height: (row === grid.length / 7 - 1 ? 81 : 78) * scale }]}>
       {grid.slice(row * 7, row * 7 + 7).map((cell, index) => <View key={cell?.date ?? `empty-${index}`} style={[styles.cell, { width: (index === 6 ? 58 : 54) * scale }]}>
-        {cell ? <CalendarDay lastColumn={index === 6} day={cell.day} date={cell.date} state={calendarStatus(cell.date, entriesByDay[cell.date])} paid={entriesByDay[cell.date]?.some(entry => entry.isPaidRestart)} /> : null}
+        {cell ? <CalendarDay lastColumn={index === 6} day={cell.day} date={cell.date} state={calendarStatus(cell.date, entriesByDay[cell.date], undefined, failuresByDay[cell.date])} failures={failuresByDay[cell.date]?.level} paid={entriesByDay[cell.date]?.some(entry => entry.isPaidRestart)} /> : null}
       </View>)}
     </View>)}
   </View>;

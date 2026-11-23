@@ -44,3 +44,13 @@ test('legacy profiles retain history and do not re-enter onboarding', async () =
   expect((await profile.getUserPrefs()).onboardingDone).toBe(true);
   expect((await profile.getAllCheckIns())[0].id).toBe('kept');
 });
+
+test('banked time and failures survive web reload and snapshot import', async () => {
+  let storage = reload().getStorageForUser(null);
+  const state = await storage.getTrackState('main');
+  const habitClock = { deadlineAt: 1900000000000, periodMs: 86400000, failures: 1, lastFailureDay: '2030-03-17', rewardedDay: null, history: [{ at: 1899999900000, day: '2030-03-17', level: 1 }] };
+  await storage.saveCheckIn({ id: 'clock', trackType: 'main', intensity: 'medium', note: null, timestamp: '2030-03-18T10:00:00Z' }, { ...state, habitClock });
+  storage = reload().getStorageForUser(null);
+  expect((await storage.getTrackState('main')).habitClock).toEqual(habitClock);
+  expect(await storage.getAllCheckIns()).toHaveLength(1);
+});

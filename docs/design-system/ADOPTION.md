@@ -150,3 +150,13 @@ The shared idle pet moves gently ±6 artwork pixels, taking 3 seconds per direct
 ### Double-success decoration motion — 18 November 2026
 
 Original d0ef1 vectors are split losslessly into rainbow and three heart layers. Rainbow breathes over 4.2 seconds; hearts pulse, bob up to 6 artwork pixels and tilt 3–5 degrees on staggered 2.3–3 second loops. Shared native/web Animated implementation; reduced motion and calendar/compact scenes retain the static original. Web transforms and iPhone Simulator rendering verified, production export passed. Type checking reports only the seven existing legacy SVG/widget errors. Sites version 15; Figma motion reconciliation remains pending.
+
+### Banked countdown and five failure stages — 23 November 2026
+
+Home shows a small 16px countdown under the idle ground line (under the card for result states). Balances of 48 hours or more use whole days; smaller balances display hours, minutes and seconds. One successful check-in per local calendar day adds the selected 24h/48h/week interval to the remaining balance, with no upper cap. The success phrase replaces the question and actions until local midnight, including after reopening. This supersedes the earlier same-day repeat/Continue flow; legacy double-success history remains visible.
+
+An expired deadline records a failure and advances the interval, including while the app was closed. Explicit failure and expiry cannot remove two parts on the same local date. Consecutive failures detach left leg, right leg, left arm, right arm, then head; the fifth state collapses the body. Success restores all parts. Original SVG paths are separated into shared layers; reduced-motion and calendar artwork show static fallen positions. Existing restart/payment behavior is retained.
+
+Failure records persist with the banked deadline in the track snapshot on web and native SQLite. Check-in and updated clock are saved together. Legacy profiles keep their last deadline and check-in history. Cadence changes keep already-banked time and apply the new duration to subsequent intervals/rewards. Progress includes failure-only months and renders the recorded failure stage; later success on the same date shows recovery, with the failure record retained.
+
+Validation: 111 tests passed, including time accumulation for all cadences, calendar-midnight separation, duplicate suppression, offline expiry, recovery, calendar outcomes, and native/web persistence. Fresh web flow verified timer → failure → Progress → success → reload; iPhone Simulator verified automatic missed stages and restored success with 24 hours added. Existing seven legacy SVG/widget TypeScript errors remain unchanged. Figma reconciliation is pending.

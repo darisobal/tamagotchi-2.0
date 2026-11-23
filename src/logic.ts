@@ -1,3 +1,4 @@
+import { advanceClock, FAILURE_LIMIT } from './habitClock';
 import {
   TrackState,
   TrackType,
@@ -26,6 +27,7 @@ export function computeLives(missedDeadlines: number, hasCheckIn: boolean): numb
 }
 
 export function livesToMood(lives: number): Mood {
+  if (lives >= 3) return 'happy';
   switch (lives) {
     case 3:
       return 'happy';
@@ -105,7 +107,14 @@ export function computeAllHabits(
   planStartedAt: string | null = null,
 ): ComputedHabit[] {
   return tracks.map((t) =>
-    computeHabitStatus(t.trackType, t.lastCheckInAt, nowMs, periodMs, planStartedAt),
+    t.habitClock ? (() => {
+      const clock = advanceClock(t.habitClock, nowMs);
+      const lives = FAILURE_LIMIT - clock.failures;
+      const remaining = lives ? Math.max(0, clock.deadlineAt - nowMs) : 0;
+      return { trackType: t.trackType, progress: Math.min(1, remaining / clock.periodMs),
+        timeRemainingMs: remaining, lives, status: lives === 0 ? 'OVERDUE' as const : clock.failures ? 'RED' as const : 'GREEN' as const,
+        lastCheckInAt: t.lastCheckInAt, planStartedAt, nextDeadlineAt: lives ? new Date(clock.deadlineAt).toISOString() : null };
+    })() : computeHabitStatus(t.trackType, t.lastCheckInAt, nowMs, periodMs, planStartedAt),
   );
 }
 

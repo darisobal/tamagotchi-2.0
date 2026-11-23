@@ -74,7 +74,7 @@ function Journey({ prefs, updatePrefs, startHabitPlan }: Pick<ReturnType<typeof 
       {step > 0 && <Pressable accessibilityRole="button" disabled={busy} style={styles.link} onPress={() => { setError(''); setStep(step - 1); }}><Text style={DesignType.calendar}>Back</Text></Pressable>}
     </View>
     <ScreenHeader title={['Name your habit', 'How often?'][step]} />
-    <Text style={DesignType.supporting}>{['Pick one small thing. Your pet will show your progress.', 'Each check-in restarts the interval.'][step]}</Text>
+    <Text style={DesignType.supporting}>{['Pick one small thing. Your pet will show your progress.', 'Each check-in adds this much time.'][step]}</Text>
     {step === 0 && <>
       <TextField ref={input} label="Habit" autoFocus accessibilityHint="Choose a concrete, achievable action" value={habit} onChangeText={setHabit} maxLength={HABIT_NAME_MAX} placeholder="E.g. read 10 pages" returnKeyType="next" onSubmitEditing={() => void next()} />
       <View style={styles.habitSuggestions}>{['meditate', 'run', 'read 10 pages'].map(value => <Pressable key={value} accessibilityRole="button" accessibilityHint="Fills your habit field so you can edit it" style={styles.tagTarget} onPress={() => { setHabit(value); setError(''); input.current?.focus(); }}><Text style={[DesignType.calendar, { textDecorationLine: 'underline' }]}>{value}</Text></Pressable>)}</View>

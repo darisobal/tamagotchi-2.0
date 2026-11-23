@@ -93,6 +93,7 @@ export function repositoryForUser(userId: string | null) {
     updateUserPrefs: (prefs: Partial<UserPrefs>) => storage.updateUserPrefs(prefs),
     updateTrackState: (state: TrackState) => storage.updateTrackState(state),
     insertCheckIn: (row: CheckIn) => storage.insertCheckIn(row),
+    saveCheckIn: (row: CheckIn, state: TrackState) => storage.saveCheckIn(row, state),
     markCouponCollected: (id: string) => storage.markCouponCollected(id),
     deleteCheckIn: (id: string) => storage.deleteCheckIn(id),
     resetAllData: () => storage.resetAll(),

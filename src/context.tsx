@@ -1,3 +1,4 @@
+import { advanceClock, failClock, initialClock, rewardClock, localDay } from './habitClock';
 import { AppState as NativeAppState, Platform } from 'react-native';
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import {
@@ -39,6 +40,8 @@ interface AppState {
   petMoodInfo: PetMoodInfo;
   computedHabits: ComputedHabit[];
   refresh: () => Promise<void>;
+  doFail: () => Promise<void>;
+  now: number;
   doCheckIn: (trackType: TrackType, intensity: Intensity, note: string | null) => Promise<void>;
   deleteCheckInById: (id: string) => Promise<void>;
   updatePrefs: (prefs: Partial<UserPrefs>) => Promise<void>;
@@ -55,7 +58,7 @@ export function useAppState(): AppState {
   return ctx;
 }
 
-const TICK_INTERVAL_MS = 10_000;
+const TICK_INTERVAL_MS = 1_000;
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading, signOut, passwordRecoveryPending } = useAuth();
@@ -68,6 +71,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [retry, setRetry] = useState(0);
   const syncReady = useRef(false);
   const planStartedRef = useRef<string | null>(null);
+  const [now, setNow] = useState(Date.now());
+  const actionInFlight = useRef(false);
   const [loading, setLoading] = useState(true);
   const [prefs, setPrefs] = useState<UserPrefs>({
     petType: 'dino',
@@ -93,6 +98,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const recompute = useCallback((currentTracks: TrackState[]) => {
     const nowMs = Date.now();
+    setNow(nowMs);
     // Always evaluate the main habit — empty tracks would otherwise blank the home card.
     const tracks =
       currentTracks.length > 0
@@ -141,6 +147,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       repo.getAllCheckIns(),
     ]);
 
+    if (p.onboardingDone) {
+      for (const track of rawTracks) {
+        if (!track.habitClock) {
+          track.habitClock = initialClock(track, habitCadenceToPeriodMs(p.habitCadence), p.planStartedAt ?? null, Date.now());
+          await repo.updateTrackState(track);
+        }
+      }
+    }
     tracksRef.current = rawTracks;
     habitNameRef.current = p.habitName || DEFAULT_HABIT_NAME;
     habitCadenceRef.current = habitCadenceToPeriodMs(p.habitCadence);
@@ -240,6 +254,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const doCheckIn = useCallback(
     async (trackType: TrackType, intensity: Intensity, note: string | null) => {
       if (loading || loadedIdentity !== identity || !prefs.onboardingDone) throw new Error('Your plan is still loading. Try again.');
+      if (actionInFlight.current) return;
+      actionInFlight.current = true;
+      try {
       const now = new Date();
       const state = tracksRef.current.find((t) => t.trackType === trackType);
       if (!state) return;
@@ -266,17 +283,34 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         couponCollected: true,
       };
 
-      const updatedState = processCheckIn(state, intensity, now, isPaidRestart);
+      const clock = initialClock(state, habitCadenceRef.current, planStartedRef.current, now.getTime());
+      if (!isPaidRestart && clock.rewardedDay === localDay(now.getTime())) return;
+      const updatedState = { ...processCheckIn(state, intensity, now, isPaidRestart),
+        habitClock: rewardClock(clock, now.getTime(), habitCadenceRef.current, isPaidRestart) };
 
       await markPending();
-      await repo.insertCheckIn(newCheckIn);
-      await repo.updateTrackState(updatedState);
+      await repo.saveCheckIn(newCheckIn, updatedState);
       await refresh();
       await syncToCloud();
-
+      } finally { actionInFlight.current = false; }
     },
     [refresh, syncToCloud, repo, markPending, loading, loadedIdentity, identity, prefs.onboardingDone]
   );
+
+  const doFail = useCallback(async () => {
+    if (loading || loadedIdentity !== identity || !prefs.onboardingDone || actionInFlight.current) return;
+    actionInFlight.current = true;
+    try {
+      const track = tracksRef.current[0];
+      if (!track) return;
+      const now = Date.now();
+      const clock = failClock(initialClock(track, habitCadenceRef.current, planStartedRef.current, now), now);
+      await markPending();
+      await repo.updateTrackState({ ...track, habitClock: clock });
+      await refresh();
+      await syncToCloud();
+    } finally { actionInFlight.current = false; }
+  }, [loading, loadedIdentity, identity, prefs.onboardingDone, repo, refresh, syncToCloud, markPending]);
 
   const deleteCheckInById = useCallback(
     async (id: string) => {
@@ -313,6 +347,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     async (partial: Partial<UserPrefs>) => {
       const draftOnly = Object.keys(partial).every(key => key === 'onboardingDraft');
       if (!draftOnly) await markPending();
+      if (partial.habitCadence !== undefined) {
+        const periodMs = habitCadenceToPeriodMs(partial.habitCadence);
+        const changed = tracksRef.current.map(track => ({ ...track,
+          habitClock: { ...advanceClock(initialClock(track, habitCadenceRef.current, planStartedRef.current, Date.now()), Date.now()), periodMs } }));
+        for (const track of changed) await repo.updateTrackState(track);
+        tracksRef.current = changed;
+        setTracks(changed);
+      }
       await repo.updateUserPrefs(partial);
       setPrefs((prev) => {
         const next = { ...prev, ...partial };
@@ -377,6 +419,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         computedHabits,
         refresh,
         doCheckIn,
+        doFail,
+        now,
         deleteCheckInById,
         updatePrefs,
         resetAll,

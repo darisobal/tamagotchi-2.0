@@ -1,3 +1,4 @@
+import { FailureRecord } from './habitClock';
 import { CheckIn } from './types';
 import { toDateString } from './logic';
 
@@ -26,9 +27,10 @@ export function groupCheckInsByDay(checkIns: CheckIn[]) {
   return days;
 }
 
-/** No negative check-ins are persisted by the existing app. An absent entry never proves failure. */
-export function calendarStatus(date: string, entries: CheckIn[] = [], today = toDateString(new Date())): CalendarStatus {
+/** Only explicit or deadline failures count; an empty calendar cell is not a failure. */
+export function calendarStatus(date: string, entries: CheckIn[] = [], today = toDateString(new Date()), failure?: FailureRecord): CalendarStatus {
   if (date > today) return 'future';
+  if (failure && !entries.some(entry => Date.parse(entry.timestamp) >= failure.at)) return 'missed';
   if (entries.length > 1) return 'double-success';
   if (entries.length === 1) return 'success';
   return 'missing';
@@ -44,13 +46,21 @@ export function planDayNumber(planStartedAt?: string | null, checkIns: CheckIn[]
 }
 
 /** Only months backed by valid persisted check-ins are navigation destinations. */
-export function loggedMonths(checkIns: CheckIn[]) {
+export function loggedMonths(checkIns: CheckIn[], failures: FailureRecord[] = []) {
   const unique = new Map<string, { year: number; month: number }>();
-  for (const entry of checkIns) {
+  for (const entry of [...checkIns, ...failures.map(failure => ({ timestamp: `${failure.day}T12:00:00` }))]) {
     const date = new Date(entry.timestamp);
     if (!Number.isFinite(date.getTime())) continue;
     const year = date.getFullYear(), month = date.getMonth();
     unique.set(`${year}-${month}`, { year, month });
   }
   return [...unique.values()].sort((a, b) => b.year - a.year || a.month - b.month);
+}
+
+export function groupFailuresByDay(failures: FailureRecord[]) {
+  const days: Record<string, FailureRecord> = {};
+  for (const failure of failures) {
+    if (!days[failure.day] || days[failure.day].at < failure.at) days[failure.day] = failure;
+  }
+  return days;
 }

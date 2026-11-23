@@ -48,4 +48,6 @@ Darya owns product and visual decisions. The design-system agent maintains reusa
 
 Before marking setup ready, verify source provenance, foundations, component contracts, screenshots, bindings, publication, remote imports and an existing-instance update. Record application adoption separately. Minor releases can add components/states; document changed visual behavior explicitly and preserve valid IDs. Use major releases for incompatible public properties. Keep personal details, secrets and temporary asset URLs out of public records.
 
+The 23 November application update adds a banked countdown, daily question reset, five progressive failure states, and failure history in Progress. These rules supersede the earlier repeat-check-in flow; details and Figma reconciliation status are in ADOPTION.md.
+
 Current implementation and validation: [ADOPTION.md](ADOPTION.md), [adoption.json](adoption.json), [application-components.json](application-components.json).
