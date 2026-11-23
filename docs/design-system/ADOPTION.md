@@ -160,3 +160,7 @@ An expired deadline records a failure and advances the interval, including while
 Failure records persist with the banked deadline in the track snapshot on web and native SQLite. Check-in and updated clock are saved together. Legacy profiles keep their last deadline and check-in history. Cadence changes keep already-banked time and apply the new duration to subsequent intervals/rewards. Progress includes failure-only months and renders the recorded failure stage; later success on the same date shows recovery, with the failure record retained.
 
 Validation: 111 tests passed, including time accumulation for all cadences, calendar-midnight separation, duplicate suppression, offline expiry, recovery, calendar outcomes, and native/web persistence. Fresh web flow verified timer → failure → Progress → success → reload; iPhone Simulator verified automatic missed stages and restored success with 24 hours added. Existing seven legacy SVG/widget TypeScript errors remain unchanged. Figma reconciliation is pending.
+
+### Today in Progress — 23 November 2026
+
+The device-local current date uses a 5px coral (#FF7254) outline, compared with the standard 3px black calendar stroke. Cell dimensions, shared edges and 20px corner radius are preserved. The highlight sits above neighbouring strokes and is announced as Today for screen readers. Verified on web and iPhone Simulator.
