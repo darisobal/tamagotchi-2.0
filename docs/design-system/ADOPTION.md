@@ -1,5 +1,9 @@
 # Application adoption — current review
 
+**23 November 2026 — pet patch v0.2.1:** published in Figma and implemented locally in the shared application. Setup/idle match source `4792:1906`; hats default off, with explicit optional control. Web and iPhone setup reviewed, 115 tests passed, web export and iOS bundle passed. Seven existing type errors remain. See [pet-update.json](pet-update.json). This patch has not been deployed.
+
+The following v0.2.0 assessment is historical context.
+
 Figma library **v0.2.0** reconciles Darya’s approved implementation changes on 18 November 2026. The application’s last recorded adopted base version remains v0.1.1 until the developer verifies the new contract. [PR #7](https://github.com/darisobal/tamagotchi-2.0/pull/7) remains in draft; no merge or deployment was made.
 
 The current contract is in [README.md](README.md), the verified [component correspondence](application-components.json), and [reconciliation evidence](reconciliation-verification.json). It supersedes the historical reward, details, month-chip and normalized-copy behavior described below. Setup now uses “Check in every” with 24h / 48h / Weekly; Progress uses the month-year title, shared outlined calendar cells and saved-month links. Coupon earning/overlays and home/progress detail controls are removed; stored data and game/restart logic remain.

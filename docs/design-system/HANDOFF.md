@@ -1,4 +1,6 @@
-# Tamagotchi v0.2.0 handoff
+# Tamagotchi v0.2.1 handoff
+
+Pet patch: v0.2.1 is published and accepted in Business Visual. Setup/idle use source `4792:1906`, with the hat optional and off by default in every pose. The implementation chat has completed the matching local app change and web/iPhone checks. Read [pet-update.json](pet-update.json) for current evidence; application deployment is separate. The earlier v0.2.0 reconciliation notes below are historical context.
 
 The [published library](https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp) and [review screens](https://www.figma.com/design/rVMEM0ZI5L0oyzZtIQibkp?node-id=1-69) now reconcile Darya’s approved implementation changes. [Connected examples](https://www.figma.com/design/eU62JH6PqW61UeGlLaGk7T?node-id=4744-461) use current remote definitions. Read README.md, status.json, components.json, tokens.json and reconciliation-verification.json before further visual changes.
 

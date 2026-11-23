@@ -862,12 +862,12 @@
       "show-hat"
     ],
     "source": [
-      "4727:164",
+      "4792:1906",
       "4727:184",
       "4727:268",
       "4727:240"
     ],
-    "notes": "Original native vector poses. Keep path geometry and scale uniformly. show-hat hides the original idle hat for setup only. No new accessory artwork is supplied. Release verification: 18 November 2026.",
+    "notes": "v0.2.1 · Setup and idle use the smiling pose from Business Visual 4792:1906. Preserve native paths, brush profiles and distinct outcome poses. show-hat defaults false for every pose; application post-signup logic must explicitly enable it. Scale uniformly.",
     "figma": {
       "fileKey": "rVMEM0ZI5L0oyzZtIQibkp",
       "nodeId": "5:2",
@@ -877,7 +877,7 @@
       "propertyDefinitions": {
         "show-hat#27:0": {
           "type": "BOOLEAN",
-          "defaultValue": true
+          "defaultValue": false
         },
         "state": {
           "type": "VARIANT",
@@ -895,8 +895,8 @@
           "id": "5:3",
           "name": "state=idle",
           "key": "9d318592d665123d23c88706eb88a490bad3d82f",
-          "width": 129.54205322265625,
-          "height": 278.17340087890625
+          "width": 175.17457580566406,
+          "height": 266.3598327636719
         },
         {
           "id": "5:4",
@@ -921,7 +921,7 @@
         }
       ]
     },
-    "description": "Original native vector poses. Keep path geometry and scale uniformly. show-hat hides the original idle hat for setup only. No new accessory artwork is supplied. Release verification: 18 November 2026."
+    "description": "v0.2.1 · Setup and idle use the smiling pose from Business Visual 4792:1906. Preserve native paths, brush profiles and distinct outcome poses. show-hat defaults false for every pose; application post-signup logic must explicitly enable it. Scale uniformly."
   },
   {
     "name": "pet-decor/success",
@@ -1082,11 +1082,11 @@
         }
       ]
     },
-    "description": "v0.2.0 · Original 382×438 scene proportions. Scale the entire instance uniformly, never resize width alone. Setup: white bordered card, name at top, no hat; vertical auto-layout grows for long names. Idle is unframed. Success, missed and double-success retain source decoration and circular confetti. Expose name/show-name and nested pet properties. Release verification: 18 November 2026.",
+    "description": "v0.2.1 · Shared 382×438 scene. Setup and idle use the smiling reference pose, centered without distortion. Exposed pet instance controls optional hat, default off. Preserve outcome poses, names and scene decorations; scale whole scenes uniformly.",
     "nestedControls": {
       "pet": "exposed pet-artwork instance; state selects pose"
     },
-    "notes": "v0.2.0 · Original 382×438 scene proportions. Scale the entire instance uniformly, never resize width alone. Setup: white bordered card, name at top, no hat; vertical auto-layout grows for long names. Idle is unframed. Success, missed and double-success retain source decoration and circular confetti. Expose name/show-name and nested pet properties. Release verification: 18 November 2026.",
+    "notes": "v0.2.1 · Shared 382×438 scene. Setup and idle use the smiling reference pose, centered without distortion. Exposed pet instance controls optional hat, default off. Preserve outcome poses, names and scene decorations; scale whole scenes uniformly.",
     "figGround": {
       "nodeId": "19:347",
       "sourceNodeId": "4727:180",

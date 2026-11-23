@@ -75,8 +75,8 @@
     "nativeFontScaling": "preserved",
     "minimumCalendarFont": 10
   },
-  "targetLibraryVersion": "0.2.0",
-  "designReconciledVersion": "0.2.0",
+  "targetLibraryVersion": "0.2.1",
+  "designReconciledVersion": "0.2.1",
   "productionExportEvidence": "Historical implementation exports, not rerun during Figma reconciliation.",
   "approvedFlowChanges": [
     "Setup: Name, Colour, Hair, Clothes, Habit, Check in every; 24h / 48h / Weekly in one row.",
@@ -109,5 +109,12 @@
     "figma": "Interaction examples pending update",
     "negativeAnswer": "Ja lox shows the red missed pet card and plain reference message; both actions remain; successful save clears the temporary state.",
     "successAnswer": "Successful save shows celebration with Continue. Continue returns to the top of Home with idle/standing pet and question; saved history is preserved. Reload starts with the question. Verified web and iPhone simulator."
+  },
+  "petPatch": {
+    "libraryVersion": "0.2.1",
+    "date": "2026-11-23",
+    "status": "implemented-locally",
+    "deployed": false,
+    "evidence": "pet-update.json"
   }
 }

@@ -1,7 +1,7 @@
 {
-  "version": "0.2.0",
-  "updated": "2026-11-18",
-  "stage": "design-reconciled-application-review-pending",
+  "version": "0.2.1",
+  "updated": "2026-11-23",
+  "stage": "pet-patch-published-implemented-locally",
   "source": {
     "fileKey": "eU62JH6PqW61UeGlLaGk7T",
     "pageId": "4727:144",
@@ -114,7 +114,7 @@
     "projectId": "34241739",
     "projectUrl": "https://www.figma.com/files/team/997171912960236676/project/34241739",
     "libraryKey": "lk-5c96e9eaac5c9dce238d521f67ef86efb846991dfd72d34eda5e5eb1750162447e071dbd41e1291c466ed6393381ba042810c60842d59ccc71184f513297da08",
-    "publishedVersion": "0.2.0"
+    "publishedVersion": "0.2.1"
   },
   "readiness": {
     "sourceInspected": true,
@@ -134,7 +134,7 @@
     "setupComplete": true
   },
   "pending": [
-    "Application agent to verify adoption of v0.2.0 and make disabled SelectionOption surfaces white.",
+    "Application pet changes are local and await the next application release.",
     "Android runtime and screen-reader review remain pending."
   ],
   "git": {
@@ -811,7 +811,8 @@
       "visible": true,
       "optionalVisibilityPropertyDetached": true
     },
-    "crossFileEvidence": "reconciliation-verification.json"
+    "crossFileEvidence": "reconciliation-verification.json",
+    "baseRelease": "0.2.0"
   },
   "limitations": [
     "No supplied hair/clothing art: only the accessible None choice.",
@@ -928,5 +929,12 @@
     "initialLibraryVersion": "0.1.1",
     "reconciliationDispatched": "2026-11-18"
   },
-  "applicationAdoption": "adoption.json"
+  "applicationAdoption": "adoption.json",
+  "petPatch": {
+    "evidence": "pet-update.json",
+    "sourceNode": "4792:1906",
+    "application": "implemented-locally-not-deployed",
+    "published": true,
+    "consumerUpdateVerified": true
+  }
 }

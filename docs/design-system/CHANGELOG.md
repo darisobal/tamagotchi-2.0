@@ -1,5 +1,13 @@
 # Design system changes
 
+## 0.2.1 — 2026-11-23
+
+Updated the existing pet-artwork idle variant in place from Business Visual `4792:1906`, preserving its component ID/key, exact native paths, transforms and textured brush profiles. Setup and idle now share the wider smiling pose. All four poses expose the existing optional hat property with default false; application logic after signup must explicitly enable it. Other outcome drawings remain unchanged.
+
+Published pet-artwork, pet-stage and their calendar dependencies. Accepted the update in Business Visual and verified all five existing setup/idle instances at normal, narrow and long-name sizes: remote connections preserved, new proportions and no visible hat. The user’s reference screen remains untouched.
+
+The implementation chat updated the shared app, removed the intro’s baked-in hat, separated the progressive-failure hat, and adjusted accessory placement. Web and iPhone setup were inspected; 115 tests, web export and iOS bundle passed. Seven existing type errors remain, and Android runtime was not rerun. App changes remain local alongside existing intro work; this patch does not claim deployment. See [pet-update.json](pet-update.json).
+
 ## 0.2.0 — 2026-11-18
 
 Reconciled Darya’s approved application changes in the published Figma library and connected designs. Original capitalization replaces normalized lowercase; pet scenes retain 382×438 proportions, setup places the name above a hatless pet, and long names grow safely. Setup now exposes Check in every with 24h / 48h / Weekly. Added the shared white SelectionOption family, wrapped SelectionTile around it, corrected colour circles/dots, and retained explicit focus/disabled states.

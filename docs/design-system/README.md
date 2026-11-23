@@ -1,6 +1,6 @@
 # Tamagotchi design system
 
-**v0.2.0 is published** in Business → Team project. It reconciles the approved application changes and has 15 reviewed library screens plus 15 connected examples. The original seven source frames remain intact. Application adoption and device checks are tracked separately; see [status](status.json) and [adoption](adoption.json).
+**v0.2.1 is published** in Business → Team project. The pet patch adopts the smiling pose from reference `4792:1906` for setup and idle, with the hat off by default. It is implemented locally in the shared app; deployment is separate. See [pet patch evidence](pet-update.json). It reconciles the approved application changes and has 15 reviewed library screens plus 15 connected examples. The original seven source frames remain intact. Application adoption and device checks are tracked separately; see [status](status.json) and [adoption](adoption.json).
 
 ## Sources
 
@@ -30,9 +30,9 @@ Match the original Figma capitalization and emphasis: Day, Set up, Goal and DOUB
 
 At the 430px source viewport, content is 382px wide with 24px margins. Use Hepta Slab Bold 62/65 for page titles, ExtraBold 42/48 for feedback, Bold 22/28 for labels and 22/48 for buttons; use Aleo Regular 22/44 for body, Bold 22/28 for support and Regular 14/18 for calendar labels. Scale by `min(1, (viewportWidth - 48) / 382)`, keeping reading text at least 16px, calendar text at least 10px, navigation text 12px, and targets at least 44px. Preserve accessibility font scaling. Figma-only adapter sizes compensate instance transforms; they are not application tokens.
 
-Scale original 382×438 pet scenes uniformly. Setup has a white bordered card, name above the pet and no hat; long names grow the card without stretching the artwork. Idle is unframed. Preserve the original vectors, circular confetti, poses and decorations.
+Scale original 382×438 pet scenes uniformly. Setup has a white bordered card, name above the pet and no hat; long names grow the card without stretching the artwork. Idle is unframed. Setup and idle use the 175.1746×266.3598 reference pet, centered at x=103.4127 in the scene; idle y=62, setup y=106. Preserve the original vectors, brush profiles, circular confetti, outcome poses and decorations.
 
-Setup order is Name → Colour → Hair → Clothes → Habit → **Check in every**. Show **24h / 48h / Weekly** directly in one row. Colour choices stay on one horizontally scrollable row. Hair and Clothes now offer None plus original vector accessories: curls, spikes, side swoop; striped T-shirt, waistcoat, scarf. Picker thumbnails and pet overlays share PetAccessories paths. Selected hair replaces the default hat. This application extension is pending Figma library reconciliation. Fields are white, source height 72px, radius 20px and grow for long values.
+Setup order is Name → Colour → Hair → Clothes → Habit → **Check in every**. Show **24h / 48h / Weekly** directly in one row. Colour choices stay on one horizontally scrollable row. Hair and Clothes now offer None plus original vector accessories: curls, spikes, side swoop; striped T-shirt, waistcoat, scarf. Picker thumbnails and pet overlays share PetAccessories paths. Hat visibility is optional and defaults off; only explicit application logic after signup should enable it. Selected hair suppresses that optional hat. This application extension is pending Figma library reconciliation. Fields are white, source height 72px, radius 20px and grow for long values.
 
 Use `SelectionOption` for choices and `SelectionTile` as its accessory wrapper. Every selection state keeps a white surface and black Aleo text. Selected gets a 2px outline, unselected an invisible outline, and keyboard focus a distinct outline. Action buttons such as Save keep their action styling. The remaining grey disabled-selection implementation mismatch is recorded in adoption.json.
 
